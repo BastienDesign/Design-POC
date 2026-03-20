@@ -18,6 +18,8 @@ import { Badge } from "@/components/ui/badge";
 import {
   Sheet,
   SheetContent,
+  SheetHeader,
+  SheetTitle,
 } from "@/components/ui/sheet";
 import {
   HoverCard,
@@ -75,6 +77,11 @@ export function PostSidePanel({
         showCloseButton={false}
         className="flex w-full flex-col border-l border-neutral-200 p-0 shadow-2xl sm:max-w-[550px]"
       >
+        {/* Accessibility: visually hidden title for screen readers */}
+        <SheetHeader className="sr-only">
+          <SheetTitle>Post Details</SheetTitle>
+        </SheetHeader>
+
         {/* ─── Sticky Header ─── */}
         <div className="flex shrink-0 items-center justify-between gap-4 border-b border-neutral-200 bg-white px-4 py-3">
           <div className="flex min-w-0 flex-1 items-center gap-3">
