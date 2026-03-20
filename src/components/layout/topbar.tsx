@@ -3,24 +3,30 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import {
-  RiArrowRightSLine,
-  RiLayoutLeftLine,
   RiArrowDownSLine,
   RiBuildingLine,
 } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { BREADCRUMBS, NAV_ITEMS, SUB_ORGANIZATIONS } from "@/lib/mock-data";
-import { useSidebar } from "./sidebar-context";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { BREADCRUMBS, SUB_ORGANIZATIONS } from "@/lib/mock-data";
 
 export function Topbar() {
   const pathname = usePathname();
-  const { toggle } = useSidebar();
   const [activeOrg, setActiveOrg] = useState<string>(SUB_ORGANIZATIONS[0].id);
 
   const segments = BREADCRUMBS[pathname] ?? ["Dashboard"];
@@ -29,33 +35,28 @@ export function Topbar() {
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b border-neutral-200 bg-white px-4">
       {/* Left: Toggle + Breadcrumbs */}
-      <div className="flex items-center gap-3">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggle}
-          className="-ml-2 h-8 w-8 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 focus-visible:ring-0"
-        >
-          <RiLayoutLeftLine size={18} />
-        </Button>
-        <nav className="flex items-center gap-1.5 text-[14px] text-neutral-500">
-          {segments.map((segment, index) => (
-            <span key={index} className="flex items-center gap-1.5">
-              {index > 0 && (
-                <RiArrowRightSLine className="text-neutral-400" size={16} />
-              )}
-              <span
-                className={
-                  index === segments.length - 1
-                    ? "font-medium text-neutral-900"
-                    : "cursor-pointer transition-colors hover:text-neutral-900"
-                }
-              >
-                {segment}
-              </span>
-            </span>
-          ))}
-        </nav>
+      <div className="flex items-center gap-2">
+        <SidebarTrigger className="-ml-1" />
+        <Separator
+          orientation="vertical"
+          className="mr-2 data-[orientation=vertical]:h-4"
+        />
+        <Breadcrumb>
+          <BreadcrumbList>
+            {segments.map((segment, index) => (
+              index < segments.length - 1 ? (
+                <BreadcrumbItem key={index} className="hidden md:block">
+                  <BreadcrumbLink href="#">{segment}</BreadcrumbLink>
+                  <BreadcrumbSeparator className="hidden md:block" />
+                </BreadcrumbItem>
+              ) : (
+                <BreadcrumbItem key={index}>
+                  <BreadcrumbPage>{segment}</BreadcrumbPage>
+                </BreadcrumbItem>
+              )
+            ))}
+          </BreadcrumbList>
+        </Breadcrumb>
       </div>
 
       {/* Right: Organization Selector */}
