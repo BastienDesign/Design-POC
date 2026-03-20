@@ -5,7 +5,7 @@ export default function OverviewPage() {
         Overview
       </h1>
       <p className="mt-1 text-sm text-neutral-500">
-        Welcome to ShieldSync. Select a view from the sidebar.
+        Welcome to Sentinel. Select a view from the sidebar.
       </p>
     </div>
   );
