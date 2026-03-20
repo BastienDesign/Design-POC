@@ -360,7 +360,7 @@ export function BulkActionPill({
           {hasPending ? (
             <Button
               onClick={onApplyAll}
-              className="h-8 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-6 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.4)]"
+              className="h-8 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold px-6 rounded-xl shadow-[0_0_15px_rgba(21,25,96,0.4)]"
             >
               <RiCheckLine className="w-4 h-4 mr-1.5" />
               Apply to {selectedCount} rows

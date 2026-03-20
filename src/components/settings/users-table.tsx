@@ -21,8 +21,8 @@ import { TEAM_USERS, ACTIVE_ORG } from "@/lib/mock-data";
 function StatusDot({ status }: { status: "active" | "invited" }) {
   if (status === "active") {
     return (
-      <span className="flex items-center gap-1.5 text-emerald-600">
-        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+      <span className="flex items-center gap-1.5 text-primary">
+        <span className="h-1.5 w-1.5 rounded-full bg-primary" />
         <span className="text-[13px]">Active</span>
       </span>
     );
@@ -44,7 +44,7 @@ export function UsersTable() {
           Organizational Settings
         </p>
         <div className="flex items-center gap-2 rounded-lg border border-neutral-200/50 bg-white px-3 py-1.5">
-          <div className="flex h-5 w-5 items-center justify-center rounded bg-emerald-600 text-[8px] font-bold text-white">
+          <div className="flex h-5 w-5 items-center justify-center rounded bg-primary text-[8px] font-bold text-white">
             {ACTIVE_ORG.logo}
           </div>
           <span className="text-xs font-medium text-neutral-700">
@@ -61,7 +61,7 @@ export function UsersTable() {
           </h1>
           <Badge
             variant="secondary"
-            className="rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800 hover:bg-emerald-100"
+            className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary hover:bg-primary/10"
           >
             336
           </Badge>

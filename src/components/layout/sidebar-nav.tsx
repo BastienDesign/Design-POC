@@ -57,13 +57,13 @@ function NavLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
       href={item.href}
       className={`flex items-center gap-3 rounded-md px-2 py-2 text-[13px] font-medium transition-colors ${
         isActive
-          ? "bg-white text-emerald-900 shadow-sm ring-1 ring-neutral-200/50"
+          ? "bg-white text-primary shadow-sm ring-1 ring-neutral-200/50"
           : "text-neutral-600 hover:bg-neutral-100 active:bg-neutral-200"
       }`}
     >
       <Icon
         className={`h-[18px] w-[18px] shrink-0 ${
-          isActive ? "text-emerald-600" : "text-neutral-400"
+          isActive ? "text-primary" : "text-neutral-400"
         }`}
       />
       <span className="truncate">{item.label}</span>

@@ -38,7 +38,7 @@ export function UserMenu() {
         <DropdownMenuItem className="gap-2">
           <RiNotification3Line size={16} className="text-neutral-400" />
           Notifications
-          <span className="ml-auto h-2 w-2 rounded-full bg-emerald-500" />
+          <span className="ml-auto h-2 w-2 rounded-full bg-primary" />
         </DropdownMenuItem>
         <DropdownMenuItem className="gap-2">
           <RiSettings4Line size={16} className="text-neutral-400" />

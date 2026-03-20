@@ -48,7 +48,7 @@ export function SettingsSidebar() {
       {/* Org Context Card */}
       <div className="mx-4 mb-4 rounded-lg bg-neutral-50/80 p-3">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-xs font-bold text-white">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-xs font-bold text-white">
             {ACTIVE_ORG.logo}
           </div>
           <div className="overflow-hidden">
@@ -80,13 +80,13 @@ export function SettingsSidebar() {
                     href={item.href}
                     className={`relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors ${
                       isActive
-                        ? "border-r-2 border-emerald-500 bg-emerald-50 text-emerald-900"
+                        ? "border-r-2 border-primary bg-primary/10 text-primary"
                         : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-700"
                     }`}
                   >
                     <Icon
                       className={`h-4 w-4 ${
-                        isActive ? "text-emerald-600" : "text-neutral-400"
+                        isActive ? "text-primary" : "text-neutral-400"
                       }`}
                     />
                     {item.label}
