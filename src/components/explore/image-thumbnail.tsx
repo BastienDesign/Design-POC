@@ -31,8 +31,9 @@ export function ImageThumbnail({ src, alt, id }: ImageThumbnailProps) {
 
       <HoverCardContent
         side="right"
-        align="start"
+        align="center"
         sideOffset={16}
+        avoidCollisions
         className="z-[100] w-auto max-w-[400px] p-0 overflow-hidden shadow-2xl border-neutral-200 bg-white"
       >
         <div className="flex flex-col">
