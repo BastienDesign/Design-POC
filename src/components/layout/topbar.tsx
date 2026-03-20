@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import {
   RiArrowDownSLine,
@@ -39,22 +39,31 @@ export function Topbar() {
         <SidebarTrigger className="-ml-1" />
         <Separator
           orientation="vertical"
-          className="mr-2 data-[orientation=vertical]:h-4"
+          className="mr-2 h-4"
         />
         <Breadcrumb>
-          <BreadcrumbList>
-            {segments.map((segment, index) => (
-              index < segments.length - 1 ? (
-                <BreadcrumbItem key={index} className="hidden md:block">
-                  <BreadcrumbLink href="#">{segment}</BreadcrumbLink>
-                  <BreadcrumbSeparator className="hidden md:block" />
-                </BreadcrumbItem>
-              ) : (
-                <BreadcrumbItem key={index}>
-                  <BreadcrumbPage>{segment}</BreadcrumbPage>
-                </BreadcrumbItem>
-              )
-            ))}
+          <BreadcrumbList className="flex-nowrap">
+            {segments.map((segment, index) => {
+              const isLast = index === segments.length - 1;
+              return (
+                <React.Fragment key={index}>
+                  {index > 0 && (
+                    <BreadcrumbSeparator className="hidden md:block text-neutral-400" />
+                  )}
+                  <BreadcrumbItem className={isLast ? "flex items-center" : "hidden md:flex items-center"}>
+                    {isLast ? (
+                      <BreadcrumbPage className="font-semibold text-neutral-900">
+                        {segment}
+                      </BreadcrumbPage>
+                    ) : (
+                      <BreadcrumbLink href="#" className="text-neutral-500 hover:text-neutral-900 transition-colors">
+                        {segment}
+                      </BreadcrumbLink>
+                    )}
+                  </BreadcrumbItem>
+                </React.Fragment>
+              );
+            })}
           </BreadcrumbList>
         </Breadcrumb>
       </div>
