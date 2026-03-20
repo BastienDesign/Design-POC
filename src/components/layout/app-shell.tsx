@@ -11,9 +11,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className="flex flex-col h-screen overflow-hidden min-w-0">
         <Topbar />
-        <main className="flex-1 min-w-0 flex flex-col overflow-hidden">{children}</main>
+        <div className="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

@@ -309,9 +309,9 @@ export default function ExplorePage() {
   }
 
   return (
-    <div className="flex h-full min-w-0 flex-col overflow-hidden bg-white">
+    <div className="flex flex-col h-full w-full min-w-0 overflow-hidden bg-white">
       {/* Header: natural height, never scrolls */}
-      <div className="shrink-0 min-w-0 px-4 pt-4">
+      <div className="shrink-0 w-full min-w-0 px-4 pt-4">
         <ExploreHeader
           filters={filters}
           onRemoveFilter={handleRemoveFilter}
@@ -340,8 +340,8 @@ export default function ExplorePage() {
         />
       </div>
 
-      {/* Content: fills remaining height, scrolls */}
-      <div className="flex flex-1 flex-col min-h-0 min-w-0 px-4 pt-4 pb-0">
+      {/* Content: fills remaining height, scrolls confined here */}
+      <div className="flex-1 min-h-0 min-w-0 overflow-hidden flex flex-col px-4 pt-4 pb-0">
         {activeTab === "Posts" && postsLayout === "table" && (
           <ExploreTable
             data={filteredPosts}
