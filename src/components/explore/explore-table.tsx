@@ -248,13 +248,12 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
     case "website":
       return (
         <WebsiteCell
-          websiteDomain={post.websiteDomain}
-          websiteUrl={post.website}
-          websiteCategory={post.websiteCategory}
-          platformGeo={post.platformGeo}
-          domainCount={post.domainCount}
-          status={post.status}
+          websiteUrl={post.websiteDomain}
+          isUp={post.status === "up"}
           lastCrawledDate={post.crawlingDate}
+          storeType={post.websiteCategory}
+          listingsCount={post.domainCount}
+          country={post.platformGeo}
           relatedDomains={post.relatedDomains}
         />
       );
