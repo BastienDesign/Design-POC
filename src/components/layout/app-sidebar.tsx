@@ -18,8 +18,6 @@ import {
   RiNotification3Line,
   RiSettings4Line,
   RiArrowUpSLine,
-  RiLifebuoyLine,
-  RiSendPlaneLine,
 } from "@remixicon/react";
 import type { RemixiconComponentType } from "@remixicon/react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -85,11 +83,6 @@ const NAV_GROUPS: NavGroup[] = [
   },
 ];
 
-const NAV_SECONDARY = [
-  { title: "Support", url: "#", icon: RiLifebuoyLine },
-  { title: "Feedback", url: "#", icon: RiSendPlaneLine },
-];
-
 // ─── Nav Main ───
 
 function NavMain({ groups }: { groups: NavGroup[] }) {
@@ -123,34 +116,6 @@ function NavMain({ groups }: { groups: NavGroup[] }) {
         </SidebarGroup>
       ))}
     </>
-  );
-}
-
-// ─── Nav Secondary ───
-
-function NavSecondary({
-  items,
-  ...props
-}: {
-  items: typeof NAV_SECONDARY;
-} & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
-  return (
-    <SidebarGroup {...props}>
-      <SidebarGroupContent>
-        <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild size="sm">
-                <a href={item.url}>
-                  <item.icon />
-                  <span>{item.title}</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
   );
 }
 
@@ -275,7 +240,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain groups={NAV_GROUPS} />
-        <NavSecondary items={NAV_SECONDARY} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />
