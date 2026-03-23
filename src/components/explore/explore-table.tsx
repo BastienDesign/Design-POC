@@ -12,6 +12,10 @@ import {
   RiArrowDownSLine,
   RiExpandUpDownLine,
   RiFilter3Line,
+  RiMapPinLine,
+  RiGlobalLine,
+  RiUserLine,
+  RiPriceTag3Line,
 } from "@remixicon/react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +31,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Table,
   TableBody,
@@ -239,17 +249,30 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
     case "website":
       return (
         <div className="flex items-center gap-2 w-full">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span className="flex min-w-0 flex-1 cursor-pointer items-center gap-1 truncate text-[13px] text-blue-600 hover:underline">
+          <HoverCard openDelay={250} closeDelay={100}>
+            <HoverCardTrigger asChild>
+              <button className="flex min-w-0 flex-1 cursor-pointer items-center gap-1 truncate text-[13px] text-blue-600 hover:text-blue-800 hover:underline focus:outline-none text-left transition-colors">
                 <span className="truncate">{post.websiteDomain}</span>
                 <RiExternalLinkLine className="h-3 w-3 shrink-0 text-blue-400" />
-              </span>
-            </TooltipTrigger>
-            <TooltipContent className="max-w-[320px]">
-              <p className="break-all">{post.website}</p>
-            </TooltipContent>
-          </Tooltip>
+              </button>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-80 z-[60]" align="start" sideOffset={8}>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <RiGlobalLine className="h-4 w-4 text-neutral-400 shrink-0" />
+                  <h4 className="text-sm font-semibold text-neutral-900 truncate">{post.websiteDomain}</h4>
+                </div>
+                <p className="text-xs text-neutral-500 break-all leading-relaxed">{post.website}</p>
+                <div className="flex items-center gap-3 pt-1 text-xs text-neutral-500">
+                  <span>{post.websiteCategory}</span>
+                  <span className="h-3 w-px bg-neutral-200" />
+                  <span>{post.domainCount} listing{post.domainCount !== 1 ? "s" : ""} on domain</span>
+                  <span className="h-3 w-px bg-neutral-200" />
+                  <span>{post.platformGeo}</span>
+                </div>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
           {post.domainCount > 1 && (
             <Badge variant="secondary" className="shrink-0 px-1.5 text-[10px]">
               {post.domainCount}+
@@ -261,14 +284,44 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
     case "account":
       return (
         <div className="flex items-center gap-2 w-full">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span className="min-w-0 flex-1 cursor-pointer truncate text-[13px] text-blue-600 hover:underline">
+          <HoverCard openDelay={250} closeDelay={100}>
+            <HoverCardTrigger asChild>
+              <button className="min-w-0 flex-1 cursor-pointer truncate text-[13px] text-blue-600 hover:text-blue-800 hover:underline focus:outline-none text-left transition-colors">
                 {post.accountName}
-              </span>
-            </TooltipTrigger>
-            <TooltipContent>{post.accountName}</TooltipContent>
-          </Tooltip>
+              </button>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-72 z-[60]" align="start" sideOffset={8}>
+              <div className="flex gap-3">
+                <Avatar className="h-9 w-9 shrink-0">
+                  <AvatarFallback className="bg-neutral-100 text-xs font-semibold text-neutral-600">
+                    {post.accountName.substring(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="space-y-1.5 min-w-0 flex-1">
+                  <div>
+                    <h4 className="text-sm font-semibold text-neutral-900 truncate">{post.accountName}</h4>
+                    <p className="text-xs text-neutral-500">{post.websiteDomain}</p>
+                  </div>
+                  <div className="flex flex-col gap-1 text-xs text-neutral-500">
+                    <span className="flex items-center gap-1.5">
+                      <RiMapPinLine className="h-3 w-3 text-neutral-400" />
+                      {post.accountGeo}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <RiAlertLine className="h-3 w-3 text-amber-500" />
+                      {post.suspiciousCount} suspicious signal{post.suspiciousCount !== 1 ? "s" : ""}
+                    </span>
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className={`mt-0.5 px-1.5 text-[10px] ${ACCOUNT_TAG_STYLES[post.accountTagType]}`}
+                  >
+                    {post.accountTag}
+                  </Badge>
+                </div>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
           <Badge
             variant="outline"
             className={`shrink-0 px-1.5 text-[10px] ${ACCOUNT_TAG_STYLES[post.accountTagType]}`}
@@ -293,16 +346,29 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
             <RiAlertLine className="h-4 w-4 shrink-0 text-red-500" />
             <span className="text-[13px] font-medium text-foreground">{post.suspiciousCount}</span>
           </div>
-          <Tooltip>
-            <TooltipTrigger asChild>
+          <HoverCard openDelay={250} closeDelay={100}>
+            <HoverCardTrigger asChild>
               <span className="min-w-0 flex-1 truncate text-[12px] text-muted-foreground cursor-default">
                 {post.suspiciousReasons}
               </span>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="max-w-[300px]">
-              <p>{post.suspiciousReasons}</p>
-            </TooltipContent>
-          </Tooltip>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-72 z-[60]" align="start" sideOffset={8}>
+              <div className="space-y-2">
+                <h4 className="text-sm font-semibold text-neutral-900 flex items-center gap-1.5">
+                  <RiAlertLine className="h-3.5 w-3.5 text-red-500" />
+                  {post.suspiciousCount} Suspicious Signal{post.suspiciousCount !== 1 ? "s" : ""}
+                </h4>
+                <ul className="space-y-1">
+                  {post.suspiciousReasons.split(", ").map((reason, i) => (
+                    <li key={i} className="flex items-start gap-2 text-xs text-neutral-600">
+                      <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-red-400" />
+                      {reason}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
         </div>
       ) : (
         <span className="text-[13px] text-muted-foreground">&mdash;</span>
@@ -333,17 +399,18 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
       if (displayTags.length === 0) {
         return <span className="text-neutral-300 text-xs">&mdash;</span>;
       }
-      return (
+
+      const tagBadgeClass = isTagsStaged
+        ? "bg-blue-50 border border-blue-300 text-blue-600"
+        : "bg-neutral-100 border border-neutral-200 text-neutral-600";
+
+      const inlineTags = (
         <div className={`flex flex-wrap gap-1 items-center ${isTagsStaged ? "animate-pulse" : ""}`}>
           {displayTags.slice(0, 2).map((tag) => (
             <Badge
               key={tag}
               variant="secondary"
-              className={`h-5 px-1.5 py-0 text-[10px] font-medium rounded-sm shadow-none shrink-0 ${
-                isTagsStaged
-                  ? "bg-blue-50 border border-blue-300 text-blue-600"
-                  : "bg-neutral-100 border border-neutral-200 text-neutral-600"
-              }`}
+              className={`h-5 px-1.5 py-0 text-[10px] font-medium rounded-sm shadow-none shrink-0 ${tagBadgeClass}`}
             >
               {tag.length > 12 ? `${tag.substring(0, 10)}...` : tag}
             </Badge>
@@ -352,15 +419,42 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
             <Badge
               variant="outline"
               className={`h-5 px-1.5 py-0 text-[10px] font-medium rounded-sm shrink-0 ${
-                isTagsStaged
-                  ? "border-blue-300 text-blue-500"
-                  : "border-neutral-200 text-neutral-400"
+                isTagsStaged ? "border-blue-300 text-blue-500" : "border-neutral-200 text-neutral-400"
               }`}
             >
               +{displayTags.length - 2}
             </Badge>
           )}
         </div>
+      );
+
+      if (displayTags.length <= 2) return inlineTags;
+
+      return (
+        <HoverCard openDelay={250} closeDelay={100}>
+          <HoverCardTrigger asChild>
+            <div className="cursor-default">{inlineTags}</div>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-64 z-[60]" align="start" sideOffset={8}>
+            <div className="space-y-2">
+              <h4 className="text-sm font-semibold text-neutral-900 flex items-center gap-1.5">
+                <RiPriceTag3Line className="h-3.5 w-3.5 text-neutral-400" />
+                {displayTags.length} Tags
+              </h4>
+              <div className="flex flex-wrap gap-1">
+                {displayTags.map((tag) => (
+                  <Badge
+                    key={tag}
+                    variant="secondary"
+                    className={`h-5 px-1.5 py-0 text-[10px] font-medium rounded-sm shadow-none ${tagBadgeClass}`}
+                  >
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          </HoverCardContent>
+        </HoverCard>
       );
     }
 
@@ -420,9 +514,9 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
     case "shipsTo":
       return (
         <div className="flex items-center gap-1.5 w-full overflow-hidden">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-1.5 truncate">
+          <HoverCard openDelay={250} closeDelay={100}>
+            <HoverCardTrigger asChild>
+              <div className="flex items-center gap-1.5 truncate cursor-default">
                 {post.shipsTo.slice(0, 2).map((country) => (
                   <Badge
                     key={country}
@@ -438,11 +532,27 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
                   </Badge>
                 )}
               </div>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="max-w-[400px]">
-              <p>{post.shipsTo.join(", ")}</p>
-            </TooltipContent>
-          </Tooltip>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-64 z-[60]" align="start" sideOffset={8}>
+              <div className="space-y-2">
+                <h4 className="text-sm font-semibold text-neutral-900 flex items-center gap-1.5">
+                  <RiMapPinLine className="h-3.5 w-3.5 text-neutral-400" />
+                  Ships to {post.shipsTo.length} countries
+                </h4>
+                <div className="flex flex-wrap gap-1">
+                  {post.shipsTo.map((country) => (
+                    <Badge
+                      key={country}
+                      variant="outline"
+                      className="font-normal bg-neutral-50 text-neutral-600 text-[10px]"
+                    >
+                      {country}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
         </div>
       );
 
