@@ -2,7 +2,6 @@
 
 import { useRef, useCallback, useState, useMemo } from "react";
 import {
-  RiExternalLinkLine,
   RiAlertLine,
   RiInformationLine,
   RiMoreLine,
@@ -13,7 +12,6 @@ import {
   RiExpandUpDownLine,
   RiFilter3Line,
   RiMapPinLine,
-  RiGlobalLine,
   RiUserLine,
   RiPriceTag3Line,
 } from "@remixicon/react";
@@ -50,6 +48,7 @@ import type { PendingChanges } from "./bulk-action-pill";
 import type { ColumnDef } from "./explore-columns";
 import { ALL_COLUMNS } from "./explore-columns";
 import { ImageThumbnail } from "./image-thumbnail";
+import { WebsiteCell } from "./website-cell";
 
 const STATUS_CONFIG: Record<
   PostStatus,
@@ -248,37 +247,15 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
 
     case "website":
       return (
-        <div className="flex items-center gap-2 w-full">
-          <HoverCard openDelay={250} closeDelay={100}>
-            <HoverCardTrigger asChild>
-              <button className="flex min-w-0 flex-1 cursor-pointer items-center gap-1 truncate text-[13px] text-blue-600 hover:text-blue-800 hover:underline focus:outline-none text-left transition-colors">
-                <span className="truncate">{post.websiteDomain}</span>
-                <RiExternalLinkLine className="h-3 w-3 shrink-0 text-blue-400" />
-              </button>
-            </HoverCardTrigger>
-            <HoverCardContent className="w-80 z-[60]" align="start" sideOffset={8}>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <RiGlobalLine className="h-4 w-4 text-neutral-400 shrink-0" />
-                  <h4 className="text-sm font-semibold text-neutral-900 truncate">{post.websiteDomain}</h4>
-                </div>
-                <p className="text-xs text-neutral-500 break-all leading-relaxed">{post.website}</p>
-                <div className="flex items-center gap-3 pt-1 text-xs text-neutral-500">
-                  <span>{post.websiteCategory}</span>
-                  <span className="h-3 w-px bg-neutral-200" />
-                  <span>{post.domainCount} listing{post.domainCount !== 1 ? "s" : ""} on domain</span>
-                  <span className="h-3 w-px bg-neutral-200" />
-                  <span>{post.platformGeo}</span>
-                </div>
-              </div>
-            </HoverCardContent>
-          </HoverCard>
-          {post.domainCount > 1 && (
-            <Badge variant="secondary" className="shrink-0 px-1.5 text-[10px]">
-              {post.domainCount}+
-            </Badge>
-          )}
-        </div>
+        <WebsiteCell
+          websiteDomain={post.websiteDomain}
+          websiteUrl={post.website}
+          websiteCategory={post.websiteCategory}
+          platformGeo={post.platformGeo}
+          domainCount={post.domainCount}
+          status={post.status}
+          lastCrawledDate={post.crawlingDate}
+        />
       );
 
     case "account":
