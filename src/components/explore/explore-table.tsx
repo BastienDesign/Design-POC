@@ -255,6 +255,7 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
           domainCount={post.domainCount}
           status={post.status}
           lastCrawledDate={post.crawlingDate}
+          relatedDomains={post.relatedDomains}
         />
       );
 

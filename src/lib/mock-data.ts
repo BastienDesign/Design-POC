@@ -457,6 +457,7 @@ export interface ExplorePost {
   crawlingDate: string;
   lastCreatedDate: string;
   tags: string[];
+  relatedDomains: string[];
 }
 
 // --- Explore: Posts Generator (50 rows) ---
@@ -494,6 +495,7 @@ const SEED_IMG_REASONS = ["Watermark detected", "Stock photo match", "Rendered m
 const SEED_VALIDATION = ["None", "Missing GTIN", "Invalid SKU", "Trademark violation", "Missing barcode", "Duplicate EAN"];
 const SEED_STOCK = ["In Stock", "Low Stock", "Out of Stock"];
 const SEED_TAGS = ["amazon:b0fx", "premium_check", "manual_audit", "repeat_offender", "price_alert", "vip_brand", "seasonal", "escalated", "grey_market", "high_volume"];
+const SEED_RELATED_TLDS = [".ch", ".ca", ".fr", ".de", ".co.uk", ".it", ".es", ".nl", ".com.au", ".co.jp"];
 
 function seededRandom(seed: number) {
   const x = Math.sin(seed + 1) * 10000;
@@ -562,6 +564,15 @@ function generateExplorePosts(count: number): ExplorePost[] {
         { length: Math.floor(seededRandom(s + 31) * 5) },
         (_, j) => pick(SEED_TAGS, s + j + 32)
       ).filter((v, idx, arr) => arr.indexOf(v) === idx),
+      relatedDomains: (() => {
+        const count = Math.floor(seededRandom(s + 33) * 5); // 0-4 related domains
+        if (count === 0) return [];
+        const base = pick(SEED_DOMAINS, s + 9).replace(/\.[^.]+$/, "");
+        return Array.from(
+          { length: count },
+          (_, j) => `${base}${pick(SEED_RELATED_TLDS, s + j + 34)}`
+        ).filter((v, idx, arr) => arr.indexOf(v) === idx);
+      })(),
     };
   });
 }

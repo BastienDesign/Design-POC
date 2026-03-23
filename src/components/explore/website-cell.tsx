@@ -3,6 +3,7 @@
 import { format, differenceInMonths } from "date-fns";
 import { RiGlobalLine, RiExternalLinkLine } from "@remixicon/react";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
   HoverCard,
   HoverCardContent,
@@ -19,6 +20,7 @@ interface WebsiteCellProps {
   domainCount: number;
   status: WebsiteStatus;
   lastCrawledDate: string;
+  relatedDomains?: string[];
 }
 
 const STATUS_CONFIG = {
@@ -35,6 +37,7 @@ export function WebsiteCell({
   domainCount,
   status,
   lastCrawledDate,
+  relatedDomains = [],
 }: WebsiteCellProps) {
   const crawlDate = new Date(lastCrawledDate);
   const monthsSinceCrawl = differenceInMonths(new Date(), crawlDate);
@@ -42,6 +45,7 @@ export function WebsiteCell({
   const isUnknown = monthsSinceCrawl > 2 || status === "unknown";
   const finalStatus = isUnknown ? "Unknown" : status === "up" ? "Up" : "Down";
   const config = STATUS_CONFIG[finalStatus];
+  const hasRelatedDomains = relatedDomains.length > 0;
 
   return (
     <div className="flex items-center gap-2 w-full">
@@ -53,10 +57,11 @@ export function WebsiteCell({
           </button>
         </HoverCardTrigger>
         <HoverCardContent
-          className="w-auto p-3 z-[60]"
+          className="w-auto max-w-[280px] p-3 flex flex-col gap-3 z-[60] shadow-lg shadow-black/5"
           align="start"
           sideOffset={4}
         >
+          {/* Status Section */}
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center gap-2">
               <RiGlobalLine className={`size-4 shrink-0 ${config.color}`} />
@@ -66,22 +71,39 @@ export function WebsiteCell({
             </div>
             <div className="flex items-center gap-2 pl-6">
               <span className="text-xs text-neutral-500 leading-none">
-                Last crawled {format(crawlDate, "MMM dd yyyy")}
+                Last crawled {format(crawlDate, "MMM dd, yyyy")}
               </span>
             </div>
-            <div className="flex items-center gap-3 pl-6 pt-1 text-xs text-neutral-500">
+            <div className="flex items-center gap-3 pl-6 pt-0.5 text-xs text-neutral-500">
               <span>{websiteCategory}</span>
               <span className="h-3 w-px bg-neutral-200" />
-              <span>
-                {domainCount} listing{domainCount !== 1 ? "s" : ""}
-              </span>
+              <span>{domainCount} listing{domainCount !== 1 ? "s" : ""}</span>
               <span className="h-3 w-px bg-neutral-200" />
               <span>{platformGeo}</span>
             </div>
-            <p className="pl-6 pt-0.5 text-[11px] text-neutral-400 break-all leading-relaxed max-w-[320px]">
-              {websiteUrl}
-            </p>
           </div>
+
+          {/* Related Domains Section */}
+          {hasRelatedDomains && (
+            <>
+              <Separator className="bg-neutral-100" />
+              <div className="flex flex-col gap-2">
+                <span className="text-[10px] uppercase font-bold tracking-wider text-neutral-400">
+                  Listed on {relatedDomains.length} other domain{relatedDomains.length !== 1 ? "s" : ""}
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {relatedDomains.map((domain) => (
+                    <span
+                      key={domain}
+                      className="px-1.5 py-0.5 bg-neutral-50 border border-neutral-200 rounded-md text-[11px] font-medium text-neutral-600"
+                    >
+                      {domain}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </HoverCardContent>
       </HoverCard>
       {domainCount > 1 && (
