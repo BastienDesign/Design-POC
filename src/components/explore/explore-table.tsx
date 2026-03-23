@@ -878,7 +878,7 @@ export function ExploreTable({
                   <TableRow
                     key={post.id}
                     data-state={isSelected ? "selected" : undefined}
-                    className="group border-b border-neutral-100 transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted cursor-pointer"
+                    className="group h-14 border-b border-neutral-100 transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted cursor-pointer"
                     onClick={(e) => {
                       const target = e.target as HTMLElement;
                       if (target.closest("button, [role=checkbox], a, input")) return;

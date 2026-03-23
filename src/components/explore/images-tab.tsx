@@ -165,7 +165,7 @@ function ListView({
               <TableRow
                 key={img.id}
                 data-state={isSelected ? "selected" : undefined}
-                className="border-b border-neutral-100 hover:bg-neutral-50 transition-colors group"
+                className="h-14 border-b border-neutral-100 hover:bg-neutral-50 transition-colors group"
               >
                 <TableCell className="py-3 pl-4">
                   <Checkbox

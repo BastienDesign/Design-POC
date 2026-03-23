@@ -7,7 +7,6 @@ import {
   RiBuildingLine,
 } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -33,72 +32,81 @@ export function Topbar() {
   const selectedOrg = SUB_ORGANIZATIONS.find((o) => o.id === activeOrg) ?? SUB_ORGANIZATIONS[0];
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between border-b border-neutral-200 bg-white px-4">
-      {/* Left: Toggle + Breadcrumbs */}
-      <div className="flex items-center gap-2">
-        <SidebarTrigger className="-ml-1" />
-        <Separator
-          orientation="vertical"
-          className="mr-2 h-4"
-        />
-        <Breadcrumb>
-          <BreadcrumbList className="flex-nowrap">
-            {segments.map((segment, index) => {
-              const isLast = index === segments.length - 1;
-              return (
-                <React.Fragment key={index}>
-                  {index > 0 && (
-                    <BreadcrumbSeparator className="hidden md:block text-neutral-400" />
-                  )}
-                  <BreadcrumbItem className={isLast ? "flex items-center" : "hidden md:flex items-center"}>
-                    {isLast ? (
-                      <BreadcrumbPage className="font-semibold text-neutral-900">
-                        {segment}
-                      </BreadcrumbPage>
-                    ) : (
-                      <BreadcrumbLink href="#" className="text-neutral-500 hover:text-neutral-900 transition-colors">
-                        {segment}
-                      </BreadcrumbLink>
+    <header className="sticky top-0 z-10 flex h-14 w-full shrink-0 items-center gap-4 border-b border-neutral-100 bg-white px-4 md:px-6">
+      {/* Left: Toggle + Separator + Title/Breadcrumbs */}
+      <div className="flex items-center gap-4">
+        <SidebarTrigger className="text-neutral-400 hover:text-neutral-900 transition-colors" />
+
+        {/* Pixel-Perfect Vertical Separator */}
+        <div className="h-4 w-[1px] bg-neutral-200 shrink-0" />
+
+        {/* Dynamic Breadcrumb / Page Title */}
+        {segments.length === 1 ? (
+          <span className="text-[14px] font-medium text-neutral-900 tracking-tight">
+            {segments[0]}
+          </span>
+        ) : (
+          <Breadcrumb>
+            <BreadcrumbList className="flex-nowrap">
+              {segments.map((segment, index) => {
+                const isLast = index === segments.length - 1;
+                return (
+                  <React.Fragment key={index}>
+                    {index > 0 && (
+                      <BreadcrumbSeparator className="text-neutral-400" />
                     )}
-                  </BreadcrumbItem>
-                </React.Fragment>
-              );
-            })}
-          </BreadcrumbList>
-        </Breadcrumb>
+                    <BreadcrumbItem>
+                      {isLast ? (
+                        <BreadcrumbPage className="text-[14px] font-medium text-neutral-900 tracking-tight">
+                          {segment}
+                        </BreadcrumbPage>
+                      ) : (
+                        <BreadcrumbLink href="#" className="text-[14px] text-neutral-500 hover:text-neutral-900 transition-colors">
+                          {segment}
+                        </BreadcrumbLink>
+                      )}
+                    </BreadcrumbItem>
+                  </React.Fragment>
+                );
+              })}
+            </BreadcrumbList>
+          </Breadcrumb>
+        )}
       </div>
 
       {/* Right: Organization Selector */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            className="h-8 gap-2 border-neutral-200 px-3 text-[13px] font-medium text-neutral-700 shadow-sm"
-          >
-            <RiBuildingLine size={14} className="text-neutral-400" />
-            {selectedOrg.name}
-            <RiArrowDownSLine size={14} className="text-neutral-400" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-[220px]">
-          {SUB_ORGANIZATIONS.map((org) => (
-            <DropdownMenuItem
-              key={org.id}
-              className="flex cursor-pointer items-center justify-between text-[13px]"
-              onSelect={() => setActiveOrg(org.id)}
+      <div className="ml-auto flex items-center gap-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              className="h-8 gap-2 border-neutral-200 px-3 text-[13px] font-medium text-neutral-700 shadow-sm"
             >
-              <span className={org.id === activeOrg ? "font-medium text-neutral-900" : ""}>
-                {org.name}
-              </span>
-              {org.count !== null && (
-                <span className="tabular-nums text-neutral-400">
-                  {org.count.toLocaleString()}
+              <RiBuildingLine size={14} className="text-neutral-400" />
+              {selectedOrg.name}
+              <RiArrowDownSLine size={14} className="text-neutral-400" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-[220px]">
+            {SUB_ORGANIZATIONS.map((org) => (
+              <DropdownMenuItem
+                key={org.id}
+                className="flex cursor-pointer items-center justify-between text-[13px]"
+                onSelect={() => setActiveOrg(org.id)}
+              >
+                <span className={org.id === activeOrg ? "font-medium text-neutral-900" : ""}>
+                  {org.name}
                 </span>
-              )}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+                {org.count !== null && (
+                  <span className="tabular-nums text-neutral-400">
+                    {org.count.toLocaleString()}
+                  </span>
+                )}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </header>
   );
 }

@@ -43,12 +43,17 @@ export const CURRENT_USER = {
 
 // --- Breadcrumbs ---
 export const BREADCRUMBS: Record<string, string[]> = {
-  "/overview": ["Dashboard", "Overview"],
-  "/performance": ["Dashboard", "Performance"],
-  "/explore": ["Dashboard", "Explore"],
-  "/ask-cortex": ["Dashboard", "Ask Cortex"],
-  "/moderation": ["Dashboard", "Moderation"],
-  "/settings": ["Dashboard", "Settings"],
+  "/overview": ["Overview"],
+  "/performance": ["Performance"],
+  "/explore": ["Explore"],
+  "/ask-cortex": ["Ask Cortex"],
+  "/moderation": ["Moderation"],
+  "/review": ["Review"],
+  "/validation": ["Validation"],
+  "/enforcement": ["Enforcement"],
+  "/labelling": ["Labelling"],
+  "/clusters": ["Cluster view"],
+  "/settings": ["Settings"],
 };
 
 // --- Explore: Listings Data ---

@@ -10,6 +10,7 @@ import { PostSidePanel } from "@/components/explore/post-side-panel";
 import { ExplorePagination } from "@/components/explore/explore-pagination";
 import { BulkActionPill } from "@/components/explore/bulk-action-pill";
 import type { PendingChanges } from "@/components/explore/bulk-action-pill";
+import { WebsitesTable } from "@/components/explore/websites-table";
 import { ModerationWorkspace } from "@/components/explore/moderation-workspace";
 import { EXPLORE_POSTS, EXPLORE_IMAGES } from "@/lib/mock-data";
 import type { ExplorePost } from "@/lib/mock-data";
@@ -377,6 +378,9 @@ export default function ExplorePage() {
             viewType={imagesViewType}
             visibleProperties={imagesVisibleProperties}
           />
+        )}
+        {activeTab === "Websites" && (
+          <WebsitesTable />
         )}
       </div>
 
