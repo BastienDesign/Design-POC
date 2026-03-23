@@ -9,11 +9,11 @@ import {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider>
+    <SidebarProvider className="!min-h-0 h-full" style={{ "--sidebar-width": "12.5rem" } as React.CSSProperties}>
       <AppSidebar />
-      <SidebarInset className="flex flex-col h-screen overflow-hidden min-w-0">
+      <SidebarInset className="flex flex-col overflow-hidden min-w-0">
         <Topbar />
-        <div className="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden">{children}</div>
+        {children}
       </SidebarInset>
     </SidebarProvider>
   );

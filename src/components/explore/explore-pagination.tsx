@@ -18,7 +18,7 @@ export function ExplorePagination() {
   const totalPages = 93587;
 
   return (
-    <div className="mt-auto flex w-full shrink-0 items-center justify-between border-t border-neutral-200 bg-white px-4 py-3">
+    <div className="flex w-full shrink-0 items-center justify-between px-1 py-2">
       {/* Left: Rows per page */}
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <span>Rows per page</span>

@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn("font-sans", inter.variable)}>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} font-sans antialiased flex h-screen w-screen overflow-hidden`}>
         <TooltipProvider>
           <AppShell>{children}</AppShell>
         </TooltipProvider>

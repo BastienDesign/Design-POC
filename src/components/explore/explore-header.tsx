@@ -15,6 +15,7 @@ import {
 } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import {
   Select,
   SelectContent,
@@ -126,7 +127,7 @@ export function ExploreHeader({
                 <SelectItem value="cluster-id">Cluster ID</SelectItem>
               </SelectContent>
             </Select>
-            <div className="h-5 w-px bg-neutral-200" />
+            <Separator orientation="vertical" className="h-5 bg-neutral-200" />
             <Input
               placeholder="Search"
               value={searchValue}
@@ -214,9 +215,10 @@ export function ExploreHeader({
 
           {/* Right: Expand/Collapse */}
           {filters.length > 4 && (
-            <button
+            <Button
+              variant="ghost"
               onClick={() => setIsChipsExpanded(!isChipsExpanded)}
-              className="flex shrink-0 items-center gap-1 pt-1 text-[13px] text-neutral-500 transition-colors hover:text-neutral-900"
+              className="h-auto shrink-0 gap-1 px-1 pt-1 text-[13px] text-neutral-500 hover:text-neutral-900"
             >
               {isChipsExpanded ? (
                 <>
@@ -227,13 +229,13 @@ export function ExploreHeader({
                   More <RiArrowDownSLine size={14} />
                 </>
               )}
-            </button>
+            </Button>
           )}
         </div>
       )}
 
       {/* ── ROW 3: Tabs & Context-Aware Toolbar ── */}
-      <div className="flex items-center justify-between border-b border-neutral-200">
+      <div className="flex items-center justify-between">
         {/* Left: Tabs */}
         <div className="flex items-center gap-6">
           {TABS.map((tab) => {
@@ -242,7 +244,7 @@ export function ExploreHeader({
               <button
                 key={tab}
                 onClick={() => onTabChange(tab)}
-                className={`-mb-px flex items-center gap-1.5 border-b-2 pb-2.5 text-[14px] font-medium transition-colors ${
+                className={`flex items-center gap-1.5 border-b-2 pb-2.5 text-[14px] font-medium transition-colors ${
                   isActive
                     ? "border-neutral-900 text-neutral-900"
                     : "border-transparent text-neutral-500 hover:border-neutral-300 hover:text-neutral-900"
@@ -284,7 +286,7 @@ export function ExploreHeader({
             />
           )}
 
-          <div className="h-4 w-px bg-neutral-200" />
+          <Separator orientation="vertical" className="h-4 bg-neutral-200" />
 
           <Button variant="outline" className="h-8 border-neutral-200 text-[12px] font-medium shadow-sm">
             <RiUploadLine size={14} />

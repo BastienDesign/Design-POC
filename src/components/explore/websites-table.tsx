@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { RiRobot2Line, RiArrowRightSLine } from "@remixicon/react";
+import { ImageThumbnail } from "./image-thumbnail";
 import { WebsiteCell } from "./website-cell";
 
 interface WebsiteRow {
@@ -135,69 +136,47 @@ const MOCK_WEBSITES: WebsiteRow[] = [
   },
 ];
 
+const STICKY = "sticky top-0 z-10 bg-white shadow-[0_1px_0_0_#e5e5e5]";
+const HEAD_TEXT = "text-[10px] uppercase font-bold text-neutral-700 tracking-wider";
+
 export function WebsitesTable() {
   return (
-    <div className="flex-1 min-h-0 min-w-0 w-full overflow-auto border border-neutral-200 rounded-md bg-white shadow-sm mb-4 relative">
+    <div className="min-w-0 w-full relative">
       <Table className="w-full table-fixed min-w-[1200px]">
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="w-[40px] pl-4">
+            <TableHead className={`${STICKY} w-[50px] pl-4`}>
               <Checkbox />
             </TableHead>
-            <TableHead className="w-[64px] px-2 text-center text-[10px] uppercase font-bold text-neutral-700 tracking-wider">
+            <TableHead className={`${STICKY} w-[50px] px-2 text-center ${HEAD_TEXT}`}>
               Image
             </TableHead>
-            <TableHead className="w-[140px] px-3 text-[10px] uppercase font-bold text-neutral-700 tracking-wider">
-              ID
-            </TableHead>
-            <TableHead className="w-[200px] px-3 text-[10px] uppercase font-bold text-neutral-700 tracking-wider">
-              Website
-            </TableHead>
-            <TableHead className="w-[80px] px-3 text-[10px] uppercase font-bold text-neutral-700 tracking-wider">
-              AI Insight
-            </TableHead>
-            <TableHead className="w-[80px] px-3 text-[10px] uppercase font-bold text-neutral-700 tracking-wider">
-              Posts
-            </TableHead>
-            <TableHead className="w-[80px] px-3 text-[10px] uppercase font-bold text-neutral-700 tracking-wider">
-              Notices
-            </TableHead>
-            <TableHead className="w-[140px] px-3 text-[10px] uppercase font-bold text-neutral-700 tracking-wider">
-              Label
-            </TableHead>
-            <TableHead className="w-[80px] px-3 text-[10px] uppercase font-bold text-neutral-700 tracking-wider">
-              Clusters
-            </TableHead>
-            <TableHead className="w-[120px] px-3 text-[10px] uppercase font-bold text-neutral-700 tracking-wider">
-              Enforcement
-            </TableHead>
-            <TableHead className="w-[40px]" />
+            <TableHead className={`${STICKY} w-[140px] px-3 ${HEAD_TEXT}`}>ID</TableHead>
+            <TableHead className={`${STICKY} w-[200px] px-3 ${HEAD_TEXT}`}>Website</TableHead>
+            <TableHead className={`${STICKY} w-[80px] px-3 ${HEAD_TEXT}`}>AI Insight</TableHead>
+            <TableHead className={`${STICKY} w-[80px] px-3 ${HEAD_TEXT}`}>Posts</TableHead>
+            <TableHead className={`${STICKY} w-[80px] px-3 ${HEAD_TEXT}`}>Notices</TableHead>
+            <TableHead className={`${STICKY} w-[140px] px-3 ${HEAD_TEXT}`}>Label</TableHead>
+            <TableHead className={`${STICKY} w-[80px] px-3 ${HEAD_TEXT}`}>Clusters</TableHead>
+            <TableHead className={`${STICKY} w-[120px] px-3 ${HEAD_TEXT}`}>Enforcement</TableHead>
+            <TableHead className={`${STICKY} w-[50px]`} />
           </TableRow>
         </TableHeader>
         <TableBody>
-          {MOCK_WEBSITES.map((site) => (
+          {MOCK_WEBSITES.map((site, rowIdx) => (
             <TableRow
               key={site.id}
-              className="group hover:bg-neutral-50/50 transition-colors"
+              className="group cursor-pointer"
             >
-              <TableCell className="py-2.5 px-4 w-[40px]">
-                <Checkbox className="border-neutral-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600" />
+              <TableCell className="pl-4">
+                <Checkbox />
               </TableCell>
 
-              {/* Exact clone of Posts image cell */}
-              <TableCell className="py-2.5 px-4 w-[60px]">
-                {site.image && site.image !== "" ? (
-                  <img
-                    src={site.image}
-                    alt=""
-                    className="size-[38px] min-w-[38px] rounded-md object-cover bg-neutral-100"
-                  />
-                ) : (
-                  <div className="size-[38px] min-w-[38px] rounded-md bg-neutral-100" />
-                )}
+              <TableCell className="px-2">
+                <ImageThumbnail src={site.image} alt={site.url} id={site.id} rowIndex={rowIdx} />
               </TableCell>
 
-              <TableCell className="py-2.5 px-4 max-w-[120px]">
+              <TableCell className="px-3">
                 <div className="flex flex-col leading-tight">
                   <span className="text-[13px] font-medium text-blue-600 hover:underline cursor-pointer truncate">
                     {site.id}
@@ -223,7 +202,7 @@ export function WebsitesTable() {
                 </div>
               </TableCell>
 
-              <TableCell className="py-2.5 px-4">
+              <TableCell className="px-3">
                 <WebsiteCell
                   websiteUrl={site.url}
                   isUp={site.status === "Online"}
@@ -235,45 +214,41 @@ export function WebsitesTable() {
                 />
               </TableCell>
 
-              <TableCell className="py-2.5 px-4">
+              <TableCell className="px-3">
                 {site.aiInsight ? (
                   <RiRobot2Line className="size-4 text-neutral-400" />
                 ) : (
-                  <span className="text-neutral-300">-</span>
+                  <span className="text-[13px] text-muted-foreground">&mdash;</span>
                 )}
               </TableCell>
 
-              <TableCell className="py-2.5 px-4 tabular-nums text-sm text-neutral-700">
+              <TableCell className="px-3 tabular-nums text-[13px] text-foreground">
                 {site.posts}
               </TableCell>
 
-              <TableCell className="py-2.5 px-4 tabular-nums text-sm text-neutral-700">
+              <TableCell className="px-3 tabular-nums text-[13px] text-foreground">
                 {site.notices}
               </TableCell>
 
-              <TableCell className="py-2.5 px-4">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`size-2 rounded-full ${site.labelColor}`}
-                  />
-                  <span className="text-sm text-neutral-700">
-                    {site.label}
-                  </span>
+              <TableCell className="px-3">
+                <div className="flex items-center gap-1.5">
+                  <span className={`h-2.5 w-2.5 shrink-0 rounded-sm ${site.labelColor}`} />
+                  <span className="text-[13px] text-foreground">{site.label}</span>
                 </div>
               </TableCell>
 
-              <TableCell className="py-2.5 px-4 text-sm text-neutral-500">
+              <TableCell className="px-3 text-[13px] text-muted-foreground">
                 {site.clusters}
               </TableCell>
 
-              <TableCell className="py-2.5 px-4 text-sm text-neutral-600">
+              <TableCell className="px-3 text-[13px] text-foreground">
                 {site.enforcement}
               </TableCell>
 
-              <TableCell className="py-2.5 px-4 text-right">
-                <button className="p-1 text-neutral-400 hover:text-neutral-900 transition-colors opacity-0 group-hover:opacity-100 rounded">
-                  <RiArrowRightSLine className="size-5" />
-                </button>
+              <TableCell className="pr-3">
+                <div className="flex items-center justify-center text-neutral-400 group-hover:text-neutral-900">
+                  <RiArrowRightSLine className="h-5 w-5" />
+                </div>
               </TableCell>
             </TableRow>
           ))}

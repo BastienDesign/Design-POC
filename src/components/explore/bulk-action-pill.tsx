@@ -39,13 +39,7 @@ const TAG_OPTIONS = [
   "Escalated",
 ];
 
-const VERDICT_OPTIONS = [
-  { name: "Counterfeit", color: "bg-red-500" },
-  { name: "Suspicious", color: "bg-amber-500" },
-  { name: "Legitimate", color: "bg-emerald-500" },
-  { name: "Trademark Infringement", color: "bg-orange-400" },
-  { name: "Unlabeled", color: "bg-neutral-500" },
-];
+import { VERDICT_OPTIONS } from "./verdict-options";
 
 const CATEGORY_OPTIONS = [
   "Handbags",

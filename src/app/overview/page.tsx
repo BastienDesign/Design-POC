@@ -25,8 +25,8 @@ const OrganizationView = () => (
 
 export default function OverviewPage() {
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-[1600px] mx-auto px-6 py-8 md:px-8">
+    <div className="h-[calc(100vh-72px)] w-full overflow-auto bg-white">
+      <div className="max-w-[1600px] mx-auto px-6 py-8 md:px-8 w-full">
         {/* Page Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>

@@ -296,7 +296,7 @@ export default function ExplorePage() {
 
   if (isModerating) {
     return (
-      <div className="relative h-full">
+      <div className="h-[calc(100vh-72px)] w-full bg-white">
         <ModerationWorkspace
           queue={moderationQueue}
           currentIndex={currentModIndex}
@@ -310,9 +310,10 @@ export default function ExplorePage() {
   }
 
   return (
-    <div className="flex flex-col h-full w-full min-w-0 overflow-hidden bg-white">
-      {/* Header: natural height, never scrolls */}
-      <div className="shrink-0 w-full min-w-0 px-4 pt-4">
+    <div className="flex flex-col w-full h-[calc(100vh-72px)] p-2 bg-neutral-50/50 overflow-hidden">
+
+      {/* 1. TOP CONTROLS (Tabs & Buttons) — NO border-b, just margin */}
+      <div className="shrink-0 mb-2">
         <ExploreHeader
           filters={filters}
           onRemoveFilter={handleRemoveFilter}
@@ -341,54 +342,55 @@ export default function ExplorePage() {
         />
       </div>
 
-      {/* Content: fills remaining height, scrolls confined here */}
-      <div className="flex-1 min-h-0 min-w-0 overflow-hidden flex flex-col px-4 pt-4 pb-0">
-        {activeTab === "Posts" && postsLayout === "table" && (
-          <ExploreTable
-            data={filteredPosts}
-            selectedRows={selectedRows}
-            allSelected={allSelected}
-            someSelected={someSelected}
-            onSelectAll={handleSelectAll}
-            onSelectRow={handleSelectRow}
-            visibleColumns={visibleColumns}
-            columnOrder={columnOrder}
-            onColumnOrderChange={setColumnOrder}
-            onRowClick={setSelectedPostId}
-            onResetFilters={handleResetFilters}
-            pendingChanges={pendingChanges}
-            onSingleModeration={handleSingleModeration}
-          />
-        )}
-        {activeTab === "Posts" && postsLayout === "grid" && (
-          <ExploreGrid
-            data={filteredPosts}
-            selectedRows={selectedRows}
-            allSelected={allSelected}
-            someSelected={someSelected}
-            onSelectAll={handleSelectAll}
-            onSelectRow={handleSelectRow}
-            onRowClick={setSelectedPostId}
-            onResetFilters={handleResetFilters}
-            pendingChanges={pendingChanges}
-          />
-        )}
-        {activeTab === "Images" && (
-          <ImagesTab
-            viewType={imagesViewType}
-            visibleProperties={imagesVisibleProperties}
-          />
-        )}
-        {activeTab === "Websites" && (
-          <WebsitesTable />
-        )}
+      {/* 2. ISOLATED TABLE CONTAINER */}
+      <div className="flex-1 flex flex-col min-h-0 bg-white border border-neutral-200 rounded-md shadow-sm overflow-hidden mb-2">
+        <div className="flex-1 overflow-auto min-h-0 custom-scrollbar">
+          {activeTab === "Posts" && postsLayout === "table" && (
+            <ExploreTable
+              data={filteredPosts}
+              selectedRows={selectedRows}
+              allSelected={allSelected}
+              someSelected={someSelected}
+              onSelectAll={handleSelectAll}
+              onSelectRow={handleSelectRow}
+              visibleColumns={visibleColumns}
+              columnOrder={columnOrder}
+              onColumnOrderChange={setColumnOrder}
+              onRowClick={setSelectedPostId}
+              onResetFilters={handleResetFilters}
+              pendingChanges={pendingChanges}
+              onSingleModeration={handleSingleModeration}
+            />
+          )}
+          {activeTab === "Posts" && postsLayout === "grid" && (
+            <ExploreGrid
+              data={filteredPosts}
+              selectedRows={selectedRows}
+              allSelected={allSelected}
+              someSelected={someSelected}
+              onSelectAll={handleSelectAll}
+              onSelectRow={handleSelectRow}
+              onRowClick={setSelectedPostId}
+              onResetFilters={handleResetFilters}
+              pendingChanges={pendingChanges}
+            />
+          )}
+          {activeTab === "Images" && (
+            <ImagesTab
+              viewType={imagesViewType}
+              visibleProperties={imagesVisibleProperties}
+            />
+          )}
+          {activeTab === "Websites" && (
+            <WebsitesTable />
+          )}
+        </div>
       </div>
 
-      {/* Pagination: pinned to bottom */}
+      {/* 3. DETACHED PAGINATION — sibling to table container */}
       {activeTab === "Posts" && <ExplorePagination />}
 
-      {/* Post Side Panel */}
-      {/* Post Side Panel */}
+      {/* Post Side Panel (portal) */}
       <PostSidePanel
         post={selectedPost}
         open={selectedPost !== null}

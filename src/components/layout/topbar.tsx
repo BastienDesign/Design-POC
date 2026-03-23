@@ -21,6 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { BREADCRUMBS, SUB_ORGANIZATIONS } from "@/lib/mock-data";
 
@@ -37,8 +38,7 @@ export function Topbar() {
       <div className="flex items-center gap-4">
         <SidebarTrigger className="text-neutral-400 hover:text-neutral-900 transition-colors" />
 
-        {/* Pixel-Perfect Vertical Separator */}
-        <div className="h-4 w-[1px] bg-neutral-200 shrink-0" />
+        <Separator orientation="vertical" className="h-4 bg-neutral-200" />
 
         {/* Dynamic Breadcrumb / Page Title */}
         {segments.length === 1 ? (

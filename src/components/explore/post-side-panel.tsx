@@ -15,6 +15,7 @@ import {
 } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -93,7 +94,7 @@ export function PostSidePanel({
             >
               <RiCloseLine className="h-5 w-5" />
             </Button>
-            <div className="h-4 w-px shrink-0 bg-neutral-200" />
+            <Separator orientation="vertical" className="h-4 bg-neutral-200" />
             <span className="whitespace-nowrap text-sm font-semibold text-neutral-900">
               PO#{post.postId}
             </span>
@@ -353,7 +354,7 @@ export function PostSidePanel({
                 {post.impactScore}/100
               </span>
             </span>
-            <div className="h-3 w-px bg-neutral-200" />
+            <Separator orientation="vertical" className="h-3 bg-neutral-200" />
             <span>
               Bundle: <span className="font-semibold text-neutral-900">{post.bundleItems} items</span>
             </span>

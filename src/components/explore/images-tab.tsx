@@ -1,10 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  RiMoreFill,
-} from "@remixicon/react";
-import { Button } from "@/components/ui/button";
+import { RiArrowRightSLine } from "@remixicon/react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
@@ -104,8 +101,8 @@ function GridView({
   );
 }
 
-const STICKY_HEAD = "sticky top-0 z-10 bg-white shadow-[0_1px_0_0_#e5e5e5]";
-const HEAD_TEXT = "text-[11px] font-bold uppercase tracking-wider text-muted-foreground whitespace-nowrap";
+const STICKY = "sticky top-0 z-10 bg-white shadow-[0_1px_0_0_#e5e5e5]";
+const HEAD_TEXT = "text-[10px] uppercase font-bold text-neutral-700 tracking-wider";
 
 /* ─── List View ──────────────────────────────────────────── */
 function ListView({
@@ -126,36 +123,36 @@ function ListView({
   onSelectAll: (checked: boolean) => void;
 }) {
   return (
-    <div className="flex-1 min-h-0 overflow-auto w-full border border-neutral-200 rounded-md bg-white shadow-sm relative">
+    <div className="min-w-0 w-full relative">
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className={`${STICKY_HEAD} w-12 pl-4`}>
+            <TableHead className={`${STICKY} w-[50px] pl-4`}>
               <Checkbox
                 checked={allSelected ? true : someSelected ? "indeterminate" : false}
                 onCheckedChange={(checked) => onSelectAll(checked === true)}
               />
             </TableHead>
-            <TableHead className={`${STICKY_HEAD} w-16 px-3 ${HEAD_TEXT}`}>Image</TableHead>
+            <TableHead className={`${STICKY} w-[50px] px-2 text-center ${HEAD_TEXT}`}>Image</TableHead>
             {visibleProperties.imageId && (
-              <TableHead className={`${STICKY_HEAD} px-3 ${HEAD_TEXT}`}>Image ID</TableHead>
+              <TableHead className={`${STICKY} px-3 ${HEAD_TEXT}`}>Image ID</TableHead>
             )}
             {visibleProperties.postsCount && (
-              <TableHead className={`${STICKY_HEAD} px-3 ${HEAD_TEXT}`}>Posts</TableHead>
+              <TableHead className={`${STICKY} px-3 ${HEAD_TEXT}`}>Posts</TableHead>
             )}
             {visibleProperties.accountsCount && (
-              <TableHead className={`${STICKY_HEAD} px-3 ${HEAD_TEXT}`}>Accounts</TableHead>
+              <TableHead className={`${STICKY} px-3 ${HEAD_TEXT}`}>Accounts</TableHead>
             )}
             {visibleProperties.websitesCount && (
-              <TableHead className={`${STICKY_HEAD} px-3 ${HEAD_TEXT}`}>Websites</TableHead>
+              <TableHead className={`${STICKY} px-3 ${HEAD_TEXT}`}>Websites</TableHead>
             )}
             {visibleProperties.label && (
-              <TableHead className={`${STICKY_HEAD} px-3 ${HEAD_TEXT}`}>Label</TableHead>
+              <TableHead className={`${STICKY} px-3 ${HEAD_TEXT}`}>Label</TableHead>
             )}
             {visibleProperties.firstSeen && (
-              <TableHead className={`${STICKY_HEAD} px-3 ${HEAD_TEXT}`}>First Seen</TableHead>
+              <TableHead className={`${STICKY} px-3 ${HEAD_TEXT}`}>First Seen</TableHead>
             )}
-            <TableHead className={`${STICKY_HEAD} w-10 px-3`} />
+            <TableHead className={`${STICKY} w-[50px]`} />
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -165,41 +162,41 @@ function ListView({
               <TableRow
                 key={img.id}
                 data-state={isSelected ? "selected" : undefined}
-                className="h-14 border-b border-neutral-100 hover:bg-neutral-50 transition-colors group"
+                className="group cursor-pointer"
               >
-                <TableCell className="py-3 pl-4">
+                <TableCell className="pl-4">
                   <Checkbox
                     checked={isSelected}
                     onCheckedChange={(checked) => onSelect(img.id, checked === true)}
                   />
                 </TableCell>
-                <TableCell className="py-3 px-3">
+                <TableCell className="px-2">
                   <ImageThumbnail src={img.thumbnailUrl} alt={img.imageId} id={img.imageId} rowIndex={rowIdx} />
                 </TableCell>
                 {visibleProperties.imageId && (
-                  <TableCell className="py-3 px-3">
+                  <TableCell className="px-3">
                     <span className="text-[13px] font-medium text-blue-600 hover:underline cursor-pointer">
                       {img.imageId}
                     </span>
                   </TableCell>
                 )}
                 {visibleProperties.postsCount && (
-                  <TableCell className="py-3 px-3 text-[13px] text-foreground tabular-nums">
+                  <TableCell className="px-3 text-[13px] text-foreground tabular-nums">
                     {img.postsCount.toLocaleString()}
                   </TableCell>
                 )}
                 {visibleProperties.accountsCount && (
-                  <TableCell className="py-3 px-3 text-[13px] text-foreground tabular-nums">
+                  <TableCell className="px-3 text-[13px] text-foreground tabular-nums">
                     {img.accountsCount.toLocaleString()}
                   </TableCell>
                 )}
                 {visibleProperties.websitesCount && (
-                  <TableCell className="py-3 px-3 text-[13px] text-foreground tabular-nums">
+                  <TableCell className="px-3 text-[13px] text-foreground tabular-nums">
                     {img.websitesCount.toLocaleString()}
                   </TableCell>
                 )}
                 {visibleProperties.label && (
-                  <TableCell className="py-3 px-3">
+                  <TableCell className="px-3">
                     <div className="flex items-center gap-1.5">
                       <span className={`h-2.5 w-2.5 shrink-0 rounded-sm ${
                         img.label === "counterfeit" ? "bg-red-500" :
@@ -214,18 +211,14 @@ function ListView({
                   </TableCell>
                 )}
                 {visibleProperties.firstSeen && (
-                  <TableCell className="py-3 px-3 text-[13px] text-foreground">
+                  <TableCell className="px-3 text-[13px] text-foreground">
                     {img.firstSeen}
                   </TableCell>
                 )}
-                <TableCell className="py-3 pr-3">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <RiMoreFill className="w-4 h-4" />
-                  </Button>
+                <TableCell className="pr-3">
+                  <div className="flex items-center justify-center text-neutral-400 group-hover:text-neutral-900">
+                    <RiArrowRightSLine className="h-5 w-5" />
+                  </div>
                 </TableCell>
               </TableRow>
             );

@@ -711,7 +711,7 @@ export function ExploreTable({
 
   if (data.length === 0) {
     return (
-      <div className="flex-1 min-h-0 min-w-0 w-full border border-neutral-200 rounded-md bg-white shadow-sm mb-4">
+      <div className="flex-1 min-h-0 min-w-0 w-full">
         <div className="flex flex-col items-center justify-center w-full h-[450px] mx-auto">
           <div className="flex items-center justify-center w-12 h-12 bg-neutral-100 rounded-full mb-4 ring-4 ring-neutral-50/50">
             <RiSearchLine className="w-6 h-6 text-neutral-400" />
@@ -737,7 +737,7 @@ export function ExploreTable({
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="flex-1 min-h-0 min-w-0 w-full overflow-auto border border-neutral-200 rounded-md bg-white shadow-sm mb-4 relative">
+      <div className="min-w-0 w-full relative">
         <Table className="w-full table-fixed min-w-[1400px]">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
@@ -878,7 +878,7 @@ export function ExploreTable({
                   <TableRow
                     key={post.id}
                     data-state={isSelected ? "selected" : undefined}
-                    className="group h-14 border-b border-neutral-100 transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted cursor-pointer"
+                    className="group cursor-pointer"
                     onClick={(e) => {
                       const target = e.target as HTMLElement;
                       if (target.closest("button, [role=checkbox], a, input")) return;
@@ -891,7 +891,7 @@ export function ExploreTable({
                         return (
                           <TableCell
                             key={col.id}
-                            className="py-3 pl-4 sticky left-0 z-20 bg-white border-r border-neutral-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] transition-colors group-hover:bg-neutral-50 data-[state=selected]:bg-muted"
+                            className="pl-4 sticky left-0 z-20 bg-white border-r border-neutral-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] transition-colors group-hover:bg-neutral-50 data-[state=selected]:bg-muted"
                             style={{ width: col.width, minWidth: col.width, maxWidth: col.width }}
                           >
                             {renderCell(col, post, isSelected, onSelectRow, isSelected ? pendingChanges : null, rowIdx, onSingleModeration)}
@@ -904,7 +904,7 @@ export function ExploreTable({
                         return (
                           <TableCell
                             key={col.id}
-                            className="py-3 px-2 sticky left-[50px] z-20 bg-white border-r border-neutral-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] transition-colors group-hover:bg-neutral-50 data-[state=selected]:bg-muted"
+                            className="px-2 sticky left-[50px] z-20 bg-white border-r border-neutral-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] transition-colors group-hover:bg-neutral-50 data-[state=selected]:bg-muted"
                             style={{ width: col.width, minWidth: col.width, maxWidth: col.width }}
                           >
                             {renderCell(col, post, isSelected, onSelectRow, isSelected ? pendingChanges : null, rowIdx, onSingleModeration)}
@@ -917,7 +917,7 @@ export function ExploreTable({
                         return (
                           <TableCell
                             key={col.id}
-                            className="py-3 pr-3 sticky right-0 z-20 bg-white border-l border-neutral-100 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] transition-colors group-hover:bg-neutral-50 data-[state=selected]:bg-muted"
+                            className="pr-3 sticky right-0 z-20 bg-white border-l border-neutral-100 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] transition-colors group-hover:bg-neutral-50 data-[state=selected]:bg-muted"
                             style={{ width: col.width, minWidth: col.width, maxWidth: col.width }}
                           >
                             <div className="flex items-center justify-center text-neutral-400 group-hover:text-neutral-900">
@@ -931,7 +931,7 @@ export function ExploreTable({
                       return (
                         <TableCell
                           key={col.id}
-                          className="py-3 px-3 whitespace-nowrap bg-white"
+                          className="px-3 bg-white"
                           style={{ width: col.width, minWidth: col.width, maxWidth: col.width }}
                         >
                           {renderCell(col, post, isSelected, onSelectRow, isSelected ? pendingChanges : null, rowIdx, onSingleModeration)}
