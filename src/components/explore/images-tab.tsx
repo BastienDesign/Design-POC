@@ -20,9 +20,10 @@ import type { ExploreImage } from "@/lib/mock-data";
 interface ImagesTabProps {
   viewType: "grid" | "list";
   visibleProperties: ImageVisibleProperties;
+  gridColumns?: number;
 }
 
-export function ImagesTab({ viewType, visibleProperties }: ImagesTabProps) {
+export function ImagesTab({ viewType, visibleProperties, gridColumns = 4 }: ImagesTabProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const allIds = EXPLORE_IMAGES.map((img) => img.id);
@@ -57,6 +58,7 @@ export function ImagesTab({ viewType, visibleProperties }: ImagesTabProps) {
             selectedIds={selectedIds}
             visibleProperties={visibleProperties}
             onSelect={toggleSelect}
+            columns={gridColumns}
           />
         ) : (
           <ListView
@@ -80,14 +82,19 @@ function GridView({
   selectedIds,
   visibleProperties,
   onSelect,
+  columns = 4,
 }: {
   images: ExploreImage[];
   selectedIds: string[];
   visibleProperties: ImageVisibleProperties;
   onSelect: (id: string, checked: boolean) => void;
+  columns?: number;
 }) {
   return (
-    <div className="grid grid-cols-2 gap-4 pb-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+    <div
+      className="grid gap-4 pb-4 transition-all duration-200"
+      style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+    >
       {images.map((img) => (
         <ImageCard
           key={img.id}

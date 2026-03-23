@@ -66,6 +66,8 @@ interface ExploreHeaderProps {
   onImagesViewTypeChange: (v: "grid" | "list") => void;
   imagesVisibleProperties: ImageVisibleProperties;
   onImagesVisiblePropertiesChange: (p: ImageVisibleProperties) => void;
+  gridColumns: number;
+  onGridColumnsChange: (columns: number) => void;
   filteredCount: number;
   onPlayModeration: () => void;
 }
@@ -102,6 +104,8 @@ export function ExploreHeader({
   onImagesViewTypeChange,
   imagesVisibleProperties,
   onImagesVisiblePropertiesChange,
+  gridColumns,
+  onGridColumnsChange,
   filteredCount,
   onPlayModeration,
 }: ExploreHeaderProps) {
@@ -275,6 +279,8 @@ export function ExploreHeader({
               onVisibleColumnsChange={onVisibleColumnsChange}
               columnOrder={columnOrder}
               onColumnOrderChange={onColumnOrderChange}
+              gridColumns={gridColumns}
+              onGridColumnsChange={onGridColumnsChange}
             />
           )}
           {activeTab === "Images" && (
@@ -283,6 +289,8 @@ export function ExploreHeader({
               onViewTypeChange={onImagesViewTypeChange}
               visibleProperties={imagesVisibleProperties}
               onVisiblePropertiesChange={onImagesVisiblePropertiesChange}
+              gridColumns={gridColumns}
+              onGridColumnsChange={onGridColumnsChange}
             />
           )}
 

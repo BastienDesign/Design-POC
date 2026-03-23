@@ -17,6 +17,7 @@ interface ExploreGridProps {
   onRowClick: (postId: string) => void;
   onResetFilters?: () => void;
   pendingChanges?: PendingChanges;
+  columns?: number;
 }
 
 export function ExploreGrid({
@@ -29,6 +30,7 @@ export function ExploreGrid({
   onRowClick,
   onResetFilters,
   pendingChanges,
+  columns = 4,
 }: ExploreGridProps) {
   if (data.length === 0) {
     return (
@@ -73,7 +75,10 @@ export function ExploreGrid({
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-4">
+      <div
+        className="grid gap-4 pb-4 transition-all duration-200"
+        style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+      >
         {data.map((post) => (
           <PostGridCard
             key={post.id}

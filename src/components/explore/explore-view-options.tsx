@@ -15,6 +15,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
 import { ALL_COLUMNS } from "./explore-columns";
 
 interface ExploreViewOptionsProps {
@@ -24,6 +25,8 @@ interface ExploreViewOptionsProps {
   onVisibleColumnsChange: (columns: string[]) => void;
   columnOrder: string[];
   onColumnOrderChange: (order: string[]) => void;
+  gridColumns: number;
+  onGridColumnsChange: (columns: number) => void;
 }
 
 export function ExploreViewOptions({
@@ -33,6 +36,8 @@ export function ExploreViewOptions({
   onVisibleColumnsChange,
   columnOrder,
   onColumnOrderChange,
+  gridColumns,
+  onGridColumnsChange,
 }: ExploreViewOptionsProps) {
   const [propertyFilter, setPropertyFilter] = useState("");
   const dragIdxRef = useRef<number | null>(null);
@@ -141,7 +146,31 @@ export function ExploreViewOptions({
           </div>
         </div>
 
-        {/* Section 2: Properties */}
+        {/* Section 2: Grid Density (visible only in grid mode) */}
+        {layout === "grid" && (
+          <div className="border-b border-neutral-100 p-3">
+            <div className="flex items-center justify-between mb-2 px-1">
+              <h4 className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                Grid Density
+              </h4>
+              <span className="text-[10px] font-mono font-bold bg-neutral-100 px-1.5 py-0.5 rounded text-neutral-600">
+                {gridColumns} Columns
+              </span>
+            </div>
+            <div className="px-1">
+              <Slider
+                value={[gridColumns]}
+                onValueChange={(val) => onGridColumnsChange(val[0])}
+                min={2}
+                max={6}
+                step={1}
+                className="py-2"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Section 3: Properties */}
         <div className="p-3">
           <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
             Properties

@@ -9,6 +9,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
 
 export interface ImageVisibleProperties {
   imageId: boolean;
@@ -33,6 +34,8 @@ interface ImagesViewOptionsProps {
   onViewTypeChange: (v: "grid" | "list") => void;
   visibleProperties: ImageVisibleProperties;
   onVisiblePropertiesChange: (p: ImageVisibleProperties) => void;
+  gridColumns: number;
+  onGridColumnsChange: (columns: number) => void;
 }
 
 export function ImagesViewOptions({
@@ -40,6 +43,8 @@ export function ImagesViewOptions({
   onViewTypeChange,
   visibleProperties,
   onVisiblePropertiesChange,
+  gridColumns,
+  onGridColumnsChange,
 }: ImagesViewOptionsProps) {
   const [propertyFilter, setPropertyFilter] = useState("");
 
@@ -89,6 +94,30 @@ export function ImagesViewOptions({
             </button>
           </div>
         </div>
+
+        {/* Grid Density (visible only in grid mode) */}
+        {viewType === "grid" && (
+          <div className="border-b border-neutral-100 p-3">
+            <div className="flex items-center justify-between mb-2 px-1">
+              <h4 className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                Grid Density
+              </h4>
+              <span className="text-[10px] font-mono font-bold bg-neutral-100 px-1.5 py-0.5 rounded text-neutral-600">
+                {gridColumns} Columns
+              </span>
+            </div>
+            <div className="px-1">
+              <Slider
+                value={[gridColumns]}
+                onValueChange={(val) => onGridColumnsChange(val[0])}
+                min={2}
+                max={6}
+                step={1}
+                className="py-2"
+              />
+            </div>
+          </div>
+        )}
 
         {/* Properties */}
         <div className="p-3">

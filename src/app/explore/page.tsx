@@ -59,6 +59,9 @@ export default function ExplorePage() {
   const [columnOrder, setColumnOrder] = useState<string[]>(DEFAULT_ORDER);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
+  // Grid density (shared across Posts grid & Images grid)
+  const [gridColumns, setGridColumns] = useState(4);
+
   // Images view state (lifted)
   const [imagesViewType, setImagesViewType] = useState<"grid" | "list">("grid");
   const [imagesVisibleProperties, setImagesVisibleProperties] =
@@ -337,13 +340,15 @@ export default function ExplorePage() {
           onImagesViewTypeChange={setImagesViewType}
           imagesVisibleProperties={imagesVisibleProperties}
           onImagesVisiblePropertiesChange={setImagesVisibleProperties}
+          gridColumns={gridColumns}
+          onGridColumnsChange={setGridColumns}
           filteredCount={filteredPosts.length}
           onPlayModeration={handleModerationPlay}
         />
       </div>
 
-      {/* 2. ISOLATED TABLE CONTAINER */}
-      <div className="flex-1 flex flex-col min-h-0 bg-white border border-neutral-200 rounded-md shadow-sm overflow-hidden mb-2">
+      {/* 2. NAKED CONTENT CANVAS */}
+      <div className="flex-1 flex flex-col min-h-0 bg-white overflow-hidden mb-2">
         <div className="flex-1 overflow-auto min-h-0 custom-scrollbar">
           {activeTab === "Posts" && postsLayout === "table" && (
             <ExploreTable
@@ -373,12 +378,14 @@ export default function ExplorePage() {
               onRowClick={setSelectedPostId}
               onResetFilters={handleResetFilters}
               pendingChanges={pendingChanges}
+              columns={gridColumns}
             />
           )}
           {activeTab === "Images" && (
             <ImagesTab
               viewType={imagesViewType}
               visibleProperties={imagesVisibleProperties}
+              gridColumns={gridColumns}
             />
           )}
           {activeTab === "Websites" && (
