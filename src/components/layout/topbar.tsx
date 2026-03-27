@@ -33,7 +33,7 @@ export function Topbar() {
   const selectedOrg = SUB_ORGANIZATIONS.find((o) => o.id === activeOrg) ?? SUB_ORGANIZATIONS[0];
 
   return (
-    <header className="sticky top-0 z-10 flex h-14 w-full shrink-0 items-center gap-4 border-b border-neutral-100 bg-white px-4 md:px-6">
+    <header className="sticky top-0 z-10 flex h-14 w-full shrink-0 items-center gap-4 border-b border-neutral-100 bg-white px-2">
       {/* Left: Toggle + Separator + Title/Breadcrumbs */}
       <div className="flex items-center gap-4">
         <SidebarTrigger className="text-neutral-400 hover:text-neutral-900 transition-colors" />

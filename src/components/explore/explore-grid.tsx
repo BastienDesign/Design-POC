@@ -62,15 +62,15 @@ export function ExploreGrid({
   return (
     <div className="flex-1 min-h-0 overflow-auto w-full mb-4">
       {/* Select-all bar */}
-      <div className="flex items-center gap-3 pb-3">
+      <div className="flex items-center gap-2 px-1 py-1.5">
         <Checkbox
           checked={allSelected ? true : someSelected ? "indeterminate" : false}
           onCheckedChange={(checked) => onSelectAll(checked === true)}
         />
-        <span className="text-xs text-neutral-500">
+        <span className="text-[11px] font-medium text-neutral-400">
           {selectedRows.length > 0
             ? `${selectedRows.length} of ${data.length} selected`
-            : `${data.length} posts`}
+            : `${data.length} items`}
         </span>
       </div>
 

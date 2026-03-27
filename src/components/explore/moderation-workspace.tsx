@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import {
   RiArrowLeftLine,
   RiArrowLeftSLine,
@@ -16,6 +16,9 @@ import {
   RiShieldCheckLine,
   RiCheckLine,
   RiSettings3Line,
+  RiPlayFill,
+  RiFilmLine,
+  RiClosedCaptioningLine,
 } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,7 +39,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
-import type { ExplorePost, LabelType } from "@/lib/mock-data";
+import type { ExplorePost, LabelType, MediaLabel, PostMedia } from "@/lib/mock-data";
 import { VERDICT_OPTIONS, VERDICT_TRIGGER_STYLE } from "./verdict-options";
 
 const LABEL_COLORS: Record<string, string> = {
@@ -45,6 +48,13 @@ const LABEL_COLORS: Record<string, string> = {
   legitimate: "bg-emerald-500",
   "trademark infringement": "bg-orange-400",
   unlabeled: "bg-neutral-400",
+};
+
+const MEDIA_LABEL_DOT: Record<string, string> = {
+  counterfeit: "bg-red-500",
+  suspicious: "bg-amber-500",
+  legitimate: "bg-emerald-500",
+  unlabeled: "bg-neutral-300",
 };
 
 type RiskLevel = "high" | "medium" | "low";
@@ -178,6 +188,51 @@ export function ModerationWorkspace({
   const isBatch = queue.length > 1;
   const progress = ((currentIndex + 1) / queue.length) * 100;
   const dotColor = LABEL_COLORS[currentItem.label] ?? "bg-neutral-400";
+
+  // Media player state
+  const [activeMediaIndex, setActiveMediaIndex] = useState(0);
+  const [activeFrameIndex, setActiveFrameIndex] = useState<number | null>(null);
+  const [isVideoPaused, setIsVideoPaused] = useState(true);
+  const [showSubtitles, setShowSubtitles] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Local label overrides: { [mediaId]: newLabel }
+  const [labelOverrides, setLabelOverrides] = useState<Record<string, MediaLabel>>({});
+
+  // Reset media state when switching items
+  useEffect(() => {
+    setActiveMediaIndex(0);
+    setActiveFrameIndex(null);
+    setIsVideoPaused(true);
+    setShowSubtitles(false);
+  }, [currentItem.id]);
+
+  const activeMedia = currentItem.media[activeMediaIndex] ?? currentItem.media[0];
+  const activeFrame = activeFrameIndex !== null && activeMedia.frames
+    ? activeMedia.frames[activeFrameIndex] ?? null
+    : null;
+  const displayMedia: PostMedia = activeFrame ?? activeMedia;
+
+  // Resolve label from overrides, falling back to original
+  const resolveLabel = (media: PostMedia): MediaLabel => labelOverrides[media.id] ?? media.label;
+  const currentLabel = resolveLabel(displayMedia);
+  const mediaLabelDot = MEDIA_LABEL_DOT[currentLabel] ?? "bg-neutral-300";
+  const mediaLabelText = currentLabel.charAt(0).toUpperCase() + currentLabel.slice(1);
+
+  function handleMediaLabelChange(newLabel: MediaLabel) {
+    setLabelOverrides((prev) => ({ ...prev, [displayMedia.id]: newLabel }));
+  }
+
+  const showFrameStrip =
+    activeMedia.type === "video" &&
+    activeMedia.frames &&
+    activeMedia.frames.length > 0;
+
+  function handleSelectMedia(index: number) {
+    setActiveMediaIndex(index);
+    setActiveFrameIndex(null);
+    setIsVideoPaused(true);
+  }
 
   // Insight preferences — which AI signals the user wants active
   const [insightPrefs, setInsightPrefs] = useState<Record<InsightPrefKey, boolean>>(DEFAULT_INSIGHT_PREFS);
@@ -337,41 +392,194 @@ export function ModerationWorkspace({
 
       {/* ── MAIN CONTENT GRID ── */}
       <div className="flex-1 flex overflow-hidden">
-        {/* LEFT PANEL: Media Viewer */}
-        <div className="w-1/2 p-6 flex flex-col gap-4 border-r border-neutral-200 bg-neutral-100 overflow-y-auto">
-          {/* Main Image */}
-          <div className="w-full aspect-square bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden flex items-center justify-center relative">
-            {currentItem.imageUrl ? (
-              <img
-                src={currentItem.imageUrl}
-                className="max-w-full max-h-full object-contain"
-                alt={currentItem.title}
-              />
-            ) : (
-              <div className="flex flex-col items-center gap-2 text-neutral-400">
-                <div className="w-16 h-16 rounded-full bg-neutral-100 flex items-center justify-center">
-                  <RiShieldCheckLine className="w-8 h-8" />
+        {/* LEFT PANEL: Media Investigation Viewer */}
+        <div className="w-1/2 p-4 flex flex-col gap-2 border-r border-neutral-200 bg-neutral-100 min-h-0 overflow-y-auto">
+          {/* Layer 1: Primary Display — hard-locked investigation canvas */}
+          <div className="relative w-full aspect-[4/3] shrink-0 bg-neutral-950 rounded-xl">
+            {/* Media content (clipped to rounded corners) */}
+            <div className="absolute inset-0 overflow-hidden rounded-xl">
+              {displayMedia.type === "video" && !activeFrame ? (
+                <video
+                  ref={videoRef}
+                  key={displayMedia.id}
+                  src={displayMedia.url}
+                  controls
+                  className="w-full h-full object-contain bg-neutral-900"
+                  onPause={() => setIsVideoPaused(true)}
+                  onPlay={() => setIsVideoPaused(false)}
+                >
+                  {showSubtitles && activeMedia.subtitlesUrl && (
+                    <track
+                      kind="subtitles"
+                      src={activeMedia.subtitlesUrl}
+                      srcLang="en"
+                      label="English"
+                      default
+                    />
+                  )}
+                </video>
+              ) : displayMedia.url ? (
+                <img
+                  key={displayMedia.id}
+                  src={displayMedia.url}
+                  className="w-full h-full object-contain transition-all duration-200"
+                  alt={currentItem.title}
+                />
+              ) : (
+                <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-neutral-500">
+                  <div className="w-16 h-16 rounded-full bg-neutral-800 flex items-center justify-center">
+                    <RiShieldCheckLine className="w-8 h-8 text-neutral-600" />
+                  </div>
+                  <span className="text-sm text-neutral-500">No media available</span>
                 </div>
-                <span className="text-sm">No image available</span>
+              )}
+            </div>
+
+            {/* Floating Top-Left: Integrated Action Bar */}
+            <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
+              {activeFrame && (
+                <button
+                  onClick={() => setActiveFrameIndex(null)}
+                  className="flex items-center gap-1.5 px-2.5 py-1 bg-white/90 backdrop-blur-md rounded-full shadow-sm border border-neutral-100 transition-colors hover:bg-white cursor-pointer"
+                >
+                  <RiArrowLeftSLine className="h-3.5 w-3.5 text-neutral-600" />
+                  <span className="text-[10px] font-bold text-neutral-700">
+                    Back to Video
+                  </span>
+                </button>
+              )}
+              <DropdownMenu>
+                <DropdownMenuTrigger className="outline-none">
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/90 backdrop-blur-md rounded-full shadow-sm border border-neutral-100 cursor-pointer hover:bg-white transition-colors">
+                    <div className={`w-2 h-2 rounded-full ${mediaLabelDot}`} />
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-700">
+                      {mediaLabelText}
+                    </span>
+                    <RiArrowDownSLine className="h-3 w-3 text-neutral-400" />
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-44">
+                  {(["counterfeit", "suspicious", "legitimate", "unlabeled"] as MediaLabel[]).map((label) => (
+                    <DropdownMenuItem
+                      key={label}
+                      onClick={() => handleMediaLabelChange(label)}
+                      className={`text-xs font-medium ${currentLabel === label ? "bg-neutral-100" : ""}`}
+                    >
+                      <div className={`size-2 rounded-full ${MEDIA_LABEL_DOT[label] ?? "bg-neutral-300"}`} />
+                      {label.charAt(0).toUpperCase() + label.slice(1)}
+                      {currentLabel === label && (
+                        <RiCheckLine className="ml-auto h-3.5 w-3.5 text-neutral-500" />
+                      )}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              {activeMedia.type === "video" && !activeFrame && activeMedia.subtitlesUrl && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); setShowSubtitles((v) => !v); }}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full shadow-sm border backdrop-blur-md transition-colors cursor-pointer ${
+                    showSubtitles
+                      ? "bg-white/90 border-neutral-100 text-neutral-900"
+                      : "bg-black/50 border-white/10 text-white/80 hover:bg-black/60"
+                  }`}
+                >
+                  <RiClosedCaptioningLine className="h-3.5 w-3.5" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider">
+                    {showSubtitles ? "CC On" : "CC Off"}
+                  </span>
+                </button>
+              )}
+            </div>
+
+            {/* Frame indicator (top-right) */}
+            {activeFrame && (
+              <div className="absolute top-3 right-3 z-20">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-neutral-900/80 backdrop-blur-sm rounded-full">
+                  <RiFilmLine className="h-3 w-3 text-neutral-300" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-200">
+                    Frame {activeFrameIndex! + 1}
+                  </span>
+                </div>
               </div>
             )}
-            {/* Badge overlay */}
-            <div className="absolute top-4 left-4">
-              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/90 backdrop-blur-md rounded-full shadow-sm border border-neutral-100">
-                <div className={`w-2 h-2 rounded-full ${dotColor}`} />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-700">
-                  {currentItem.labelText}
+          </div>
+
+          {/* Layer 2: Extracted Frames Strip (video paused only) */}
+          {showFrameStrip && (
+            <div className="flex flex-col gap-1.5 rounded-lg bg-neutral-900 p-2">
+              <div className="flex items-center gap-1.5 px-1">
+                <RiFilmLine className="h-3 w-3 text-neutral-400" />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                  Auto-Extracted Video Frames
+                </span>
+                <span className="text-[10px] tabular-nums text-neutral-500">
+                  {activeMedia.frames!.length}
                 </span>
               </div>
+              <div className="flex gap-1.5 overflow-x-auto pb-0.5">
+                {activeMedia.frames!.map((frame, fi) => {
+                  const fdot = MEDIA_LABEL_DOT[resolveLabel(frame)] ?? "bg-neutral-300";
+                  return (
+                    <div
+                      key={frame.id}
+                      onClick={() => setActiveFrameIndex(fi)}
+                      className={`relative size-16 shrink-0 cursor-pointer overflow-hidden rounded-md bg-neutral-800 transition-all duration-150 hover:scale-105 ${
+                        activeFrameIndex === fi
+                          ? "border-2 border-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.4)]"
+                          : "border border-neutral-700 hover:border-neutral-500"
+                      }`}
+                    >
+                      <img
+                        src={frame.url}
+                        alt={frame.id}
+                        className="h-full w-full object-cover"
+                      />
+                      <div className={`absolute bottom-0.5 right-0.5 h-2 w-2 rounded-full ring-1 ring-neutral-900 ${fdot}`} />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
+          )}
+
+          {/* Layer 3: Post Media Timeline Strip */}
+          <div className="flex gap-1.5 overflow-x-auto pb-0.5">
+            {currentItem.media.map((m, i) => {
+              const isActive = i === activeMediaIndex;
+              const mdot = MEDIA_LABEL_DOT[resolveLabel(m)] ?? "bg-neutral-300";
+              return (
+                <div
+                  key={m.id}
+                  onClick={() => handleSelectMedia(i)}
+                  className={`relative size-16 shrink-0 cursor-pointer overflow-hidden rounded-md bg-white transition-all duration-150 ${
+                    isActive
+                      ? "border-2 border-blue-600 shadow-md"
+                      : "border border-neutral-200 hover:border-neutral-400"
+                  }`}
+                >
+                  {m.type === "video" ? (
+                    <div className="flex h-full w-full items-center justify-center bg-neutral-800">
+                      <RiPlayFill className="h-5 w-5 text-white" />
+                    </div>
+                  ) : (
+                    <img
+                      src={m.url}
+                      alt={m.id}
+                      className="h-full w-full object-cover"
+                    />
+                  )}
+                  <div className={`absolute bottom-1 right-1 h-2 w-2 rounded-full ring-1 ring-white ${mdot}`} />
+                </div>
+              );
+            })}
           </div>
 
           {/* Suspicious Reasons */}
           {currentItem.suspiciousCount > 0 && (
-            <div className="p-4 bg-white rounded-lg border border-neutral-200">
-              <div className="flex items-center gap-2 mb-2">
+            <div className="p-3 bg-white rounded-lg border border-neutral-200">
+              <div className="flex items-center gap-2 mb-1.5">
                 <RiAlertLine className="w-4 h-4 text-red-500" />
-                <span className="text-xs font-bold uppercase text-neutral-400">
+                <span className="text-[10px] font-bold uppercase text-neutral-400">
                   Suspicious Reasons ({currentItem.suspiciousCount})
                 </span>
               </div>

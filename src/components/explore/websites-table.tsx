@@ -35,7 +35,7 @@ const MOCK_WEBSITES: WebsiteRow[] = [
   {
     id: "WEB#3044171",
     status: "Online",
-    image: "https://placehold.co/80x80/f5f5f5/a3a3a3?text=W",
+    image: "https://loremflickr.com/400/400/website,ecommerce?lock=3044171",
     url: "apkmudule.com",
     aiInsight: true,
     posts: 51,
@@ -52,7 +52,7 @@ const MOCK_WEBSITES: WebsiteRow[] = [
   {
     id: "WEB#3591353",
     status: "Offline",
-    image: "https://placehold.co/80x80/f5f5f5/a3a3a3?text=W",
+    image: "https://loremflickr.com/400/400/marketplace,shop?lock=3591353",
     url: "china.makepolo.com",
     aiInsight: false,
     posts: 178,
@@ -69,7 +69,7 @@ const MOCK_WEBSITES: WebsiteRow[] = [
   {
     id: "WEB#2871029",
     status: "Online",
-    image: "https://placehold.co/80x80/f5f5f5/a3a3a3?text=W",
+    image: "https://loremflickr.com/400/400/store,fashion?lock=2871029",
     url: "replica-outlet.store",
     aiInsight: true,
     posts: 324,
@@ -86,7 +86,7 @@ const MOCK_WEBSITES: WebsiteRow[] = [
   {
     id: "WEB#1982744",
     status: "Offline",
-    image: "https://placehold.co/80x80/f5f5f5/a3a3a3?text=W",
+    image: "https://loremflickr.com/400/400/luxury,boutique?lock=1982744",
     url: "luxfakes.paris",
     aiInsight: false,
     posts: 12,
@@ -103,7 +103,7 @@ const MOCK_WEBSITES: WebsiteRow[] = [
   {
     id: "WEB#4120588",
     status: "Online",
-    image: "https://placehold.co/80x80/f5f5f5/a3a3a3?text=W",
+    image: "https://loremflickr.com/400/400/shopping,brand?lock=4120588",
     url: "bargain-brands.co.uk",
     aiInsight: true,
     posts: 89,
@@ -120,7 +120,7 @@ const MOCK_WEBSITES: WebsiteRow[] = [
   {
     id: "WEB#5503912",
     status: "Online",
-    image: "https://placehold.co/80x80/f5f5f5/a3a3a3?text=W",
+    image: "https://loremflickr.com/400/400/market,japan?lock=5503912",
     url: "knockoff-central.jp",
     aiInsight: false,
     posts: 203,

@@ -61,7 +61,15 @@ export function PostGridCard({
     >
       {/* Top: Image & Overlay Actions */}
       <div className="relative aspect-[4/3] bg-neutral-100 overflow-hidden border-b border-neutral-100">
-        <div className="w-full h-full bg-gradient-to-br from-neutral-100 to-neutral-200" />
+        {post.imageUrl ? (
+          <img
+            src={post.imageUrl}
+            alt={post.title}
+            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-neutral-100 to-neutral-200" />
+        )}
 
         {/* Checkbox Overlay */}
         <div className="absolute top-2 left-2 z-10">

@@ -22,19 +22,17 @@ import {
   RiStore2Line,
   RiImageLine,
   RiBox3Line,
+  RiArrowRightSLine,
+  RiEqualizer2Line,
 } from "@remixicon/react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { RiFilter3Line } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
+import { AdvancedFilterBuilder } from "./advanced-filter-builder";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type IconComponent = ComponentType<any>;
@@ -101,7 +99,49 @@ interface ExploreFiltersMenuProps {
   onSelectFilter: (label: string, value: string, options: string[]) => void;
 }
 
+// ── Basic filter: sub-popover for a single filter item ──
+
+function FilterItemPopover({
+  item,
+  onSelect,
+}: {
+  item: FilterItem;
+  onSelect: (label: string, value: string, options: string[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-[13px] text-neutral-700 transition-colors hover:bg-neutral-50 cursor-pointer">
+          <item.icon size={15} className="text-neutral-400 shrink-0" />
+          <span className="flex-1 text-left">{item.label}</span>
+          <RiArrowRightSLine className="h-3.5 w-3.5 text-neutral-300" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent side="right" align="start" className="w-[180px] rounded-lg p-1 shadow-md">
+        {item.options.map((option) => (
+          <button
+            key={option}
+            onClick={() => {
+              onSelect(item.label, option, item.options);
+              setOpen(false);
+            }}
+            className="flex w-full items-center rounded-md px-3 py-1.5 text-[13px] text-neutral-700 transition-colors hover:bg-neutral-50 cursor-pointer"
+          >
+            {option}
+          </button>
+        ))}
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+// ── Main component ──
+
 export function ExploreFiltersMenu({ onSelectFilter }: ExploreFiltersMenuProps) {
+  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<"basic" | "advanced">("basic");
   const [search, setSearch] = useState("");
 
   const filteredConfig = search
@@ -116,65 +156,74 @@ export function ExploreFiltersMenu({ onSelectFilter }: ExploreFiltersMenuProps) 
     : filterConfig;
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
         <Button className="h-8 w-8 shrink-0 rounded-md bg-neutral-900 p-0 text-white shadow-sm hover:bg-black">
           <RiFilter3Line size={16} />
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
+      </PopoverTrigger>
+      <PopoverContent
         align="start"
-        className="w-[260px] rounded-xl border-neutral-200 p-0 shadow-lg mt-1"
+        className={`rounded-xl border-neutral-200 p-0 shadow-lg mt-1 ${
+          mode === "advanced" ? "w-[420px]" : "w-[260px]"
+        }`}
       >
-        {/* Integrated Search */}
-        <div className="border-b border-neutral-100 p-2">
-          <div className="flex items-center gap-2 rounded-md border border-neutral-200 bg-neutral-50 px-2.5 py-1.5">
-            <RiSearchLine className="text-neutral-400" size={14} />
-            <input
-              placeholder="Filter..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full border-none bg-transparent text-[13px] placeholder:text-neutral-400 outline-none"
-            />
-            <span className="text-[10px] font-medium text-neutral-400">F</span>
-          </div>
-        </div>
-
-        {/* Filter List */}
-        <div className="max-h-[350px] overflow-auto py-1">
-          {filteredConfig.map((cat) => (
-            <DropdownMenuGroup key={cat.category}>
-              <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
-                {cat.category}
+        {mode === "advanced" ? (
+          <AdvancedFilterBuilder
+            onSwitchToBasic={() => setMode("basic")}
+          />
+        ) : (
+          <>
+            {/* Integrated Search */}
+            <div className="border-b border-neutral-100 p-2">
+              <div className="flex items-center gap-2 rounded-md border border-neutral-200 bg-neutral-50 px-2.5 py-1.5">
+                <RiSearchLine className="text-neutral-400" size={14} />
+                <input
+                  placeholder="Filter..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full border-none bg-transparent text-[13px] placeholder:text-neutral-400 outline-none"
+                />
+                <span className="text-[10px] font-medium text-neutral-400">F</span>
               </div>
-              {cat.items.map((item) => (
-                <DropdownMenuSub key={item.id}>
-                  <DropdownMenuSubTrigger className="flex items-center gap-2 px-3 py-2 text-[13px] text-neutral-700 cursor-pointer data-[state=open]:bg-neutral-50">
-                    <item.icon size={15} className="text-neutral-400" />
-                    {item.label}
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent className="w-[180px] rounded-lg p-1 shadow-md">
-                    {item.options.map((option) => (
-                      <DropdownMenuItem
-                        key={option}
-                        className="cursor-pointer text-[13px]"
-                        onSelect={() => onSelectFilter(item.label, option, item.options)}
-                      >
-                        {option}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
-              ))}
-            </DropdownMenuGroup>
-          ))}
-          {filteredConfig.length === 0 && (
-            <div className="px-3 py-6 text-center text-[12px] text-neutral-400">
-              No filters match your search.
             </div>
-          )}
-        </div>
-      </DropdownMenuContent>
-    </DropdownMenu>
+
+            {/* Filter List */}
+            <div className="max-h-[350px] overflow-auto py-1">
+              {filteredConfig.map((cat) => (
+                <div key={cat.category}>
+                  <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+                    {cat.category}
+                  </div>
+                  {cat.items.map((item) => (
+                    <FilterItemPopover
+                      key={item.id}
+                      item={item}
+                      onSelect={onSelectFilter}
+                    />
+                  ))}
+                </div>
+              ))}
+              {filteredConfig.length === 0 && (
+                <div className="px-3 py-6 text-center text-[12px] text-neutral-400">
+                  No filters match your search.
+                </div>
+              )}
+            </div>
+
+            {/* Switch to Advanced */}
+            <div className="border-t border-neutral-100 p-2">
+              <button
+                onClick={() => setMode("advanced")}
+                className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-[12px] font-medium text-neutral-500 transition-colors hover:bg-neutral-50 hover:text-neutral-900 cursor-pointer"
+              >
+                <RiEqualizer2Line size={14} />
+                Advanced Filter
+              </button>
+            </div>
+          </>
+        )}
+      </PopoverContent>
+    </Popover>
   );
 }

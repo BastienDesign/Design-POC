@@ -423,11 +423,24 @@ export const FOLLOW_UP_QUESTIONS = [
 export type PostStatus = "down" | "up" | "redirected" | "unknown";
 export type LabelType = "counterfeit" | "legitimate" | "suspicious" | "trademark infringement" | "unlabeled";
 
+export type MediaLabel = "counterfeit" | "suspicious" | "legitimate" | "unlabeled";
+
+export interface PostMedia {
+  id: string;
+  type: "image" | "video";
+  url: string;
+  label: MediaLabel;
+  subtitlesUrl?: string;
+  frames?: PostMedia[];
+}
+
 export interface ExplorePost {
   id: string;
   postId: string;
   title: string;
+  keyword: string;
   imageUrl: string;
+  media: PostMedia[];
   status: PostStatus;
   website: string;
   websiteDomain: string;
@@ -476,17 +489,17 @@ const SEED_LABELS: { type: LabelType; text: string }[] = [
 const SEED_TAG_TYPES: ExplorePost["accountTagType"][] = ["counterfeit", "suspicious", "legitimate", "unknown"];
 const SEED_DOMAINS = ["ebay.com", "amazon.de", "shopify.com", "aliexpress.com", "ebay.co.uk", "zalando.de", "amazon.com", "etsy.com", "wish.com", "rakuten.co.jp"];
 const SEED_BRANDS = ["Louis Vuitton", "Rolex", "Apple", "Nike", "Gucci", "Chanel", "Hermès", "Prada", "Dior", "Balenciaga"];
-const SEED_TITLES = [
-  "Luxury Designer Handbag — Monogram Canvas Tote Limited Edition 2025",
-  "Premium Swiss Automatic Watch — Chronograph Stainless Steel 42mm",
-  "Smartphone Flagship Pro Max 512GB Unlocked — International Version",
-  "Running Shoes Air Zoom Performance — Authentic Retailer Exclusive",
-  "Designer Crossbody Bag Replica — High Quality PU Leather Women Shoulder",
-  "Eau de Parfum Branded Fragrance 100ml — Gift Set with Travel Spray",
-  "Leather Belt Designer Buckle — Unisex Fashion Accessory Premium Grade",
-  "Wireless Earbuds Pro — Active Noise Cancellation with Charging Case",
-  "Silk Scarf Printed Logo — Luxury Brand Multicolor Square 90x90cm",
-  "Sunglasses Aviator Classic — Polarized UV400 Gold Frame Brown Lens",
+const SEED_TITLES_AND_KEYWORDS: { title: string; keyword: string }[] = [
+  { title: "Luxury Designer Handbag — Monogram Canvas Tote Limited Edition 2025", keyword: "handbag,luxury" },
+  { title: "Premium Swiss Automatic Watch — Chronograph Stainless Steel 42mm", keyword: "watch,luxury" },
+  { title: "Smartphone Flagship Pro Max 512GB Unlocked — International Version", keyword: "smartphone,electronics" },
+  { title: "Running Shoes Air Zoom Performance — Authentic Retailer Exclusive", keyword: "sneakers,shoes" },
+  { title: "Designer Crossbody Bag Replica — High Quality PU Leather Women Shoulder", keyword: "handbag,fashion" },
+  { title: "Eau de Parfum Branded Fragrance 100ml — Gift Set with Travel Spray", keyword: "perfume,fragrance" },
+  { title: "Leather Belt Designer Buckle — Unisex Fashion Accessory Premium Grade", keyword: "belt,leather" },
+  { title: "Wireless Earbuds Pro — Active Noise Cancellation with Charging Case", keyword: "earbuds,electronics" },
+  { title: "Silk Scarf Printed Logo — Luxury Brand Multicolor Square 90x90cm", keyword: "scarf,fashion" },
+  { title: "Sunglasses Aviator Classic — Polarized UV400 Gold Frame Brown Lens", keyword: "sunglasses,fashion" },
 ];
 const SEED_ACCOUNTS = ["luxury_reseller_99", "watchworld_official", "techbargains_eu", "verified_retailer", "shenzhen_imports_88", "fragrance_house_uk", "fashion_outlet_de", "deal_hunter_23", "brand_discount_pro", "global_goods_hk"];
 const SEED_GEOS = ["Germany", "China", "France", "United States", "United Kingdom", "Turkey", "Japan", "South Korea", "Italy", "Brazil"];
@@ -511,7 +524,65 @@ function pick<T>(arr: T[], seed: number): T {
   return arr[Math.floor(seededRandom(seed) * arr.length)];
 }
 
+// Public-domain sample videos (short, silent, web-safe mp4)
+const SAMPLE_VIDEOS = [
+  "https://www.w3schools.com/html/mov_bbb.mp4",
+  "https://www.w3schools.com/html/movie.mp4",
+  "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+];
+
+const MEDIA_LABELS: MediaLabel[] = ["counterfeit", "suspicious", "legitimate", "unlabeled"];
+
+// Global media ID counter — ensures unique IDs across all posts
+let _mediaIdCounter = 7400100;
+
+function generatePostMedia(keyword: string, seed: number, postIndex: number): PostMedia[] {
+  const count = Math.floor(seededRandom(seed) * 4) + 2; // 2-5 media items per post
+  const items: PostMedia[] = [];
+
+  // Every 3rd post gets a video as its 2nd media item
+  const hasVideo = postIndex % 3 === 1;
+
+  for (let j = 0; j < count; j++) {
+    const id = _mediaIdCounter++;
+    const labelIdx = Math.floor(seededRandom(seed + j * 3 + 50) * 4);
+
+    if (hasVideo && j === 1) {
+      // Generate video with extracted frames
+      const videoId = id;
+      const frameCount = Math.floor(seededRandom(seed + 60) * 3) + 3; // 3-5 frames
+      const frames: PostMedia[] = Array.from({ length: frameCount }, (_, fi) => {
+        const fid = _mediaIdCounter++;
+        return {
+          id: `IMG-${fid}`,
+          type: "image" as const,
+          url: `https://loremflickr.com/400/400/${keyword}?lock=${fid}`,
+          label: MEDIA_LABELS[Math.floor(seededRandom(seed + fi * 7 + 70) * 4)],
+        };
+      });
+      items.push({
+        id: `VID-${videoId}`,
+        type: "video",
+        url: SAMPLE_VIDEOS[postIndex % SAMPLE_VIDEOS.length],
+        label: MEDIA_LABELS[labelIdx],
+        subtitlesUrl: "/mock-subtitles.vtt",
+        frames,
+      });
+    } else {
+      items.push({
+        id: `IMG-${id}`,
+        type: "image",
+        url: `https://loremflickr.com/400/400/${keyword}?lock=${id}`,
+        label: MEDIA_LABELS[labelIdx],
+      });
+    }
+  }
+
+  return items;
+}
+
 function generateExplorePosts(count: number): ExplorePost[] {
+  _mediaIdCounter = 7400100; // reset for deterministic output
   return Array.from({ length: count }, (_, i) => {
     const s = i * 7; // spread seed
     const status = SEED_STATUSES[i % 4];
@@ -527,11 +598,18 @@ function generateExplorePosts(count: number): ExplorePost[] {
     const shipsTo = SEED_COUNTRIES.slice(0, shipsToCount);
     const noticeSent = hasTakedown ? Math.floor(seededRandom(s + 5) * 20) + 1 : null;
 
+    const titleEntry = pick(SEED_TITLES_AND_KEYWORDS, s + 6);
+    const media = generatePostMedia(titleEntry.keyword, s + 40, i);
+    // imageUrl = first image-type media URL (for grid/table thumbnails)
+    const firstImage = media.find((m) => m.type === "image") ?? media[0];
+
     return {
       id: `ep-${i + 1}`,
       postId: `${2168513 + i}`,
-      title: pick(SEED_TITLES, s + 6),
-      imageUrl: "",
+      title: titleEntry.title,
+      keyword: titleEntry.keyword,
+      imageUrl: firstImage.url,
+      media,
       status,
       website: `${pick(["fake-shop", "brand-deals", "discount-outlet", "replica-hub", "grey-market", "bargain-zone", "deal-factory", "cheap-finds"], s + 7)}.${pick(["com", "net", "co.uk", "de", "cn", "store"], s + 8)}/product/${2168513 + i}`,
       websiteDomain: pick(SEED_DOMAINS, s + 9),
@@ -596,13 +674,15 @@ export const EXPLORE_ACTIVE_FILTERS = [
   { label: "Channel", value: "All" },
 ];
 
-// --- Explore: Images ---
+// --- Explore: Images (derived from Posts — single source of truth) ---
 export type ImageLabel = "counterfeit" | "suspicious" | "legitimate" | "unlabeled";
 
 export interface ExploreImage {
   id: string;
   imageId: string;
   thumbnailUrl: string;
+  parentPostId: string;
+  parentPostTitle: string;
   postsCount: number;
   accountsCount: number;
   websitesCount: number;
@@ -612,31 +692,35 @@ export interface ExploreImage {
   similarity: number;
 }
 
-const IMAGE_LABELS: { type: ImageLabel; text: string }[] = [
-  { type: "counterfeit", text: "Counterfeit" },
-  { type: "suspicious", text: "Suspicious" },
-  { type: "legitimate", text: "Legitimate" },
-  { type: "unlabeled", text: "Unlabeled" },
-];
-
-function generateExploreImages(count: number): ExploreImage[] {
-  return Array.from({ length: count }, (_, i) => {
-    const s = i * 31;
-    const lbl = IMAGE_LABELS[i % 4];
-    const hue = Math.floor(seededRandom(s + 1) * 360);
-    return {
-      id: `img-${i + 1}`,
-      imageId: `IMG-${String(7400100 + i)}`,
-      thumbnailUrl: `https://placehold.co/400x400/${hue.toString(16).padStart(2, "0")}${Math.floor(seededRandom(s + 2) * 255).toString(16).padStart(2, "0")}${Math.floor(seededRandom(s + 3) * 255).toString(16).padStart(2, "0")}/ffffff?text=${i + 1}`,
-      postsCount: Math.floor(seededRandom(s + 4) * 800) + 1,
-      accountsCount: Math.floor(seededRandom(s + 5) * 120) + 1,
-      websitesCount: Math.floor(seededRandom(s + 6) * 40) + 1,
-      label: lbl.type,
-      labelText: lbl.text,
-      firstSeen: `2026-0${Math.floor(seededRandom(s + 7) * 3) + 1}-${String(Math.floor(seededRandom(s + 8) * 28) + 1).padStart(2, "0")}`,
-      similarity: Math.floor(seededRandom(s + 9) * 40) + 60,
-    };
+function deriveExploreImages(posts: ExplorePost[]): ExploreImage[] {
+  let imgIdx = 0;
+  return posts.flatMap((post, postIdx) => {
+    // Collect all image-type media (including video frames) for the Images tab
+    const imageMedia: PostMedia[] = [];
+    for (const m of post.media) {
+      if (m.type === "image") imageMedia.push(m);
+      if (m.frames) {
+        for (const f of m.frames) imageMedia.push(f);
+      }
+    }
+    return imageMedia.map((img) => {
+      const s = (postIdx * 7 + imgIdx++) * 31;
+      return {
+        id: img.id.toLowerCase(),
+        imageId: img.id,
+        thumbnailUrl: img.url,
+        parentPostId: post.id,
+        parentPostTitle: post.title,
+        postsCount: Math.floor(seededRandom(s + 4) * 800) + 1,
+        accountsCount: Math.floor(seededRandom(s + 5) * 120) + 1,
+        websitesCount: Math.floor(seededRandom(s + 6) * 40) + 1,
+        label: post.label === "trademark infringement" ? "suspicious" as ImageLabel : post.label as ImageLabel,
+        labelText: post.label === "trademark infringement" ? "Suspicious" : post.labelText,
+        firstSeen: post.crawlingDate,
+        similarity: Math.floor(seededRandom(s + 9) * 40) + 60,
+      };
+    });
   });
 }
 
-export const EXPLORE_IMAGES: ExploreImage[] = generateExploreImages(48);
+export const EXPLORE_IMAGES: ExploreImage[] = deriveExploreImages(EXPLORE_POSTS);

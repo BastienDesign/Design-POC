@@ -7,15 +7,15 @@ import {
   RiGlobalLine,
 } from "@remixicon/react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
 import type { ExploreImage } from "@/lib/mock-data";
 import type { ImageVisibleProperties } from "./images-view-options";
 
-const LABEL_VARIANT: Record<string, "destructive" | "secondary" | "outline"> = {
-  counterfeit: "destructive",
-  suspicious: "secondary",
-  legitimate: "outline",
-  unlabeled: "outline",
+const LABEL_DOT: Record<string, string> = {
+  counterfeit: "bg-red-500",
+  suspicious: "bg-amber-500",
+  legitimate: "bg-emerald-500",
+  "trademark infringement": "bg-orange-400",
+  unlabeled: "bg-neutral-300",
 };
 
 interface ImageCardProps {
@@ -52,42 +52,44 @@ export function ImageCard({
   const hasContent =
     visibleProperties.imageId || metrics.length > 0 || visibleProperties.label;
 
+  const dotColor = LABEL_DOT[image.label] ?? "bg-neutral-300";
+
   return (
-    <div className="group relative overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-sm transition-shadow duration-200 hover:shadow-md">
-      {/* Checkbox */}
-      <div
-        className={`absolute left-2 top-2 z-10 transition-opacity ${
-          selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-        }`}
-      >
-        <div className="rounded-md bg-black/30 p-0.5">
-          <Checkbox
-            checked={selected}
-            onCheckedChange={(checked) => onSelect(checked === true)}
-            className="border-white data-[state=checked]:border-white data-[state=checked]:bg-white data-[state=checked]:text-neutral-900"
-          />
-        </div>
-      </div>
-
-      {/* Floating badge over image */}
-      {visibleProperties.label && image.label !== "unlabeled" && (
-        <div className="absolute bottom-[calc(50%+4px)] right-2 z-10">
-          <Badge
-            variant={LABEL_VARIANT[image.label]}
-            className="text-[10px] font-semibold"
-          >
-            {image.labelText}
-          </Badge>
-        </div>
-      )}
-
-      {/* Image */}
-      <div className="aspect-square overflow-hidden bg-neutral-100">
+    <div
+      className={`group relative overflow-hidden rounded-xl border bg-white transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 ${
+        selected
+          ? "border-neutral-900 ring-1 ring-neutral-900"
+          : "border-neutral-200"
+      }`}
+    >
+      {/* Image area with overlays */}
+      <div className="relative aspect-square overflow-hidden bg-neutral-100 border-b border-neutral-100">
         <img
           src={image.thumbnailUrl}
           alt={image.imageId}
           className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
         />
+
+        {/* Checkbox Overlay (Top Left) */}
+        <div className="absolute top-2 left-2 z-10">
+          <Checkbox
+            checked={selected}
+            onCheckedChange={(checked) => onSelect(checked === true)}
+            className="bg-white/80 backdrop-blur-md border-neutral-300 data-[state=checked]:bg-neutral-900 data-[state=checked]:border-neutral-900"
+          />
+        </div>
+
+        {/* Label Badge Overlay (Top Right) */}
+        {visibleProperties.label && image.label !== "unlabeled" && (
+          <div className="absolute top-2 right-2 z-10">
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-white/90 backdrop-blur-md rounded-full shadow-sm border border-neutral-100">
+              <div className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-700">
+                {image.labelText}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Content */}

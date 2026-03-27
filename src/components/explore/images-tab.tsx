@@ -43,21 +43,17 @@ export function ImagesTab({ viewType, visibleProperties, gridColumns = 4 }: Imag
 
   return (
     <div className="flex h-full flex-col min-h-0">
-      {/* Selection indicator */}
-      {selectedIds.length > 0 && (
-        <div className="shrink-0 pb-3 text-[13px] font-medium text-neutral-900">
-          {selectedIds.length} selected
-        </div>
-      )}
-
       {/* Content */}
       <div className="flex-1 min-h-0 overflow-auto">
         {viewType === "grid" ? (
           <GridView
             images={EXPLORE_IMAGES}
             selectedIds={selectedIds}
+            allSelected={allSelected}
+            someSelected={someSelected}
             visibleProperties={visibleProperties}
             onSelect={toggleSelect}
+            onSelectAll={toggleAll}
             columns={gridColumns}
           />
         ) : (
@@ -80,21 +76,40 @@ export function ImagesTab({ viewType, visibleProperties, gridColumns = 4 }: Imag
 function GridView({
   images,
   selectedIds,
+  allSelected,
+  someSelected,
   visibleProperties,
   onSelect,
+  onSelectAll,
   columns = 4,
 }: {
   images: ExploreImage[];
   selectedIds: string[];
+  allSelected: boolean;
+  someSelected: boolean;
   visibleProperties: ImageVisibleProperties;
   onSelect: (id: string, checked: boolean) => void;
+  onSelectAll: (checked: boolean) => void;
   columns?: number;
 }) {
   return (
-    <div
-      className="grid gap-4 pb-4 transition-all duration-200"
-      style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
-    >
+    <div>
+      {/* Select-all bar */}
+      <div className="flex items-center gap-2 px-1 py-1.5">
+        <Checkbox
+          checked={allSelected ? true : someSelected ? "indeterminate" : false}
+          onCheckedChange={(checked) => onSelectAll(checked === true)}
+        />
+        <span className="text-[11px] font-medium text-neutral-400">
+          {selectedIds.length > 0
+            ? `${selectedIds.length} of ${images.length} selected`
+            : `${images.length} items`}
+        </span>
+      </div>
+      <div
+        className="grid gap-4 pb-4 transition-all duration-200"
+        style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+      >
       {images.map((img) => (
         <ImageCard
           key={img.id}
@@ -104,6 +119,7 @@ function GridView({
           onSelect={(checked) => onSelect(img.id, checked)}
         />
       ))}
+      </div>
     </div>
   );
 }
