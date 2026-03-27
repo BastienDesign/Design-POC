@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useDeferredValue } from "react";
 import { ExploreHeader } from "@/components/explore/explore-header";
 import type { ActiveFilter } from "@/components/explore/explore-header";
 import { ExploreTable } from "@/components/explore/explore-table";
@@ -14,26 +14,24 @@ import { WebsitesTable } from "@/components/explore/websites-table";
 import { ModerationWorkspace } from "@/components/explore/moderation-workspace";
 import { EXPLORE_POSTS, EXPLORE_IMAGES } from "@/lib/mock-data";
 import type { ExplorePost } from "@/lib/mock-data";
+import { DEFAULT_QUERY, getFieldDef } from "@/components/explore/advanced-filter-builder";
+import type { FilterQuery, FilterRule } from "@/components/explore/advanced-filter-builder";
+import type { FilterMode } from "@/components/explore/explore-filters-popover";
 import { DEFAULT_VISIBLE, DEFAULT_ORDER } from "@/components/explore/explore-columns";
 import type { ImageVisibleProperties } from "@/components/explore/images-view-options";
 
-// Maps the search field selector value to the ExplorePost field(s) to match against
-const SEARCH_FIELD_MAP: Record<string, (post: ExplorePost, query: string) => boolean> = {
-  "post-id": (post, q) => post.postId.toLowerCase().includes(q),
-  "image-id": (post, q) => post.id.toLowerCase().includes(q),
-  "account-website-id": (post, q) => post.websiteDomain.toLowerCase().includes(q),
-  "account-poster-id": (post, q) => post.accountName.toLowerCase().includes(q),
-  "cluster-id": (post, q) => post.id.toLowerCase().includes(q),
-};
+// ── Heuristic Engine: auto-categorize a search term ──
+const KNOWN_BRANDS = ["rolex", "gucci", "prada", "hermès", "hermes", "nike", "apple", "louis vuitton", "chanel", "dior", "burberry", "cartier", "fendi", "balenciaga", "versace"];
+const DOMAIN_HINTS = [".com", ".fr", ".net", ".org", ".co", ".io", ".de", ".uk", "www."];
 
-// Human-readable labels for search field keys
-const SEARCH_FIELD_LABELS: Record<string, string> = {
-  "post-id": "Post ID",
-  "image-id": "Image ID",
-  "account-website-id": "Account Website ID",
-  "account-poster-id": "Account Poster ID",
-  "cluster-id": "Cluster ID",
-};
+function guessSearchCategory(term: string): { label: string; operator: string } {
+  const t = term.trim().toLowerCase();
+  if (/^(post-?)?\d{4,}$/i.test(t)) return { label: "Post ID", operator: "is" };
+  if (/^[a-z]{2,4}-\d{3,}/i.test(t)) return { label: "ID", operator: "is" };
+  if (DOMAIN_HINTS.some((h) => t.includes(h))) return { label: "Website", operator: "contains" };
+  if (KNOWN_BRANDS.some((b) => t.includes(b))) return { label: "Brand", operator: "contains" };
+  return { label: "Keyword", operator: "contains" };
+}
 
 const DEFAULT_IMAGE_PROPERTIES: ImageVisibleProperties = {
   imageId: true,
@@ -50,8 +48,10 @@ export default function ExplorePage() {
   const [posts, setPosts] = useState<ExplorePost[]>(EXPLORE_POSTS);
   const [activeTab, setActiveTab] = useState("Posts");
   const [filters, setFilters] = useState<ActiveFilter[]>([]);
-  const [searchField, setSearchField] = useState("post-id");
   const [searchValue, setSearchValue] = useState("");
+  const [advancedQuery, setAdvancedQuery] = useState<FilterQuery>(DEFAULT_QUERY);
+  const [filterMode, setFilterMode] = useState<FilterMode>("basic");
+  const [filterOpen, setFilterOpen] = useState(false);
 
   // Posts view state
   const [postsLayout, setPostsLayout] = useState<"table" | "grid">("table");
@@ -78,80 +78,205 @@ export default function ExplorePage() {
   const [moderationQueue, setModerationQueue] = useState<ExplorePost[]>([]);
   const [currentModIndex, setCurrentModIndex] = useState(0);
 
-  // ── Filter Engine ──
-  const filteredPosts = useMemo(() => {
-    if (filters.length === 0) return posts;
+  // ── Deferred filter state (non-blocking concurrent rendering) ──
+  const deferredFilters = useDeferredValue(filters);
+  const deferredAdvancedQuery = useDeferredValue(advancedQuery);
+  const deferredSearchValue = useDeferredValue(searchValue);
+  const isFiltering =
+    filters !== deferredFilters ||
+    advancedQuery !== deferredAdvancedQuery ||
+    searchValue !== deferredSearchValue;
 
-    return posts.filter((post) =>
-      filters.every((f) => {
-        if (f.type === "search") {
-          const matcher = SEARCH_FIELD_MAP[f.label === "Post ID" ? "post-id"
-            : f.label === "Image ID" ? "image-id"
-            : f.label === "Account Website ID" ? "account-website-id"
-            : f.label === "Account Poster ID" ? "account-poster-id"
-            : "cluster-id"];
-          return matcher ? matcher(post, f.value.toLowerCase()) : true;
-        }
-        // Standard filter chips — match against known post fields
-        const val = f.value.toLowerCase();
-        switch (f.label) {
-          case "Label":
-            return post.labelText.toLowerCase() === val;
-          case "Moderation status":
-          case "Moderation Method":
-            return true; // No direct mock field — pass through for prototype
-          case "Takedown status":
-            return true; // Pass through
-          case "Date":
-          case "Crawling date":
-            return true; // Date filtering is a pass-through for the vibe prototype
-          case "Price": {
-            const numPrice = parseFloat(post.price.replace(/[^0-9.]/g, ""));
-            if (val.includes("under 50")) return numPrice < 50;
-            if (val.includes("50")) return numPrice >= 50 && numPrice <= 200;
-            if (val.includes("200")) return numPrice >= 200 && numPrice <= 500;
-            if (val.includes("over 500")) return numPrice > 500;
-            return true;
+  // ── Advanced Filter: resolve a post field value by rule key ──
+  function resolvePostField(post: ExplorePost, fieldKey: string): string | number | null {
+    switch (fieldKey) {
+      case "label": return post.labelText;
+      case "moderation_status": return null; // pass-through for prototype
+      case "takedown_status": return null;
+      case "product_category": return post.productCategory;
+      case "channel": return post.websiteCategory;
+      case "enforcement": return null;
+      case "account": return post.accountTag;
+      case "stock": return post.stock;
+      case "impact_score": return post.impactScore;
+      case "price": return parseFloat(post.price.replace(/[^0-9.]/g, "")) || 0;
+      case "risk_score": return post.impactScore;
+      case "geo": return post.platformGeo;
+      case "tags": return (post.tags ?? []).join(", ");
+      case "contact_info": return null;
+      default: return null;
+    }
+  }
+
+  function evaluateRule(post: ExplorePost, rule: FilterRule): boolean {
+    // Skip incomplete rules (no value for non-unary operators)
+    if (rule.operator !== "is empty" && rule.operator !== "is not empty" && !rule.value) return true;
+
+    const raw = resolvePostField(post, rule.field);
+    if (raw === null) return true; // field not mapped, pass through
+
+    const fieldDef = getFieldDef(rule.field);
+    const isNumeric = fieldDef?.type === "number";
+
+    if (rule.operator === "is empty") return raw === "" || raw === 0;
+    if (rule.operator === "is not empty") return raw !== "" && raw !== 0;
+
+    if (isNumeric) {
+      const numVal = typeof raw === "number" ? raw : parseFloat(String(raw));
+      const ruleNum = parseFloat(rule.value);
+      if (isNaN(numVal) || isNaN(ruleNum)) return true;
+      switch (rule.operator) {
+        case "is": return numVal === ruleNum;
+        case "is not": return numVal !== ruleNum;
+        case "greater than": return numVal > ruleNum;
+        case "less than": return numVal < ruleNum;
+        default: return true;
+      }
+    }
+
+    const strVal = String(raw).toLowerCase();
+    const ruleVal = rule.value.toLowerCase();
+    switch (rule.operator) {
+      case "is": return strVal === ruleVal;
+      case "is not": return strVal !== ruleVal;
+      case "contains": return strVal.includes(ruleVal);
+      case "does not contain": return !strVal.includes(ruleVal);
+      default: return true;
+    }
+  }
+
+  // ── Filter Engine (uses deferred state for non-blocking updates) ──
+  const filteredPosts = useMemo(() => {
+    let result = posts;
+
+    // Omnibar: comma-separated bulk search (OR logic across terms)
+    const searchTerms = deferredSearchValue.split(",").map((t) => t.trim().toLowerCase()).filter(Boolean);
+    if (searchTerms.length > 0) {
+      result = result.filter((post) =>
+        searchTerms.some(
+          (term) =>
+            post.id.toLowerCase().includes(term) ||
+            post.postId.toLowerCase().includes(term) ||
+            post.title.toLowerCase().includes(term) ||
+            post.accountName.toLowerCase().includes(term) ||
+            post.accountTag.toLowerCase().includes(term) ||
+            post.websiteDomain.toLowerCase().includes(term) ||
+            post.website.toLowerCase().includes(term) ||
+            post.listedBrand.toLowerCase().includes(term) ||
+            post.keyword.toLowerCase().includes(term) ||
+            post.platformGeo.toLowerCase().includes(term) ||
+            post.productCategory.toLowerCase().includes(term) ||
+            post.tags.some((t) => t.toLowerCase().includes(term))
+        )
+      );
+    }
+
+    // Basic (chip) filters
+    if (deferredFilters.length > 0) {
+      result = result.filter((post) =>
+        deferredFilters.every((f) => {
+          const val = f.value.toLowerCase();
+
+          // Search token chips: match against the guessed field(s)
+          if (f.type === "search") {
+            switch (f.label) {
+              case "Post ID":
+                return post.postId.toLowerCase().includes(val) || post.id.toLowerCase().includes(val);
+              case "ID":
+                return post.id.toLowerCase().includes(val) || post.postId.toLowerCase().includes(val);
+              case "Website":
+                return post.websiteDomain.toLowerCase().includes(val) || post.website.toLowerCase().includes(val);
+              case "Brand":
+                return post.listedBrand.toLowerCase().includes(val);
+              case "Keyword":
+              default:
+                return (
+                  post.id.toLowerCase().includes(val) ||
+                  post.postId.toLowerCase().includes(val) ||
+                  post.title.toLowerCase().includes(val) ||
+                  post.accountName.toLowerCase().includes(val) ||
+                  post.accountTag.toLowerCase().includes(val) ||
+                  post.websiteDomain.toLowerCase().includes(val) ||
+                  post.website.toLowerCase().includes(val) ||
+                  post.listedBrand.toLowerCase().includes(val) ||
+                  post.keyword.toLowerCase().includes(val) ||
+                  post.tags.some((t) => t.toLowerCase().includes(val))
+                );
+            }
           }
-          case "Stock":
-            return post.stock.toLowerCase() === val;
-          case "Items in Bundle": {
-            if (val === "single") return post.bundleItems === 1;
-            if (val.includes("2")) return post.bundleItems >= 2 && post.bundleItems <= 5;
-            if (val.includes("6")) return post.bundleItems >= 6 && post.bundleItems <= 10;
-            if (val.includes("10+")) return post.bundleItems > 10;
-            return true;
+
+          switch (f.label) {
+            case "Label":
+              return post.labelText.toLowerCase() === val;
+            case "Moderation status":
+            case "Moderation Method":
+              return true;
+            case "Takedown status":
+              return true;
+            case "Date":
+            case "Crawling date":
+              return true;
+            case "Price": {
+              const numPrice = parseFloat(post.price.replace(/[^0-9.]/g, ""));
+              if (val.includes("under 50")) return numPrice < 50;
+              if (val.includes("50")) return numPrice >= 50 && numPrice <= 200;
+              if (val.includes("200")) return numPrice >= 200 && numPrice <= 500;
+              if (val.includes("over 500")) return numPrice > 500;
+              return true;
+            }
+            case "Stock":
+              return post.stock.toLowerCase() === val;
+            case "Items in Bundle": {
+              if (val === "single") return post.bundleItems === 1;
+              if (val.includes("2")) return post.bundleItems >= 2 && post.bundleItems <= 5;
+              if (val.includes("6")) return post.bundleItems >= 6 && post.bundleItems <= 10;
+              if (val.includes("10+")) return post.bundleItems > 10;
+              return true;
+            }
+            case "Product Category":
+              return post.productCategory.toLowerCase() === val;
+            case "Estimated Geo":
+              return val === "all regions" || post.platformGeo.toLowerCase().includes(val);
+            case "Channel":
+              return post.websiteCategory.toLowerCase().includes(val);
+            case "Account":
+              return post.accountTag.toLowerCase().includes(val) || post.accountTagType.toLowerCase().includes(val);
+            case "Risk Score": {
+              const s = post.impactScore;
+              if (val.includes("critical")) return s >= 90;
+              if (val.includes("high")) return s >= 70 && s < 90;
+              if (val.includes("medium")) return s >= 40 && s < 70;
+              if (val.includes("low")) return s < 40;
+              return true;
+            }
+            case "Image Reasons":
+              return val === "none"
+                ? !post.imageReasons
+                : (post.imageReasons ?? "").toLowerCase().includes(val);
+            case "Enforcement":
+            case "Tags":
+            case "Contact Info":
+              return true;
+            default:
+              return true;
           }
-          case "Product Category":
-            return post.productCategory.toLowerCase() === val;
-          case "Estimated Geo":
-            return val === "all regions" || post.platformGeo.toLowerCase().includes(val);
-          case "Channel":
-            return post.websiteCategory.toLowerCase().includes(val);
-          case "Account":
-            return post.accountTag.toLowerCase().includes(val) || post.accountTagType.toLowerCase().includes(val);
-          case "Risk Score": {
-            const s = post.impactScore;
-            if (val.includes("critical")) return s >= 90;
-            if (val.includes("high")) return s >= 70 && s < 90;
-            if (val.includes("medium")) return s >= 40 && s < 70;
-            if (val.includes("low")) return s < 40;
-            return true;
-          }
-          case "Image Reasons":
-            return val === "none"
-              ? !post.imageReasons
-              : (post.imageReasons ?? "").toLowerCase().includes(val);
-          case "Enforcement":
-          case "Tags":
-          case "Contact Info":
-            return true; // No direct mock field — pass through
-          default:
-            return true;
-        }
-      })
+        })
+      );
+    }
+
+    // Advanced filters
+    const activeRules = deferredAdvancedQuery.rules.filter(
+      (r) => r.operator === "is empty" || r.operator === "is not empty" || r.value
     );
-  }, [filters, posts]);
+    if (activeRules.length > 0) {
+      const combine = deferredAdvancedQuery.logicalOperator === "AND"
+        ? (post: ExplorePost) => activeRules.every((r) => evaluateRule(post, r))
+        : (post: ExplorePost) => activeRules.some((r) => evaluateRule(post, r));
+      result = result.filter(combine);
+    }
+
+    return result;
+  }, [deferredFilters, posts, deferredAdvancedQuery, deferredSearchValue]);
 
   const tabCounts: Record<string, number> = {
     Posts: filteredPosts.length,
@@ -189,9 +314,31 @@ export default function ExplorePage() {
     setFilters((prev) => prev.filter((f) => f.id !== id));
   }
 
+  function handleTokenizeSearch() {
+    const raw = searchValue.trim();
+    if (!raw) return;
+
+    const terms = raw.split(",").map((t) => t.trim()).filter(Boolean);
+    const newFilters: ActiveFilter[] = terms.map((term) => {
+      const { label, operator } = guessSearchCategory(term);
+      return {
+        id: `search-${++filterIdCounter}`,
+        type: "search" as const,
+        label,
+        operator,
+        value: term,
+      };
+    });
+
+    setFilters((prev) => [...prev, ...newFilters]);
+    setSearchValue("");
+  }
+
   function handleResetFilters() {
     setFilters([]);
     setSearchValue("");
+    setAdvancedQuery(DEFAULT_QUERY);
+    setFilterMode("basic");
   }
 
   function handleStageChange(field: keyof PendingChanges, value: string | string[]) {
@@ -244,22 +391,6 @@ export default function ExplorePage() {
         },
       ];
     });
-  }
-
-  function handleApplySearch() {
-    const trimmed = searchValue.trim();
-    if (!trimmed) return;
-
-    const newFilter: ActiveFilter = {
-      id: `search-${++filterIdCounter}`,
-      type: "search",
-      label: SEARCH_FIELD_LABELS[searchField] ?? searchField,
-      operator: "is",
-      value: trimmed,
-    };
-
-    setFilters((prev) => [...prev, newFilter]);
-    setSearchValue("");
   }
 
   const handlePrevPost = useCallback(() => {
@@ -321,11 +452,9 @@ export default function ExplorePage() {
           filters={filters}
           onRemoveFilter={handleRemoveFilter}
           onFilterValueChange={handleFilterValueChange}
-          searchField={searchField}
-          onSearchFieldChange={setSearchField}
           searchValue={searchValue}
           onSearchValueChange={setSearchValue}
-          onApplySearch={handleApplySearch}
+          onTokenizeSearch={handleTokenizeSearch}
           onSelectFilter={handleSelectFilter}
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -344,11 +473,18 @@ export default function ExplorePage() {
           onGridColumnsChange={setGridColumns}
           filteredCount={filteredPosts.length}
           onPlayModeration={handleModerationPlay}
+          advancedQuery={advancedQuery}
+          onAdvancedQueryChange={setAdvancedQuery}
+          filterMode={filterMode}
+          onFilterModeChange={setFilterMode}
+          filterOpen={filterOpen}
+          onFilterOpenChange={setFilterOpen}
+          onResetAll={handleResetFilters}
         />
       </div>
 
       {/* 2. NAKED CONTENT CANVAS */}
-      <div className="flex-1 flex flex-col min-h-0 bg-white overflow-hidden mb-2">
+      <div className={`flex-1 flex flex-col min-h-0 bg-white overflow-hidden mb-2 transition-opacity duration-150 ${isFiltering ? "opacity-50" : "opacity-100"}`}>
         <div className="flex-1 overflow-auto min-h-0 custom-scrollbar">
           {activeTab === "Posts" && postsLayout === "table" && (
             <ExploreTable

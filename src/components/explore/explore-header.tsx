@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import {
-  RiImageAddLine,
   RiCloseLine,
   RiArrowDownSLine,
   RiArrowUpSLine,
@@ -12,24 +11,26 @@ import {
   RiPlayFill,
   RiSearchLine,
   RiFilter3Line,
+  RiEqualizer2Line,
 } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { ExploreFiltersMenu } from "./explore-filters-popover";
+import type { FilterMode } from "./explore-filters-popover";
+import type { FilterQuery, FilterRule, FieldDef } from "./advanced-filter-builder";
+import { getFieldDef } from "./advanced-filter-builder";
 import { ExploreViewOptions } from "./explore-view-options";
 import { ImagesViewOptions } from "./images-view-options";
 import type { ImageVisibleProperties } from "./images-view-options";
@@ -47,11 +48,9 @@ interface ExploreHeaderProps {
   filters: ActiveFilter[];
   onRemoveFilter: (id: string) => void;
   onFilterValueChange: (id: string, value: string) => void;
-  searchField: string;
-  onSearchFieldChange: (value: string) => void;
   searchValue: string;
   onSearchValueChange: (value: string) => void;
-  onApplySearch: () => void;
+  onTokenizeSearch: () => void;
   onSelectFilter: (label: string, value: string, options: string[]) => void;
   activeTab: string;
   onTabChange: (tab: string) => void;
@@ -70,6 +69,95 @@ interface ExploreHeaderProps {
   onGridColumnsChange: (columns: number) => void;
   filteredCount: number;
   onPlayModeration: () => void;
+  advancedQuery: FilterQuery;
+  onAdvancedQueryChange: (query: FilterQuery) => void;
+  filterMode: FilterMode;
+  onFilterModeChange: (mode: FilterMode) => void;
+  filterOpen: boolean;
+  onFilterOpenChange: (open: boolean) => void;
+  onResetAll: () => void;
+}
+
+// ── Inline Chip Value Editor ──
+
+function InlineChipValue({
+  rule,
+  fieldDef,
+  onValueChange,
+}: {
+  rule: FilterRule;
+  fieldDef: FieldDef | undefined;
+  onValueChange: (val: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState(rule.value);
+
+  const displayValue = rule.value || "Select…";
+  const isEnum = fieldDef?.type === "enum" && fieldDef.options;
+
+  if (isEnum) {
+    return (
+      <DropdownMenu open={open} onOpenChange={setOpen}>
+        <DropdownMenuTrigger asChild>
+          <button className="flex items-center gap-0.5 font-semibold text-neutral-900 hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap">
+            {displayValue}
+            <RiArrowDownSLine size={12} className="text-neutral-400" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-[180px] rounded-lg p-1 shadow-md">
+          {fieldDef.options!.map((opt) => (
+            <DropdownMenuItem
+              key={opt}
+              className="cursor-pointer text-[12px]"
+              onSelect={() => {
+                onValueChange(opt);
+                setOpen(false);
+              }}
+            >
+              {opt}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  }
+
+  // Text / Number: Popover with Input
+  return (
+    <Popover
+      open={open}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (!o && draft !== rule.value) onValueChange(draft);
+      }}
+    >
+      <PopoverTrigger asChild>
+        <button
+          onClick={() => setDraft(rule.value)}
+          className="flex items-center gap-0.5 font-semibold text-neutral-900 hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap"
+        >
+          {displayValue}
+          <RiArrowDownSLine size={12} className="text-neutral-400" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-[200px] p-2">
+        <Input
+          autoFocus
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              onValueChange(draft);
+              setOpen(false);
+            }
+          }}
+          placeholder={fieldDef?.type === "number" ? "0" : "Value…"}
+          type={fieldDef?.type === "number" ? "number" : "text"}
+          className="h-8 text-[12px] border-neutral-200 shadow-none focus-visible:ring-1 focus-visible:ring-neutral-300"
+        />
+      </PopoverContent>
+    </Popover>
+  );
 }
 
 const TABS = ["Images", "Posts", "Websites", "Accounts"];
@@ -85,11 +173,9 @@ export function ExploreHeader({
   filters,
   onRemoveFilter,
   onFilterValueChange,
-  searchField,
-  onSearchFieldChange,
   searchValue,
   onSearchValueChange,
-  onApplySearch,
+  onTokenizeSearch,
   onSelectFilter,
   activeTab,
   onTabChange,
@@ -108,6 +194,13 @@ export function ExploreHeader({
   onGridColumnsChange,
   filteredCount,
   onPlayModeration,
+  advancedQuery,
+  onAdvancedQueryChange,
+  filterMode,
+  onFilterModeChange,
+  filterOpen,
+  onFilterOpenChange,
+  onResetAll,
 }: ExploreHeaderProps) {
   const [isChipsExpanded, setIsChipsExpanded] = useState(false);
 
@@ -117,42 +210,38 @@ export function ExploreHeader({
       <div className="mb-3 flex items-center justify-between gap-4">
         {/* Left: Filter trigger + Search + Apply */}
         <div className="flex items-center gap-2">
-          <ExploreFiltersMenu onSelectFilter={onSelectFilter} />
-          <div className="flex h-9 w-[480px] items-center overflow-hidden rounded-md border border-neutral-200 bg-white shadow-sm transition-all focus-within:border-neutral-900 focus-within:ring-1 focus-within:ring-neutral-900">
-            <Select value={searchField} onValueChange={onSearchFieldChange}>
-              <SelectTrigger className="w-[120px] shrink-0 rounded-none border-0 bg-transparent text-[13px] font-medium shadow-none focus:ring-0 focus:ring-offset-0">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="post-id">Post ID</SelectItem>
-                <SelectItem value="image-id">Image ID</SelectItem>
-                <SelectItem value="account-website-id">Account Website ID</SelectItem>
-                <SelectItem value="account-poster-id">Account Poster ID</SelectItem>
-                <SelectItem value="cluster-id">Cluster ID</SelectItem>
-              </SelectContent>
-            </Select>
-            <Separator orientation="vertical" className="h-5 bg-neutral-200" />
+          <ExploreFiltersMenu
+            onSelectFilter={onSelectFilter}
+            advancedQuery={advancedQuery}
+            onAdvancedQueryChange={onAdvancedQueryChange}
+            filterMode={filterMode}
+            onFilterModeChange={onFilterModeChange}
+            filterOpen={filterOpen}
+            onFilterOpenChange={onFilterOpenChange}
+          />
+          <div className="relative flex h-9 w-[480px] items-center overflow-hidden rounded-md border border-neutral-200 bg-white shadow-sm transition-all focus-within:border-neutral-900 focus-within:ring-1 focus-within:ring-neutral-900">
+            <RiSearchLine size={15} className="absolute left-2.5 text-neutral-400 pointer-events-none" />
             <Input
-              placeholder="Search"
+              placeholder="Search IDs, accounts, websites, or brands..."
               value={searchValue}
               onChange={(e) => onSearchValueChange(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && onApplySearch()}
-              className="flex-1 rounded-none border-0 bg-transparent px-3 text-[13px] shadow-none placeholder:text-neutral-400 focus-visible:ring-0 focus-visible:ring-offset-0"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  onTokenizeSearch();
+                }
+              }}
+              className="h-full w-full rounded-none border-0 bg-transparent pl-8 pr-9 text-[13px] shadow-none placeholder:text-neutral-400 focus-visible:ring-0 focus-visible:ring-offset-0"
             />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="mr-1 h-7 w-7 text-neutral-400 hover:text-neutral-900"
-            >
-              <RiImageAddLine size={16} />
-            </Button>
+            {searchValue && (
+              <button
+                onClick={() => onSearchValueChange("")}
+                className="absolute right-2 flex h-5 w-5 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 cursor-pointer"
+              >
+                <RiCloseLine size={14} />
+              </button>
+            )}
           </div>
-          <Button
-            onClick={onApplySearch}
-            className="h-9 shrink-0 rounded-md bg-[#2D2D2D] px-5 text-[13px] font-medium text-white shadow-sm hover:bg-black"
-          >
-            Apply
-          </Button>
         </div>
 
         {/* Right: Saved Filters + Reset */}
@@ -161,7 +250,10 @@ export function ExploreHeader({
             Saved Filters
             <RiArrowDownSLine size={14} />
           </span>
-          <span className="cursor-pointer text-neutral-400 transition-colors hover:text-neutral-900">
+          <span
+            onClick={onResetAll}
+            className="cursor-pointer text-neutral-400 transition-colors hover:text-neutral-900"
+          >
             Reset
           </span>
         </div>
@@ -235,6 +327,65 @@ export function ExploreHeader({
               )}
             </Button>
           )}
+        </div>
+      )}
+
+      {/* ── ROW 2b: Advanced Filter Chips (inline-editable) ── */}
+      {advancedQuery.rules.length > 0 && (
+        <div className="mb-3 flex items-center gap-2 overflow-x-auto">
+          <button
+            onClick={() => { onFilterModeChange("advanced"); onFilterOpenChange(true); }}
+            className="flex shrink-0 items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-neutral-400 hover:text-neutral-600 transition-colors cursor-pointer"
+          >
+            <RiEqualizer2Line size={13} />
+            Advanced
+          </button>
+          {advancedQuery.rules.map((rule, index) => {
+            const fieldDef = getFieldDef(rule.field);
+            const fieldLabel = fieldDef?.label ?? rule.field;
+            const isUnary = rule.operator === "is empty" || rule.operator === "is not empty";
+
+            const updateRuleValue = (newValue: string) => {
+              onAdvancedQueryChange({
+                ...advancedQuery,
+                rules: advancedQuery.rules.map((r) =>
+                  r.id === rule.id ? { ...r, value: newValue } : r
+                ),
+              });
+            };
+
+            return (
+              <div key={rule.id} className="flex items-center gap-1.5">
+                {index > 0 && (
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-300 select-none">
+                    {advancedQuery.logicalOperator}
+                  </span>
+                )}
+                <div className="flex items-center gap-1.5 rounded-md border border-neutral-200 bg-white px-2 py-1 text-[12px] shadow-sm">
+                  <span className="font-medium text-neutral-700">{fieldLabel}</span>
+                  <span className="text-neutral-400">{rule.operator}</span>
+                  {!isUnary && (
+                    <InlineChipValue
+                      rule={rule}
+                      fieldDef={fieldDef}
+                      onValueChange={updateRuleValue}
+                    />
+                  )}
+                  <button
+                    onClick={() =>
+                      onAdvancedQueryChange({
+                        ...advancedQuery,
+                        rules: advancedQuery.rules.filter((r) => r.id !== rule.id),
+                      })
+                    }
+                    className="ml-0.5 rounded-full p-0.5 text-neutral-300 transition-colors hover:bg-neutral-100 hover:text-neutral-600 cursor-pointer"
+                  >
+                    <RiCloseLine size={12} />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import {
   RiCloseLine,
   RiAddLine,
@@ -23,11 +23,11 @@ import {
 } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 
-// ── Types ──
+// ── Exported Types ──
 
-type LogicalOperator = "AND" | "OR";
+export type LogicalOperator = "AND" | "OR";
 
-type RuleOperator =
+export type RuleOperator =
   | "is"
   | "is not"
   | "contains"
@@ -37,30 +37,30 @@ type RuleOperator =
   | "is empty"
   | "is not empty";
 
-interface FilterRule {
+export interface FilterRule {
   id: string;
   field: string;
   operator: RuleOperator;
   value: string;
 }
 
-interface FilterQuery {
+export interface FilterQuery {
   logicalOperator: LogicalOperator;
   rules: FilterRule[];
 }
 
-// ── Field Definitions ──
+// ── Field Definitions (exported for filtering engine) ──
 
-type FieldType = "enum" | "number" | "text" | "date";
+export type FieldType = "enum" | "number" | "text" | "date";
 
-interface FieldDef {
+export interface FieldDef {
   key: string;
   label: string;
   type: FieldType;
   options?: string[];
 }
 
-const FIELDS: FieldDef[] = [
+export const FIELDS: FieldDef[] = [
   { key: "label", label: "Label", type: "enum", options: ["Legitimate", "Suspicious", "Counterfeit", "Unlabeled"] },
   { key: "moderation_status", label: "Moderation Status", type: "enum", options: ["Un-moderated", "Moderated", "Checked", "Validated"] },
   { key: "takedown_status", label: "Takedown Status", type: "enum", options: ["Pending", "Success", "Failed", "Not Requested"] },
@@ -86,7 +86,7 @@ const OPERATORS_BY_TYPE: Record<FieldType, RuleOperator[]> = {
 
 const UNARY_OPERATORS: RuleOperator[] = ["is empty", "is not empty"];
 
-function getFieldDef(key: string): FieldDef | undefined {
+export function getFieldDef(key: string): FieldDef | undefined {
   return FIELDS.find((f) => f.key === key);
 }
 
@@ -95,9 +95,14 @@ function nextRuleId(): string {
   return `rule-${++_ruleId}`;
 }
 
-function createBlankRule(): FilterRule {
+export function createBlankRule(): FilterRule {
   return { id: nextRuleId(), field: "label", operator: "is", value: "" };
 }
+
+export const DEFAULT_QUERY: FilterQuery = {
+  logicalOperator: "AND",
+  rules: [],
+};
 
 // ── Sub-components ──
 
@@ -251,43 +256,40 @@ function ValueInput({
 // ── Main Component ──
 
 interface AdvancedFilterBuilderProps {
+  query: FilterQuery;
+  onQueryChange: (query: FilterQuery) => void;
   onSwitchToBasic: () => void;
 }
 
-export function AdvancedFilterBuilder({ onSwitchToBasic }: AdvancedFilterBuilderProps) {
-  const [query, setQuery] = useState<FilterQuery>({
-    logicalOperator: "AND",
-    rules: [createBlankRule()],
-  });
+export function AdvancedFilterBuilder({ query, onQueryChange, onSwitchToBasic }: AdvancedFilterBuilderProps) {
+  const setQuery = onQueryChange;
 
   const updateRule = useCallback(
     (ruleId: string, patch: Partial<FilterRule>) => {
-      setQuery((prev) => ({
-        ...prev,
-        rules: prev.rules.map((r) => (r.id === ruleId ? { ...r, ...patch } : r)),
-      }));
+      setQuery({
+        ...query,
+        rules: query.rules.map((r) => (r.id === ruleId ? { ...r, ...patch } : r)),
+      });
     },
-    []
+    [query, setQuery]
   );
 
-  const removeRule = useCallback((ruleId: string) => {
-    setQuery((prev) => ({
-      ...prev,
-      rules: prev.rules.filter((r) => r.id !== ruleId),
-    }));
-  }, []);
+  const removeRule = useCallback(
+    (ruleId: string) => {
+      setQuery({
+        ...query,
+        rules: query.rules.filter((r) => r.id !== ruleId),
+      });
+    },
+    [query, setQuery]
+  );
 
   const addRule = useCallback(() => {
-    setQuery((prev) => ({
-      ...prev,
-      rules: [...prev.rules, createBlankRule()],
-    }));
-  }, []);
-
-  // Log query to console on change (mock filtering)
-  useEffect(() => {
-    console.log("[AdvancedFilter] query:", query);
-  }, [query]);
+    setQuery({
+      ...query,
+      rules: [...query.rules, createBlankRule()],
+    });
+  }, [query, setQuery]);
 
   return (
     <div className="flex flex-col">
@@ -304,10 +306,10 @@ export function AdvancedFilterBuilder({ onSwitchToBasic }: AdvancedFilterBuilder
           <span>Match</span>
           <button
             onClick={() =>
-              setQuery((prev) => ({
-                ...prev,
-                logicalOperator: prev.logicalOperator === "AND" ? "OR" : "AND",
-              }))
+              setQuery({
+                ...query,
+                logicalOperator: query.logicalOperator === "AND" ? "OR" : "AND",
+              })
             }
             className="rounded-md bg-neutral-100 px-1.5 py-0.5 text-[11px] font-bold text-neutral-700 hover:bg-neutral-200 transition-colors cursor-pointer"
           >
