@@ -29,8 +29,8 @@ import {
 } from "@/components/ui/popover";
 import { ExploreFiltersMenu } from "./explore-filters-popover";
 import type { FilterMode } from "./explore-filters-popover";
-import type { FilterQuery, FilterRule, FieldDef } from "./advanced-filter-builder";
-import { getFieldDef } from "./advanced-filter-builder";
+import type { FilterQuery, FilterRule, FilterNode, FieldDef } from "./advanced-filter-builder";
+import { getFieldDef, updateNodeInTree, removeNodeFromTree } from "./advanced-filter-builder";
 import { ExploreViewOptions } from "./explore-view-options";
 import { ImagesViewOptions } from "./images-view-options";
 import type { ImageVisibleProperties } from "./images-view-options";
@@ -157,6 +157,97 @@ function InlineChipValue({
         />
       </PopoverContent>
     </Popover>
+  );
+}
+
+// ── Recursive Chip Renderer (visual parentheses for nested groups) ──
+
+function ActiveFilterNode({
+  node,
+  rootQuery,
+  onQueryChange,
+  isRoot,
+}: {
+  node: FilterNode;
+  rootQuery: FilterQuery;
+  onQueryChange: (q: FilterQuery) => void;
+  isRoot: boolean;
+}) {
+  // Base case: a single rule → render the editable chip
+  if (node.type === "rule") {
+    const rule = node;
+    const fieldDef = getFieldDef(rule.field);
+    const fieldLabel = fieldDef?.label ?? rule.field;
+    const isUnary = rule.operator === "is empty" || rule.operator === "is not empty";
+
+    const updateRuleValue = (newValue: string) => {
+      onQueryChange(
+        updateNodeInTree(rootQuery, rule.id, (n) => ({ ...(n as FilterRule), value: newValue }))
+      );
+    };
+
+    return (
+      <div className="flex items-center gap-1.5 rounded-md border border-neutral-200 bg-white px-2 py-1 text-[12px] shadow-sm">
+        <span className="font-medium text-neutral-700">{fieldLabel}</span>
+        <span className="text-neutral-400">{rule.operator}</span>
+        {!isUnary && (
+          <InlineChipValue
+            rule={rule}
+            fieldDef={fieldDef}
+            onValueChange={updateRuleValue}
+          />
+        )}
+        <button
+          onClick={() => onQueryChange(removeNodeFromTree(rootQuery, rule.id))}
+          className="ml-0.5 rounded-full p-0.5 text-neutral-300 transition-colors hover:bg-neutral-100 hover:text-neutral-600 cursor-pointer"
+        >
+          <RiCloseLine size={12} />
+        </button>
+      </div>
+    );
+  }
+
+  // Recursive case: a group
+  const group = node;
+  if (group.children.length === 0) return null;
+
+  // Single-child group: skip brackets, just render the child
+  if (group.children.length === 1) {
+    return (
+      <ActiveFilterNode
+        node={group.children[0]}
+        rootQuery={rootQuery}
+        onQueryChange={onQueryChange}
+        isRoot={isRoot}
+      />
+    );
+  }
+
+  const groupContent = group.children.map((child, index) => (
+    <div key={child.id} className="flex items-center gap-1">
+      {index > 0 && (
+        <span className="text-[9px] font-bold uppercase tracking-wider text-neutral-400 mx-0.5 select-none">
+          {group.logicalOperator}
+        </span>
+      )}
+      <ActiveFilterNode
+        node={child}
+        rootQuery={rootQuery}
+        onQueryChange={onQueryChange}
+        isRoot={false}
+      />
+    </div>
+  ));
+
+  if (isRoot) {
+    return <>{groupContent}</>;
+  }
+
+  // Nested group → Visual Island
+  return (
+    <div className="flex items-center gap-1 rounded-lg border border-neutral-200/80 bg-neutral-100/60 p-0.5 shadow-sm">
+      {groupContent}
+    </div>
   );
 }
 
@@ -330,8 +421,8 @@ export function ExploreHeader({
         </div>
       )}
 
-      {/* ── ROW 2b: Advanced Filter Chips (inline-editable) ── */}
-      {advancedQuery.rules.length > 0 && (
+      {/* ── ROW 2b: Advanced Filter Chips (recursive with visual parentheses) ── */}
+      {advancedQuery.children.length > 0 && (
         <div className="mb-3 flex items-center gap-2 overflow-x-auto">
           <button
             onClick={() => { onFilterModeChange("advanced"); onFilterOpenChange(true); }}
@@ -340,52 +431,12 @@ export function ExploreHeader({
             <RiEqualizer2Line size={13} />
             Advanced
           </button>
-          {advancedQuery.rules.map((rule, index) => {
-            const fieldDef = getFieldDef(rule.field);
-            const fieldLabel = fieldDef?.label ?? rule.field;
-            const isUnary = rule.operator === "is empty" || rule.operator === "is not empty";
-
-            const updateRuleValue = (newValue: string) => {
-              onAdvancedQueryChange({
-                ...advancedQuery,
-                rules: advancedQuery.rules.map((r) =>
-                  r.id === rule.id ? { ...r, value: newValue } : r
-                ),
-              });
-            };
-
-            return (
-              <div key={rule.id} className="flex items-center gap-1.5">
-                {index > 0 && (
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-300 select-none">
-                    {advancedQuery.logicalOperator}
-                  </span>
-                )}
-                <div className="flex items-center gap-1.5 rounded-md border border-neutral-200 bg-white px-2 py-1 text-[12px] shadow-sm">
-                  <span className="font-medium text-neutral-700">{fieldLabel}</span>
-                  <span className="text-neutral-400">{rule.operator}</span>
-                  {!isUnary && (
-                    <InlineChipValue
-                      rule={rule}
-                      fieldDef={fieldDef}
-                      onValueChange={updateRuleValue}
-                    />
-                  )}
-                  <button
-                    onClick={() =>
-                      onAdvancedQueryChange({
-                        ...advancedQuery,
-                        rules: advancedQuery.rules.filter((r) => r.id !== rule.id),
-                      })
-                    }
-                    className="ml-0.5 rounded-full p-0.5 text-neutral-300 transition-colors hover:bg-neutral-100 hover:text-neutral-600 cursor-pointer"
-                  >
-                    <RiCloseLine size={12} />
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+          <ActiveFilterNode
+            node={advancedQuery}
+            rootQuery={advancedQuery}
+            onQueryChange={onAdvancedQueryChange}
+            isRoot={true}
+          />
         </div>
       )}
 

@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import {
   RiCloseLine,
   RiAddLine,
   RiArrowLeftSLine,
   RiArrowDownSLine,
+  RiParenthesesLine,
 } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +24,7 @@ import {
 } from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 
-// ── Exported Types ──
+// ── Exported Types (Recursive Tree) ──
 
 export type LogicalOperator = "AND" | "OR";
 
@@ -38,16 +39,24 @@ export type RuleOperator =
   | "is not empty";
 
 export interface FilterRule {
+  type: "rule";
   id: string;
   field: string;
   operator: RuleOperator;
   value: string;
 }
 
-export interface FilterQuery {
+export interface FilterGroup {
+  type: "group";
+  id: string;
   logicalOperator: LogicalOperator;
-  rules: FilterRule[];
+  children: FilterNode[];
 }
+
+export type FilterNode = FilterRule | FilterGroup;
+
+/** The root query IS a FilterGroup */
+export type FilterQuery = FilterGroup;
 
 // ── Field Definitions (exported for filtering engine) ──
 
@@ -90,19 +99,67 @@ export function getFieldDef(key: string): FieldDef | undefined {
   return FIELDS.find((f) => f.key === key);
 }
 
-let _ruleId = 0;
-function nextRuleId(): string {
-  return `rule-${++_ruleId}`;
+let _nodeId = 0;
+function nextNodeId(prefix: string): string {
+  return `${prefix}-${++_nodeId}`;
 }
 
 export function createBlankRule(): FilterRule {
-  return { id: nextRuleId(), field: "label", operator: "is", value: "" };
+  return { type: "rule", id: nextNodeId("rule"), field: "label", operator: "is", value: "" };
+}
+
+export function createBlankGroup(): FilterGroup {
+  return { type: "group", id: nextNodeId("group"), logicalOperator: "AND", children: [] };
 }
 
 export const DEFAULT_QUERY: FilterQuery = {
+  type: "group",
+  id: "root",
   logicalOperator: "AND",
-  rules: [],
+  children: [],
 };
+
+/** Flatten all FilterRule nodes from a recursive tree */
+export function flattenRules(node: FilterNode): FilterRule[] {
+  if (node.type === "rule") return [node];
+  return node.children.flatMap(flattenRules);
+}
+
+// ── Recursive tree update helpers ──
+
+export function updateNodeInTree(root: FilterGroup, nodeId: string, updater: (node: FilterNode) => FilterNode): FilterGroup {
+  return {
+    ...root,
+    children: root.children.map((child) => {
+      if (child.id === nodeId) return updater(child);
+      if (child.type === "group") return updateNodeInTree(child, nodeId, updater);
+      return child;
+    }),
+  };
+}
+
+export function removeNodeFromTree(root: FilterGroup, nodeId: string): FilterGroup {
+  return {
+    ...root,
+    children: root.children
+      .filter((child) => child.id !== nodeId)
+      .map((child) =>
+        child.type === "group" ? removeNodeFromTree(child, nodeId) : child
+      ),
+  };
+}
+
+function addChildToGroup(root: FilterGroup, groupId: string, newChild: FilterNode): FilterGroup {
+  if (root.id === groupId) {
+    return { ...root, children: [...root.children, newChild] };
+  }
+  return {
+    ...root,
+    children: root.children.map((child) =>
+      child.type === "group" ? addChildToGroup(child, groupId, newChild) : child
+    ),
+  };
+}
 
 // ── Sub-components ──
 
@@ -253,6 +310,180 @@ function ValueInput({
   );
 }
 
+// ── Recursive Group Renderer ──
+
+function FilterGroupNode({
+  group,
+  rootQuery,
+  onRootChange,
+  isRoot,
+}: {
+  group: FilterGroup;
+  rootQuery: FilterGroup;
+  onRootChange: (q: FilterGroup) => void;
+  isRoot: boolean;
+}) {
+  const toggleOperator = () => {
+    onRootChange(
+      updateNodeInTree(rootQuery, group.id, (n) => ({
+        ...(n as FilterGroup),
+        logicalOperator: (n as FilterGroup).logicalOperator === "AND" ? "OR" : "AND",
+      })) as FilterGroup
+    );
+  };
+
+  const handleAddRule = () => {
+    onRootChange(addChildToGroup(rootQuery, group.id, createBlankRule()));
+  };
+
+  const handleAddGroup = () => {
+    onRootChange(addChildToGroup(rootQuery, group.id, createBlankGroup()));
+  };
+
+  const handleRemoveNode = (nodeId: string) => {
+    onRootChange(removeNodeFromTree(rootQuery, nodeId));
+  };
+
+  const handleUpdateRule = (ruleId: string, patch: Partial<FilterRule>) => {
+    onRootChange(
+      updateNodeInTree(rootQuery, ruleId, (n) => ({ ...(n as FilterRule), ...patch }))
+    );
+  };
+
+  const wrapperClass = isRoot
+    ? "flex flex-col"
+    : "flex flex-col border-l-2 border-neutral-200 pl-3 ml-2 my-1 rounded-sm";
+
+  return (
+    <div className={wrapperClass}>
+      {/* Nested group header (non-root only) */}
+      {!isRoot && (
+        <div className="flex items-center justify-between py-1 pr-1">
+          <div className="flex items-center gap-1 text-[10px] text-neutral-500">
+            <span>Match</span>
+            <button
+              onClick={toggleOperator}
+              className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-bold text-neutral-700 hover:bg-neutral-200 transition-colors cursor-pointer"
+            >
+              {group.logicalOperator === "AND" ? "All" : "Any"}
+            </button>
+          </div>
+          <button
+            onClick={() => handleRemoveNode(group.id)}
+            className="h-4 w-4 shrink-0 flex items-center justify-center rounded text-neutral-300 hover:text-neutral-600 hover:bg-neutral-100 transition-all cursor-pointer"
+          >
+            <RiCloseLine className="h-3 w-3" />
+          </button>
+        </div>
+      )}
+
+      {/* Children: rules + nested groups */}
+      <div className="flex flex-col">
+        {group.children.length === 0 && isRoot && (
+          <div className="px-3 py-4 text-center text-[11px] text-neutral-400">
+            No filters applied. Add a filter below.
+          </div>
+        )}
+        {group.children.length === 0 && !isRoot && (
+          <div className="px-2 py-2 text-[10px] text-neutral-400">
+            Empty group — add a filter.
+          </div>
+        )}
+        {group.children.map((child, idx) => {
+          if (child.type === "group") {
+            return (
+              <div key={child.id} className="flex items-start gap-0.5">
+                <span className="w-8 shrink-0 pt-2 text-right text-[10px] font-medium uppercase text-neutral-300 select-none">
+                  {idx === 0 ? "Where" : group.logicalOperator === "AND" ? "and" : "or"}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <FilterGroupNode
+                    group={child}
+                    rootQuery={rootQuery}
+                    onRootChange={onRootChange}
+                    isRoot={false}
+                  />
+                </div>
+              </div>
+            );
+          }
+
+          // It's a rule
+          const rule = child;
+          const fieldDef = getFieldDef(rule.field);
+          const fieldType = fieldDef?.type ?? "text";
+          const isUnary = UNARY_OPERATORS.includes(rule.operator);
+
+          return (
+            <div
+              key={rule.id}
+              className="group flex items-center gap-0.5 rounded-md px-1 py-0.5 hover:bg-neutral-50 transition-colors"
+            >
+              <span className="w-8 shrink-0 text-right text-[10px] font-medium uppercase text-neutral-300 select-none">
+                {idx === 0 ? "Where" : group.logicalOperator === "AND" ? "and" : "or"}
+              </span>
+              <FieldPicker
+                value={rule.field}
+                onChange={(key) => {
+                  const newDef = getFieldDef(key);
+                  const newType = newDef?.type ?? "text";
+                  const newOps = OPERATORS_BY_TYPE[newType];
+                  const op = newOps.includes(rule.operator) ? rule.operator : newOps[0];
+                  handleUpdateRule(rule.id, { field: key, operator: op, value: "" });
+                }}
+              />
+              <OperatorPicker
+                fieldType={fieldType}
+                value={rule.operator}
+                onChange={(op) => {
+                  const patch: Partial<FilterRule> = { operator: op };
+                  if (UNARY_OPERATORS.includes(op)) patch.value = "";
+                  handleUpdateRule(rule.id, patch);
+                }}
+              />
+              {!isUnary && fieldDef && (
+                <ValueInput
+                  fieldDef={fieldDef}
+                  value={rule.value}
+                  onChange={(val) => handleUpdateRule(rule.id, { value: val })}
+                />
+              )}
+              <button
+                onClick={() => handleRemoveNode(rule.id)}
+                className="ml-auto h-5 w-5 shrink-0 flex items-center justify-center rounded text-neutral-300 opacity-0 group-hover:opacity-100 hover:text-neutral-600 hover:bg-neutral-100 transition-all cursor-pointer"
+              >
+                <RiCloseLine className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Footer: Add rule / Add group */}
+      <div className={`flex items-center gap-1 ${isRoot ? "border-t border-neutral-100 px-3 py-2" : "px-1 py-1"}`}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleAddRule}
+          className="h-7 gap-1 px-2 text-[11px] font-medium text-neutral-500 hover:text-neutral-900"
+        >
+          <RiAddLine className="h-3.5 w-3.5" />
+          Add filter
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleAddGroup}
+          className="h-7 gap-1 px-2 text-[11px] font-medium text-neutral-500 hover:text-neutral-900"
+        >
+          <RiParenthesesLine className="h-3.5 w-3.5" />
+          Add group
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 // ── Main Component ──
 
 interface AdvancedFilterBuilderProps {
@@ -262,38 +493,9 @@ interface AdvancedFilterBuilderProps {
 }
 
 export function AdvancedFilterBuilder({ query, onQueryChange, onSwitchToBasic }: AdvancedFilterBuilderProps) {
-  const setQuery = onQueryChange;
-
-  const updateRule = useCallback(
-    (ruleId: string, patch: Partial<FilterRule>) => {
-      setQuery({
-        ...query,
-        rules: query.rules.map((r) => (r.id === ruleId ? { ...r, ...patch } : r)),
-      });
-    },
-    [query, setQuery]
-  );
-
-  const removeRule = useCallback(
-    (ruleId: string) => {
-      setQuery({
-        ...query,
-        rules: query.rules.filter((r) => r.id !== ruleId),
-      });
-    },
-    [query, setQuery]
-  );
-
-  const addRule = useCallback(() => {
-    setQuery({
-      ...query,
-      rules: [...query.rules, createBlankRule()],
-    });
-  }, [query, setQuery]);
-
   return (
     <div className="flex flex-col">
-      {/* Header: Back + Logical Operator */}
+      {/* Header: Back + Root Logical Operator */}
       <div className="flex items-center justify-between border-b border-neutral-100 px-3 py-2">
         <button
           onClick={onSwitchToBasic}
@@ -306,7 +508,7 @@ export function AdvancedFilterBuilder({ query, onQueryChange, onSwitchToBasic }:
           <span>Match</span>
           <button
             onClick={() =>
-              setQuery({
+              onQueryChange({
                 ...query,
                 logicalOperator: query.logicalOperator === "AND" ? "OR" : "AND",
               })
@@ -319,83 +521,14 @@ export function AdvancedFilterBuilder({ query, onQueryChange, onSwitchToBasic }:
         </div>
       </div>
 
-      {/* Rules */}
-      <div className="flex flex-col px-2 py-1.5">
-        {query.rules.length === 0 && (
-          <div className="px-3 py-4 text-center text-[11px] text-neutral-400">
-            No filters applied. Add a filter below.
-          </div>
-        )}
-        {query.rules.map((rule, idx) => {
-          const fieldDef = getFieldDef(rule.field);
-          const fieldType = fieldDef?.type ?? "text";
-          const isUnary = UNARY_OPERATORS.includes(rule.operator);
-
-          return (
-            <div
-              key={rule.id}
-              className="group flex items-center gap-0.5 rounded-md px-1 py-0.5 hover:bg-neutral-50 transition-colors"
-            >
-              {/* Row connector label */}
-              <span className="w-8 shrink-0 text-right text-[10px] font-medium uppercase text-neutral-300 select-none">
-                {idx === 0 ? "Where" : query.logicalOperator === "AND" ? "and" : "or"}
-              </span>
-
-              {/* Field */}
-              <FieldPicker
-                value={rule.field}
-                onChange={(key) => {
-                  const newDef = getFieldDef(key);
-                  const newType = newDef?.type ?? "text";
-                  const newOps = OPERATORS_BY_TYPE[newType];
-                  const op = newOps.includes(rule.operator) ? rule.operator : newOps[0];
-                  updateRule(rule.id, { field: key, operator: op, value: "" });
-                }}
-              />
-
-              {/* Operator */}
-              <OperatorPicker
-                fieldType={fieldType}
-                value={rule.operator}
-                onChange={(op) => {
-                  const patch: Partial<FilterRule> = { operator: op };
-                  if (UNARY_OPERATORS.includes(op)) patch.value = "";
-                  updateRule(rule.id, patch);
-                }}
-              />
-
-              {/* Value (hidden for unary operators) */}
-              {!isUnary && fieldDef && (
-                <ValueInput
-                  fieldDef={fieldDef}
-                  value={rule.value}
-                  onChange={(val) => updateRule(rule.id, { value: val })}
-                />
-              )}
-
-              {/* Remove */}
-              <button
-                onClick={() => removeRule(rule.id)}
-                className="ml-auto h-5 w-5 shrink-0 flex items-center justify-center rounded text-neutral-300 opacity-0 group-hover:opacity-100 hover:text-neutral-600 hover:bg-neutral-100 transition-all cursor-pointer"
-              >
-                <RiCloseLine className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Footer: Add filter */}
-      <div className="border-t border-neutral-100 px-3 py-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={addRule}
-          className="h-7 gap-1 px-2 text-[11px] font-medium text-neutral-500 hover:text-neutral-900"
-        >
-          <RiAddLine className="h-3.5 w-3.5" />
-          Add filter
-        </Button>
+      {/* Recursive Group Renderer */}
+      <div className="px-2 py-1.5">
+        <FilterGroupNode
+          group={query}
+          rootQuery={query}
+          onRootChange={onQueryChange}
+          isRoot={true}
+        />
       </div>
     </div>
   );

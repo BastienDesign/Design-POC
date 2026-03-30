@@ -15,7 +15,7 @@ import { ModerationWorkspace } from "@/components/explore/moderation-workspace";
 import { EXPLORE_POSTS, EXPLORE_IMAGES } from "@/lib/mock-data";
 import type { ExplorePost } from "@/lib/mock-data";
 import { DEFAULT_QUERY, getFieldDef } from "@/components/explore/advanced-filter-builder";
-import type { FilterQuery, FilterRule } from "@/components/explore/advanced-filter-builder";
+import type { FilterQuery, FilterRule, FilterNode } from "@/components/explore/advanced-filter-builder";
 import type { FilterMode } from "@/components/explore/explore-filters-popover";
 import { DEFAULT_VISIBLE, DEFAULT_ORDER } from "@/components/explore/explore-columns";
 import type { ImageVisibleProperties } from "@/components/explore/images-view-options";
@@ -145,6 +145,14 @@ export default function ExplorePage() {
     }
   }
 
+  function evaluateNode(post: ExplorePost, node: FilterNode): boolean {
+    if (node.type === "rule") return evaluateRule(post, node);
+    if (node.children.length === 0) return true;
+    return node.logicalOperator === "AND"
+      ? node.children.every((child) => evaluateNode(post, child))
+      : node.children.some((child) => evaluateNode(post, child));
+  }
+
   // ── Filter Engine (uses deferred state for non-blocking updates) ──
   const filteredPosts = useMemo(() => {
     let result = posts;
@@ -264,15 +272,9 @@ export default function ExplorePage() {
       );
     }
 
-    // Advanced filters
-    const activeRules = deferredAdvancedQuery.rules.filter(
-      (r) => r.operator === "is empty" || r.operator === "is not empty" || r.value
-    );
-    if (activeRules.length > 0) {
-      const combine = deferredAdvancedQuery.logicalOperator === "AND"
-        ? (post: ExplorePost) => activeRules.every((r) => evaluateRule(post, r))
-        : (post: ExplorePost) => activeRules.some((r) => evaluateRule(post, r));
-      result = result.filter(combine);
+    // Advanced filters (recursive tree evaluation)
+    if (deferredAdvancedQuery.children.length > 0) {
+      result = result.filter((post) => evaluateNode(post, deferredAdvancedQuery));
     }
 
     return result;
