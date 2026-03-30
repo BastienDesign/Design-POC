@@ -13,6 +13,7 @@ import {
   RiFilter3Line,
   RiEqualizer2Line,
 } from "@remixicon/react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -40,14 +41,14 @@ export interface ActiveFilter {
   type: "search" | "filter";
   label: string;
   operator: string;
-  value: string;
+  value: string | string[];
   options?: string[];
 }
 
 interface ExploreHeaderProps {
   filters: ActiveFilter[];
   onRemoveFilter: (id: string) => void;
-  onFilterValueChange: (id: string, value: string) => void;
+  onFilterValueChange: (id: string, value: string | string[]) => void;
   searchValue: string;
   onSearchValueChange: (value: string) => void;
   onTokenizeSearch: () => void;
@@ -160,7 +161,162 @@ function InlineChipValue({
   );
 }
 
-// ── Recursive Chip Renderer (visual parentheses for nested groups) ──
+// ── Bulk Tag Editor for Search Token Chips ──
+
+function InlineSearchTokenEditor({
+  filterId,
+  value,
+  label,
+  onValueChange,
+  onRemove,
+}: {
+  filterId: string;
+  value: string | string[];
+  label: string;
+  onValueChange: (id: string, value: string | string[]) => void;
+  onRemove: (id: string) => void;
+}) {
+  const values = Array.isArray(value) ? value : [value];
+  const displayValue = values[0];
+  const extraCount = values.length - 1;
+
+  const [open, setOpen] = useState(false);
+  const [editValues, setEditValues] = useState<string[]>([]);
+  const [newValueInput, setNewValueInput] = useState("");
+
+  const handleOpen = () => {
+    setEditValues([...values]);
+    setNewValueInput("");
+  };
+
+  const handleRemoveTag = (idx: number) => {
+    setEditValues((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleAppend = () => {
+    const terms = newValueInput.split(",").map((v) => v.trim()).filter(Boolean);
+    if (terms.length === 0) return;
+    setEditValues((prev) => {
+      const next = [...prev];
+      for (const t of terms) {
+        if (!next.some((v) => v.toLowerCase() === t.toLowerCase())) {
+          next.push(t);
+        }
+      }
+      return next;
+    });
+    setNewValueInput("");
+  };
+
+  const handleSave = () => {
+    if (editValues.length === 0) {
+      onRemove(filterId);
+    } else {
+      onValueChange(filterId, editValues.length > 1 ? editValues : editValues[0]);
+    }
+    setOpen(false);
+  };
+
+  return (
+    <Popover open={open} onOpenChange={(o) => { setOpen(o); if (o) handleOpen(); }}>
+      <PopoverTrigger asChild>
+        <button className="flex items-center gap-0.5 rounded px-1 -mx-1 font-medium text-blue-600 outline-none transition-colors hover:bg-neutral-100 cursor-pointer">
+          {displayValue}
+          {extraCount > 0 && (
+            <span className="ml-0.5 rounded-sm bg-neutral-200 px-1 text-[10px] font-bold text-neutral-700">
+              +{extraCount}
+            </span>
+          )}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-72 p-0" align="start">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-neutral-100 px-3 py-2">
+          <p className="text-xs font-medium text-neutral-500">
+            {label}
+            <span className="ml-1.5 rounded-sm bg-neutral-100 px-1 py-0.5 text-[10px] font-bold text-neutral-400">
+              {editValues.length}
+            </span>
+          </p>
+          {editValues.length > 0 && (
+            <button
+              onClick={() => setEditValues([])}
+              className="text-[11px] font-medium text-red-500 hover:text-red-600 transition-colors cursor-pointer"
+            >
+              Clear all
+            </button>
+          )}
+        </div>
+
+        {/* Tag list */}
+        <div className="max-h-48 overflow-y-auto px-3 py-2">
+          {editValues.length === 0 ? (
+            <p className="py-3 text-center text-xs text-neutral-400">No values — add below or save to remove chip.</p>
+          ) : (
+            <div className="flex flex-wrap gap-1.5">
+              {editValues.map((v, idx) => (
+                <Badge
+                  key={`${v}-${idx}`}
+                  variant="secondary"
+                  className="gap-1 pr-1 text-xs font-normal"
+                >
+                  {v}
+                  <button
+                    onClick={() => handleRemoveTag(idx)}
+                    className="ml-0.5 rounded-full p-0.5 text-neutral-400 transition-colors hover:bg-neutral-200 hover:text-neutral-600 cursor-pointer"
+                  >
+                    <RiCloseLine size={12} />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Append input */}
+        <div className="border-t border-neutral-100 px-3 py-2">
+          <div className="flex gap-1.5">
+            <Input
+              autoFocus
+              value={newValueInput}
+              onChange={(e) => setNewValueInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleAppend();
+                }
+              }}
+              className="h-7 flex-1 text-xs"
+              placeholder="Add values (comma-separated)…"
+            />
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 px-2 text-xs"
+              onClick={handleAppend}
+              disabled={!newValueInput.trim()}
+            >
+              Add
+            </Button>
+          </div>
+        </div>
+
+        {/* Save */}
+        <div className="border-t border-neutral-100 px-3 py-2">
+          <Button
+            size="sm"
+            className="h-7 w-full text-xs"
+            onClick={handleSave}
+          >
+            Save Changes
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+// ── Recursive Chip Renderer (visual islands for nested groups) ──
 
 function ActiveFilterNode({
   node,
@@ -360,6 +516,8 @@ export function ExploreHeader({
           >
             {filters.map((filter) => {
               const Icon = filter.type === "search" ? RiSearchLine : RiFilter3Line;
+              const isFreeText = filter.type === "search";
+
               return (
                 <div
                   key={filter.id}
@@ -369,10 +527,18 @@ export function ExploreHeader({
                     <Icon size={14} />
                     {filter.label} {filter.operator}
                   </span>
-                  {filter.options && filter.options.length > 0 ? (
+                  {isFreeText ? (
+                    <InlineSearchTokenEditor
+                      filterId={filter.id}
+                      value={filter.value}
+                      label={filter.label}
+                      onValueChange={onFilterValueChange}
+                      onRemove={onRemoveFilter}
+                    />
+                  ) : filter.options && filter.options.length > 0 ? (
                     <DropdownMenu>
                       <DropdownMenuTrigger className="font-medium text-blue-600 hover:underline focus:outline-none">
-                        {filter.value}
+                        {Array.isArray(filter.value) ? filter.value[0] : filter.value}
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
                         {filter.options.map((opt) => (
@@ -387,7 +553,9 @@ export function ExploreHeader({
                       </DropdownMenuContent>
                     </DropdownMenu>
                   ) : (
-                    <span className="font-medium text-blue-600">{filter.value}</span>
+                    <span className="font-medium text-blue-600">
+                      {Array.isArray(filter.value) ? filter.value[0] : filter.value}
+                    </span>
                   )}
                   <button
                     onClick={() => onRemoveFilter(filter.id)}

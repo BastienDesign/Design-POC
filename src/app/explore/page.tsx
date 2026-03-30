@@ -183,36 +183,39 @@ export default function ExplorePage() {
     if (deferredFilters.length > 0) {
       result = result.filter((post) =>
         deferredFilters.every((f) => {
-          const val = f.value.toLowerCase();
-
-          // Search token chips: match against the guessed field(s)
+          // Search token chips: array values use OR (IN) logic
           if (f.type === "search") {
+            const vals = (Array.isArray(f.value) ? f.value : [f.value]).map((v) => v.toLowerCase());
+            const matchField = (fieldVal: string) => vals.some((v) => fieldVal.toLowerCase().includes(v));
+
             switch (f.label) {
               case "Post ID":
-                return post.postId.toLowerCase().includes(val) || post.id.toLowerCase().includes(val);
+                return vals.some((v) => post.postId.toLowerCase().includes(v) || post.id.toLowerCase().includes(v));
               case "ID":
-                return post.id.toLowerCase().includes(val) || post.postId.toLowerCase().includes(val);
+                return vals.some((v) => post.id.toLowerCase().includes(v) || post.postId.toLowerCase().includes(v));
               case "Website":
-                return post.websiteDomain.toLowerCase().includes(val) || post.website.toLowerCase().includes(val);
+                return vals.some((v) => post.websiteDomain.toLowerCase().includes(v) || post.website.toLowerCase().includes(v));
               case "Brand":
-                return post.listedBrand.toLowerCase().includes(val);
+                return matchField(post.listedBrand);
               case "Keyword":
               default:
-                return (
-                  post.id.toLowerCase().includes(val) ||
-                  post.postId.toLowerCase().includes(val) ||
-                  post.title.toLowerCase().includes(val) ||
-                  post.accountName.toLowerCase().includes(val) ||
-                  post.accountTag.toLowerCase().includes(val) ||
-                  post.websiteDomain.toLowerCase().includes(val) ||
-                  post.website.toLowerCase().includes(val) ||
-                  post.listedBrand.toLowerCase().includes(val) ||
-                  post.keyword.toLowerCase().includes(val) ||
-                  post.tags.some((t) => t.toLowerCase().includes(val))
+                return vals.some(
+                  (v) =>
+                    post.id.toLowerCase().includes(v) ||
+                    post.postId.toLowerCase().includes(v) ||
+                    post.title.toLowerCase().includes(v) ||
+                    post.accountName.toLowerCase().includes(v) ||
+                    post.accountTag.toLowerCase().includes(v) ||
+                    post.websiteDomain.toLowerCase().includes(v) ||
+                    post.website.toLowerCase().includes(v) ||
+                    post.listedBrand.toLowerCase().includes(v) ||
+                    post.keyword.toLowerCase().includes(v) ||
+                    post.tags.some((t) => t.toLowerCase().includes(v))
                 );
             }
           }
 
+          const val = (Array.isArray(f.value) ? f.value[0] : f.value).toLowerCase();
           switch (f.label) {
             case "Label":
               return post.labelText.toLowerCase() === val;
@@ -321,18 +324,36 @@ export default function ExplorePage() {
     if (!raw) return;
 
     const terms = raw.split(",").map((t) => t.trim()).filter(Boolean);
-    const newFilters: ActiveFilter[] = terms.map((term) => {
-      const { label, operator } = guessSearchCategory(term);
-      return {
-        id: `search-${++filterIdCounter}`,
-        type: "search" as const,
-        label,
-        operator,
-        value: term,
-      };
-    });
 
-    setFilters((prev) => [...prev, ...newFilters]);
+    setFilters((prev) => {
+      const next = [...prev];
+
+      terms.forEach((term) => {
+        const { label, operator } = guessSearchCategory(term);
+        const existingIdx = next.findIndex((f) => f.type === "search" && f.label === label);
+
+        if (existingIdx >= 0) {
+          // Merge into existing chip
+          const existing = next[existingIdx];
+          const currentValues = Array.isArray(existing.value) ? existing.value : [existing.value];
+          const lower = term.toLowerCase();
+          if (!currentValues.some((v) => v.toLowerCase() === lower)) {
+            next[existingIdx] = { ...existing, value: [...currentValues, term] };
+          }
+        } else {
+          // New chip
+          next.push({
+            id: `search-${++filterIdCounter}`,
+            type: "search" as const,
+            label,
+            operator,
+            value: term,
+          });
+        }
+      });
+
+      return next;
+    });
     setSearchValue("");
   }
 
@@ -366,7 +387,7 @@ export default function ExplorePage() {
     setSelectedRows([]);
   }
 
-  function handleFilterValueChange(id: string, value: string) {
+  function handleFilterValueChange(id: string, value: string | string[]) {
     setFilters((prev) =>
       prev.map((f) => (f.id === id ? { ...f, value } : f))
     );

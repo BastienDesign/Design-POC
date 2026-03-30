@@ -7,6 +7,7 @@ import {
   RiArrowLeftSLine,
   RiArrowDownSLine,
   RiParenthesesLine,
+  RiFilter3Line,
 } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import {
@@ -380,8 +381,23 @@ function FilterGroupNode({
       {/* Children: rules + nested groups */}
       <div className="flex flex-col">
         {group.children.length === 0 && isRoot && (
-          <div className="px-3 py-4 text-center text-[11px] text-neutral-400">
-            No filters applied. Add a filter below.
+          <div className="flex flex-col items-center justify-center py-8 text-center animate-in fade-in-50">
+            <div className="mb-3 rounded-full bg-neutral-100 p-3">
+              <RiFilter3Line className="h-5 w-5 text-neutral-500" />
+            </div>
+            <p className="mb-1 text-sm font-medium text-neutral-900">No filters applied</p>
+            <p className="mb-4 max-w-[200px] text-xs text-neutral-500">
+              Get started by adding a rule to narrow down your results.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleAddRule}
+              className="h-8 gap-1.5 bg-white text-xs"
+            >
+              <RiAddLine className="h-3 w-3" />
+              Add your first filter
+            </Button>
           </div>
         )}
         {group.children.length === 0 && !isRoot && (
