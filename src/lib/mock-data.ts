@@ -79,7 +79,7 @@ export interface Listing {
 export const LISTINGS: Listing[] = [
   {
     id: "LST-28491",
-    imageUrl: "/placeholder-product.png",
+    imageUrl: "https://picsum.photos/seed/lst28491/400/400",
     website: "fakeshop.example.com",
     status: "enforced",
     account: "seller_x92",
@@ -94,7 +94,7 @@ export const LISTINGS: Listing[] = [
   },
   {
     id: "LST-28492",
-    imageUrl: "/placeholder-product.png",
+    imageUrl: "https://picsum.photos/seed/lst28492/400/400",
     website: "brandcopy.store",
     status: "pending",
     account: "knock_off_ltd",
@@ -109,7 +109,7 @@ export const LISTINGS: Listing[] = [
   },
   {
     id: "LST-28493",
-    imageUrl: "/placeholder-product.png",
+    imageUrl: "https://picsum.photos/seed/lst28493/400/400",
     website: "cheapgoods.cn",
     status: "monitoring",
     account: "shenzhen_trade",
@@ -124,7 +124,7 @@ export const LISTINGS: Listing[] = [
   },
   {
     id: "LST-28494",
-    imageUrl: "/placeholder-product.png",
+    imageUrl: "https://picsum.photos/seed/lst28494/400/400",
     website: "replica-hub.net",
     status: "enforced",
     account: "replica_king",
@@ -139,7 +139,7 @@ export const LISTINGS: Listing[] = [
   },
   {
     id: "LST-28495",
-    imageUrl: "/placeholder-product.png",
+    imageUrl: "https://picsum.photos/seed/lst28495/400/400",
     website: "bargain-deals.co",
     status: "dismissed",
     account: "authorized_reseller",
@@ -154,7 +154,7 @@ export const LISTINGS: Listing[] = [
   },
   {
     id: "LST-28496",
-    imageUrl: "/placeholder-product.png",
+    imageUrl: "https://picsum.photos/seed/lst28496/400/400",
     website: "luxfakes.paris",
     status: "pending",
     account: "lux_imports",
@@ -169,7 +169,7 @@ export const LISTINGS: Listing[] = [
   },
   {
     id: "LST-28497",
-    imageUrl: "/placeholder-product.png",
+    imageUrl: "https://picsum.photos/seed/lst28497/400/400",
     website: "discountbrand.jp",
     status: "monitoring",
     account: "tokyo_trader",
@@ -184,7 +184,7 @@ export const LISTINGS: Listing[] = [
   },
   {
     id: "LST-28498",
-    imageUrl: "/placeholder-product.png",
+    imageUrl: "https://picsum.photos/seed/lst28498/400/400",
     website: "knockoffs-r-us.com",
     status: "enforced",
     account: "quick_deals",
@@ -556,7 +556,7 @@ function generatePostMedia(keyword: string, seed: number, postIndex: number): Po
         return {
           id: `IMG-${fid}`,
           type: "image" as const,
-          url: `https://loremflickr.com/400/400/${keyword}?lock=${fid}`,
+          url: `https://picsum.photos/seed/${keyword}${fid}/400/400`,
           label: MEDIA_LABELS[Math.floor(seededRandom(seed + fi * 7 + 70) * 4)],
         };
       });
@@ -572,7 +572,7 @@ function generatePostMedia(keyword: string, seed: number, postIndex: number): Po
       items.push({
         id: `IMG-${id}`,
         type: "image",
-        url: `https://loremflickr.com/400/400/${keyword}?lock=${id}`,
+        url: `https://picsum.photos/seed/${keyword}${id}/400/400`,
         label: MEDIA_LABELS[labelIdx],
       });
     }

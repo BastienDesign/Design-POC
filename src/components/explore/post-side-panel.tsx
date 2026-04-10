@@ -32,6 +32,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import type { ExplorePost, PostMedia } from "@/lib/mock-data";
+import { ImageWithFallback } from "./image-with-fallback";
 
 interface PostSidePanelProps {
   post: ExplorePost | null;
@@ -222,18 +223,12 @@ export function PostSidePanel({
               <HoverCard openDelay={100} closeDelay={100}>
                 <HoverCardTrigger asChild>
                   <div className="group relative h-[180px] w-full cursor-zoom-in overflow-hidden rounded-md border border-neutral-200 bg-neutral-100">
-                    {displayMedia.url ? (
-                      <img
-                        key={displayMedia.id}
-                        src={displayMedia.url}
-                        alt={post.title}
-                        className="h-full w-full object-cover transition-all duration-200 group-hover:opacity-80"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-sm text-neutral-400">
-                        No image
-                      </div>
-                    )}
+                    <ImageWithFallback
+                      src={displayMedia.url}
+                      alt={post.title}
+                      className="h-full w-full object-cover transition-all duration-200 group-hover:opacity-80"
+                      fallbackClassName="h-full w-full"
+                    />
                     {/* Frame indicator badge */}
                     {activeFrame && (
                       <div className="absolute top-2 left-2 flex items-center gap-1.5 rounded-full bg-neutral-900/80 px-2.5 py-1 backdrop-blur-sm">
@@ -251,18 +246,12 @@ export function PostSidePanel({
                   sideOffset={24}
                   className="z-[100] h-[450px] w-[450px] overflow-hidden rounded-xl border border-neutral-200 bg-white p-0 shadow-2xl"
                 >
-                  {displayMedia.url ? (
-                    <img
-                      key={displayMedia.id}
-                      src={displayMedia.url}
-                      alt={post.title}
-                      className="h-full w-full object-contain"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-neutral-100 text-sm text-neutral-400">
-                      No image
-                    </div>
-                  )}
+                  <ImageWithFallback
+                    src={displayMedia.url}
+                    alt={post.title}
+                    className="h-full w-full object-contain"
+                    fallbackClassName="h-full w-full"
+                  />
                 </HoverCardContent>
               </HoverCard>
             )}
@@ -288,10 +277,11 @@ export function PostSidePanel({
                         onClick={() => handleSelectFrame(frame)}
                         className="group/frame relative h-11 w-11 shrink-0 cursor-pointer overflow-hidden rounded-md border border-neutral-700 bg-neutral-800 transition-all duration-150 hover:border-neutral-500"
                       >
-                        <img
+                        <ImageWithFallback
                           src={frame.url}
                           alt={frame.id}
                           className="h-full w-full object-cover"
+                          fallbackClassName="h-full w-full"
                         />
                         <div className={`absolute bottom-0.5 right-0.5 h-2 w-2 rounded-full ring-1 ring-neutral-900 ${dotColor}`} />
                       </div>
@@ -332,10 +322,11 @@ export function PostSidePanel({
                         <RiPlayFill className="h-3.5 w-3.5 text-white" />
                       </div>
                     ) : (
-                      <img
+                      <ImageWithFallback
                         src={m.url}
                         alt={m.id}
                         className="h-full w-full object-cover"
+                        fallbackClassName="h-full w-full"
                       />
                     )}
                     {/* Label dot indicator */}
@@ -404,7 +395,7 @@ export function PostSidePanel({
                     <span className="text-xs font-mono text-neutral-900">{post.price}</span>
                   </div>
                   <p className="text-[10px] leading-tight text-neutral-500">
-                    {post.pricePct} of market average. Volume sold: {post.volumeSold.toLocaleString()} units.
+                    {post.pricePct} of market average. Volume sold: {post.volumeSold.toLocaleString("en-US")} units.
                   </p>
                 </div>
               </div>

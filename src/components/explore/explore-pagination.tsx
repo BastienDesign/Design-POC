@@ -50,7 +50,7 @@ export function ExplorePagination() {
           className="h-7 w-12 text-center text-xs"
         />
         <span className="text-xs text-muted-foreground">
-          of {totalPages.toLocaleString()}
+          of {totalPages.toLocaleString("en-US")}
         </span>
         <Button
           variant="outline"

@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import type { ExplorePost, LabelType, MediaLabel, PostMedia } from "@/lib/mock-data";
+import { ImageWithFallback } from "./image-with-fallback";
 import { VERDICT_OPTIONS, VERDICT_TRIGGER_STYLE } from "./verdict-options";
 
 const LABEL_COLORS: Record<string, string> = {
@@ -139,7 +140,7 @@ function getAiInsights(item: ExplorePost): AiInsights {
 
   // Volume sold spike
   if (item.volumeSold >= 500) {
-    tiles.push({ key: "highVolume", level: "medium", label: "High Volume", desc: `${item.volumeSold.toLocaleString()} units sold`, icon: RiErrorWarningFill });
+    tiles.push({ key: "highVolume", level: "medium", label: "High Volume", desc: `${item.volumeSold.toLocaleString("en-US")} units sold`, icon: RiErrorWarningFill });
   }
 
   // Sort by severity (high → medium → low)
@@ -419,11 +420,12 @@ export function ModerationWorkspace({
                   )}
                 </video>
               ) : displayMedia.url ? (
-                <img
+                <ImageWithFallback
                   key={displayMedia.id}
                   src={displayMedia.url}
                   className="w-full h-full object-contain transition-all duration-200"
                   alt={currentItem.title}
+                  fallbackClassName="w-full h-full"
                 />
               ) : (
                 <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-neutral-500">
@@ -529,10 +531,11 @@ export function ModerationWorkspace({
                           : "border border-neutral-700 hover:border-neutral-500"
                       }`}
                     >
-                      <img
+                      <ImageWithFallback
                         src={frame.url}
                         alt={frame.id}
                         className="h-full w-full object-cover"
+                        fallbackClassName="h-full w-full"
                       />
                       <div className={`absolute bottom-0.5 right-0.5 h-2 w-2 rounded-full ring-1 ring-neutral-900 ${fdot}`} />
                     </div>
@@ -562,10 +565,11 @@ export function ModerationWorkspace({
                       <RiPlayFill className="h-5 w-5 text-white" />
                     </div>
                   ) : (
-                    <img
+                    <ImageWithFallback
                       src={m.url}
                       alt={m.id}
                       className="h-full w-full object-cover"
+                      fallbackClassName="h-full w-full"
                     />
                   )}
                   <div className={`absolute bottom-1 right-1 h-2 w-2 rounded-full ring-1 ring-white ${mdot}`} />
@@ -837,7 +841,7 @@ export function ModerationWorkspace({
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-bold text-neutral-400 uppercase">Volume Sold</span>
-                      <span className="text-sm text-neutral-700">{currentItem.volumeSold.toLocaleString()}</span>
+                      <span className="text-sm text-neutral-700">{currentItem.volumeSold.toLocaleString("en-US")}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-bold text-neutral-400 uppercase">Validation</span>

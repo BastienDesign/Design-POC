@@ -33,6 +33,16 @@ function guessSearchCategory(term: string): { label: string; operator: string } 
   return { label: "Keyword", operator: "contains" };
 }
 
+function invertOperator(operator: string): string {
+  switch (operator) {
+    case "is": return "is not";
+    case "is not": return "is";
+    case "contains": return "does not contain";
+    case "does not contain": return "contains";
+    default: return "is not";
+  }
+}
+
 const DEFAULT_IMAGE_PROPERTIES: ImageVisibleProperties = {
   imageId: true,
   postsCount: true,
@@ -183,94 +193,108 @@ export default function ExplorePage() {
     if (deferredFilters.length > 0) {
       result = result.filter((post) =>
         deferredFilters.every((f) => {
-          // Search token chips: array values use OR (IN) logic
+          // Search token chips: array values use OR (IN) logic, with negation support
           if (f.type === "search") {
             const vals = (Array.isArray(f.value) ? f.value : [f.value]).map((v) => v.toLowerCase());
-            const matchField = (fieldVal: string) => vals.some((v) => fieldVal.toLowerCase().includes(v));
+            const negateSearch = f.operator === "is not" || f.operator === "does not contain";
 
-            switch (f.label) {
-              case "Post ID":
-                return vals.some((v) => post.postId.toLowerCase().includes(v) || post.id.toLowerCase().includes(v));
-              case "ID":
-                return vals.some((v) => post.id.toLowerCase().includes(v) || post.postId.toLowerCase().includes(v));
-              case "Website":
-                return vals.some((v) => post.websiteDomain.toLowerCase().includes(v) || post.website.toLowerCase().includes(v));
-              case "Brand":
-                return matchField(post.listedBrand);
-              case "Keyword":
-              default:
-                return vals.some(
-                  (v) =>
-                    post.id.toLowerCase().includes(v) ||
-                    post.postId.toLowerCase().includes(v) ||
-                    post.title.toLowerCase().includes(v) ||
-                    post.accountName.toLowerCase().includes(v) ||
-                    post.accountTag.toLowerCase().includes(v) ||
-                    post.websiteDomain.toLowerCase().includes(v) ||
-                    post.website.toLowerCase().includes(v) ||
-                    post.listedBrand.toLowerCase().includes(v) ||
-                    post.keyword.toLowerCase().includes(v) ||
-                    post.tags.some((t) => t.toLowerCase().includes(v))
-                );
-            }
+            const matchSearch = (): boolean => {
+              const matchField = (fieldVal: string) => vals.some((v) => fieldVal.toLowerCase().includes(v));
+
+              switch (f.label) {
+                case "Post ID":
+                  return vals.some((v) => post.postId.toLowerCase().includes(v) || post.id.toLowerCase().includes(v));
+                case "ID":
+                  return vals.some((v) => post.id.toLowerCase().includes(v) || post.postId.toLowerCase().includes(v));
+                case "Website":
+                  return vals.some((v) => post.websiteDomain.toLowerCase().includes(v) || post.website.toLowerCase().includes(v));
+                case "Brand":
+                  return matchField(post.listedBrand);
+                case "Keyword":
+                default:
+                  return vals.some(
+                    (v) =>
+                      post.id.toLowerCase().includes(v) ||
+                      post.postId.toLowerCase().includes(v) ||
+                      post.title.toLowerCase().includes(v) ||
+                      post.accountName.toLowerCase().includes(v) ||
+                      post.accountTag.toLowerCase().includes(v) ||
+                      post.websiteDomain.toLowerCase().includes(v) ||
+                      post.website.toLowerCase().includes(v) ||
+                      post.listedBrand.toLowerCase().includes(v) ||
+                      post.keyword.toLowerCase().includes(v) ||
+                      post.tags.some((t) => t.toLowerCase().includes(v))
+                  );
+              }
+            };
+
+            const matched = matchSearch();
+            return negateSearch ? !matched : matched;
           }
 
           const val = (Array.isArray(f.value) ? f.value[0] : f.value).toLowerCase();
-          switch (f.label) {
-            case "Label":
-              return post.labelText.toLowerCase() === val;
-            case "Moderation status":
-            case "Moderation Method":
-              return true;
-            case "Takedown status":
-              return true;
-            case "Date":
-            case "Crawling date":
-              return true;
-            case "Price": {
-              const numPrice = parseFloat(post.price.replace(/[^0-9.]/g, ""));
-              if (val.includes("under 50")) return numPrice < 50;
-              if (val.includes("50")) return numPrice >= 50 && numPrice <= 200;
-              if (val.includes("200")) return numPrice >= 200 && numPrice <= 500;
-              if (val.includes("over 500")) return numPrice > 500;
-              return true;
+          const negate = f.operator === "is not";
+
+          const matchBasic = (): boolean => {
+            switch (f.label) {
+              case "Label":
+                return post.labelText.toLowerCase() === val;
+              case "Moderation status":
+              case "Moderation Method":
+                return true;
+              case "Takedown status":
+                return true;
+              case "Date":
+              case "Crawling date":
+                return true;
+              case "Price": {
+                const numPrice = parseFloat(post.price.replace(/[^0-9.]/g, ""));
+                if (val.includes("under 50")) return numPrice < 50;
+                if (val.includes("50")) return numPrice >= 50 && numPrice <= 200;
+                if (val.includes("200")) return numPrice >= 200 && numPrice <= 500;
+                if (val.includes("over 500")) return numPrice > 500;
+                return true;
+              }
+              case "Stock":
+                return post.stock.toLowerCase() === val;
+              case "Items in Bundle": {
+                if (val === "single") return post.bundleItems === 1;
+                if (val.includes("2")) return post.bundleItems >= 2 && post.bundleItems <= 5;
+                if (val.includes("6")) return post.bundleItems >= 6 && post.bundleItems <= 10;
+                if (val.includes("10+")) return post.bundleItems > 10;
+                return true;
+              }
+              case "Product Category":
+                return post.productCategory.toLowerCase() === val;
+              case "Estimated Geo":
+                return val === "all regions" || post.platformGeo.toLowerCase().includes(val);
+              case "Channel":
+                return post.websiteCategory.toLowerCase().includes(val);
+              case "Account":
+                return post.accountTag.toLowerCase().includes(val) || post.accountTagType.toLowerCase().includes(val);
+              case "Risk Score": {
+                const s = post.impactScore;
+                if (val.includes("critical")) return s >= 90;
+                if (val.includes("high")) return s >= 70 && s < 90;
+                if (val.includes("medium")) return s >= 40 && s < 70;
+                if (val.includes("low")) return s < 40;
+                return true;
+              }
+              case "Image Reasons":
+                return val === "none"
+                  ? !post.imageReasons
+                  : (post.imageReasons ?? "").toLowerCase().includes(val);
+              case "Enforcement":
+              case "Tags":
+              case "Contact Info":
+                return true;
+              default:
+                return true;
             }
-            case "Stock":
-              return post.stock.toLowerCase() === val;
-            case "Items in Bundle": {
-              if (val === "single") return post.bundleItems === 1;
-              if (val.includes("2")) return post.bundleItems >= 2 && post.bundleItems <= 5;
-              if (val.includes("6")) return post.bundleItems >= 6 && post.bundleItems <= 10;
-              if (val.includes("10+")) return post.bundleItems > 10;
-              return true;
-            }
-            case "Product Category":
-              return post.productCategory.toLowerCase() === val;
-            case "Estimated Geo":
-              return val === "all regions" || post.platformGeo.toLowerCase().includes(val);
-            case "Channel":
-              return post.websiteCategory.toLowerCase().includes(val);
-            case "Account":
-              return post.accountTag.toLowerCase().includes(val) || post.accountTagType.toLowerCase().includes(val);
-            case "Risk Score": {
-              const s = post.impactScore;
-              if (val.includes("critical")) return s >= 90;
-              if (val.includes("high")) return s >= 70 && s < 90;
-              if (val.includes("medium")) return s >= 40 && s < 70;
-              if (val.includes("low")) return s < 40;
-              return true;
-            }
-            case "Image Reasons":
-              return val === "none"
-                ? !post.imageReasons
-                : (post.imageReasons ?? "").toLowerCase().includes(val);
-            case "Enforcement":
-            case "Tags":
-            case "Contact Info":
-              return true;
-            default:
-              return true;
-          }
+          };
+
+          const result = matchBasic();
+          return negate ? !result : result;
         })
       );
     }
@@ -328,26 +352,37 @@ export default function ExplorePage() {
     setFilters((prev) => {
       const next = [...prev];
 
-      terms.forEach((term) => {
-        const { label, operator } = guessSearchCategory(term);
-        const existingIdx = next.findIndex((f) => f.type === "search" && f.label === label);
+      terms.forEach((rawTerm) => {
+        // Parse exclusion prefix
+        let isExclusion = false;
+        let cleanTerm = rawTerm;
+        if (rawTerm.startsWith("-") && rawTerm.length > 1) {
+          isExclusion = true;
+          cleanTerm = rawTerm.substring(1).trim();
+        }
+
+        const { label, operator } = guessSearchCategory(cleanTerm);
+        const finalOperator = isExclusion ? invertOperator(operator) : operator;
+
+        // Merge only when label AND operator match
+        const existingIdx = next.findIndex(
+          (f) => f.type === "search" && f.label === label && f.operator === finalOperator
+        );
 
         if (existingIdx >= 0) {
-          // Merge into existing chip
           const existing = next[existingIdx];
           const currentValues = Array.isArray(existing.value) ? existing.value : [existing.value];
-          const lower = term.toLowerCase();
+          const lower = cleanTerm.toLowerCase();
           if (!currentValues.some((v) => v.toLowerCase() === lower)) {
-            next[existingIdx] = { ...existing, value: [...currentValues, term] };
+            next[existingIdx] = { ...existing, value: [...currentValues, cleanTerm] };
           }
         } else {
-          // New chip
           next.push({
             id: `search-${++filterIdCounter}`,
             type: "search" as const,
             label,
-            operator,
-            value: term,
+            operator: finalOperator,
+            value: cleanTerm,
           });
         }
       });
@@ -393,13 +428,13 @@ export default function ExplorePage() {
     );
   }
 
-  function handleSelectFilter(label: string, value: string, options: string[]) {
+  function handleSelectFilter(label: string, value: string, options: string[], operator: string) {
     // If a filter with the same label exists, update its value instead of duplicating
     setFilters((prev) => {
       const existing = prev.find((f) => f.type === "filter" && f.label === label);
       if (existing) {
         return prev.map((f) =>
-          f.id === existing.id ? { ...f, value } : f
+          f.id === existing.id ? { ...f, value, operator } : f
         );
       }
       return [
@@ -408,11 +443,60 @@ export default function ExplorePage() {
           id: `filter-${++filterIdCounter}`,
           type: "filter" as const,
           label,
-          operator: "is",
+          operator,
           value,
           options,
         },
       ];
+    });
+  }
+
+  function handleFilterOperatorChange(id: string, currentOperator: string) {
+    const newOperator = invertOperator(currentOperator);
+
+    setFilters((prev) => {
+      const sourceIdx = prev.findIndex((f) => f.id === id);
+      if (sourceIdx === -1) return prev;
+
+      const source = prev[sourceIdx];
+
+      // Look for a collision: same type, label, and target operator
+      const targetIdx = prev.findIndex(
+        (f) =>
+          f.id !== id &&
+          f.type === source.type &&
+          f.label === source.label &&
+          f.operator === newOperator
+      );
+
+      if (targetIdx >= 0) {
+        // Collision: merge values into target, remove source
+        const target = prev[targetIdx];
+        const sourceValues = Array.isArray(source.value) ? source.value : [source.value];
+        const targetValues = Array.isArray(target.value) ? target.value : [target.value];
+
+        const seen = new Set<string>();
+        const merged: string[] = [];
+        for (const v of [...targetValues, ...sourceValues]) {
+          const key = v.toLowerCase();
+          if (!seen.has(key)) {
+            seen.add(key);
+            merged.push(v);
+          }
+        }
+
+        const next = prev.filter((f) => f.id !== id);
+        return next.map((f) =>
+          f.id === target.id
+            ? { ...f, value: merged.length > 1 ? merged : merged[0] }
+            : f
+        );
+      }
+
+      // No collision: just flip the operator
+      return prev.map((f) =>
+        f.id === id ? { ...f, operator: newOperator } : f
+      );
     });
   }
 
@@ -479,6 +563,7 @@ export default function ExplorePage() {
           onSearchValueChange={setSearchValue}
           onTokenizeSearch={handleTokenizeSearch}
           onSelectFilter={handleSelectFilter}
+          onFilterOperatorChange={handleFilterOperatorChange}
           activeTab={activeTab}
           onTabChange={setActiveTab}
           tabCounts={tabCounts}

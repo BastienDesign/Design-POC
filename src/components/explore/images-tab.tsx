@@ -205,17 +205,17 @@ function ListView({
                 )}
                 {visibleProperties.postsCount && (
                   <TableCell className="px-3 text-[13px] text-foreground tabular-nums">
-                    {img.postsCount.toLocaleString()}
+                    {img.postsCount.toLocaleString("en-US")}
                   </TableCell>
                 )}
                 {visibleProperties.accountsCount && (
                   <TableCell className="px-3 text-[13px] text-foreground tabular-nums">
-                    {img.accountsCount.toLocaleString()}
+                    {img.accountsCount.toLocaleString("en-US")}
                   </TableCell>
                 )}
                 {visibleProperties.websitesCount && (
                   <TableCell className="px-3 text-[13px] text-foreground tabular-nums">
-                    {img.websitesCount.toLocaleString()}
+                    {img.websitesCount.toLocaleString("en-US")}
                   </TableCell>
                 )}
                 {visibleProperties.label && (

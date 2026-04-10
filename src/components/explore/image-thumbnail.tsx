@@ -1,6 +1,7 @@
 "use client";
 
 import { RiInformationLine } from "@remixicon/react";
+import { ImageWithFallback } from "./image-with-fallback";
 import {
   HoverCard,
   HoverCardContent,
@@ -21,11 +22,12 @@ export function ImageThumbnail({ src, alt, id }: ImageThumbnailProps) {
     <HoverCard openDelay={200} closeDelay={100}>
       <HoverCardTrigger asChild>
         <div className="w-10 h-10 mx-auto rounded-md bg-neutral-100 border border-neutral-200 overflow-hidden shrink-0 cursor-crosshair hover:border-neutral-900 transition-colors flex items-center justify-center">
-          {hasImage ? (
-            <img src={src} alt={alt} className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-neutral-100 to-neutral-200" />
-          )}
+          <ImageWithFallback
+            src={hasImage ? src : undefined}
+            alt={alt}
+            className="w-full h-full object-cover"
+            fallbackClassName="w-full h-full"
+          />
         </div>
       </HoverCardTrigger>
 
@@ -38,17 +40,12 @@ export function ImageThumbnail({ src, alt, id }: ImageThumbnailProps) {
       >
         <div className="flex flex-col">
           <div className="w-full max-h-[50vh] flex items-center justify-center bg-neutral-50 p-2">
-            {hasImage ? (
-              <img
-                src={src}
-                alt={alt}
-                className="max-w-full max-h-[50vh] object-contain"
-              />
-            ) : (
-              <div className="flex items-center justify-center w-[380px] h-[300px]">
-                <span className="text-sm text-neutral-400">No image available</span>
-              </div>
-            )}
+            <ImageWithFallback
+              src={hasImage ? src : undefined}
+              alt={alt}
+              className="max-w-full max-h-[50vh] object-contain"
+              fallbackClassName="w-[380px] h-[300px]"
+            />
           </div>
 
           <div className="flex items-center justify-between gap-3 px-3 py-2 border-t border-neutral-100 shrink-0">

@@ -544,7 +544,7 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
       );
 
     case "volume":
-      return <span className="text-[13px] font-medium text-foreground">{post.volumeSold.toLocaleString()}</span>;
+      return <span className="text-[13px] font-medium text-foreground">{post.volumeSold.toLocaleString("en-US")}</span>;
 
     case "imgReasons":
       return post.imageReasons ? (

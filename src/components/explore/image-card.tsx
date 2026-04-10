@@ -8,6 +8,7 @@ import {
 } from "@remixicon/react";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { ExploreImage } from "@/lib/mock-data";
+import { ImageWithFallback } from "./image-with-fallback";
 import type { ImageVisibleProperties } from "./images-view-options";
 
 const LABEL_DOT: Record<string, string> = {
@@ -34,17 +35,17 @@ export function ImageCard({
   const metrics = [
     visibleProperties.postsCount && {
       icon: RiFileTextLine,
-      value: image.postsCount.toLocaleString(),
+      value: image.postsCount.toLocaleString("en-US"),
       label: "Posts",
     },
     visibleProperties.accountsCount && {
       icon: RiUserLine,
-      value: image.accountsCount.toLocaleString(),
+      value: image.accountsCount.toLocaleString("en-US"),
       label: "Accounts",
     },
     visibleProperties.websitesCount && {
       icon: RiGlobalLine,
-      value: image.websitesCount.toLocaleString(),
+      value: image.websitesCount.toLocaleString("en-US"),
       label: "Websites",
     },
   ].filter(Boolean) as { icon: typeof RiFileTextLine; value: string; label: string }[];
@@ -64,10 +65,11 @@ export function ImageCard({
     >
       {/* Image area with overlays */}
       <div className="relative aspect-square overflow-hidden bg-neutral-100 border-b border-neutral-100">
-        <img
+        <ImageWithFallback
           src={image.thumbnailUrl}
           alt={image.imageId}
           className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+          fallbackClassName="h-full w-full"
         />
 
         {/* Checkbox Overlay (Top Left) */}

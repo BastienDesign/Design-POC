@@ -29,7 +29,19 @@ export function Topbar() {
   const pathname = usePathname();
   const [activeOrg, setActiveOrg] = useState<string>(SUB_ORGANIZATIONS[0].id);
 
-  const segments = BREADCRUMBS[pathname] ?? ["Dashboard"];
+  // Dynamic breadcrumbs for entity routes
+  const SEGMENT_HREFS: Record<string, string> = {
+    Explore: "/explore",
+    Websites: "/explore",
+  };
+
+  let segments: string[];
+  if (pathname.startsWith("/website/")) {
+    const id = decodeURIComponent(pathname.split("/website/")[1] || "");
+    segments = ["Explore", "Websites", id];
+  } else {
+    segments = BREADCRUMBS[pathname] ?? ["Dashboard"];
+  }
   const selectedOrg = SUB_ORGANIZATIONS.find((o) => o.id === activeOrg) ?? SUB_ORGANIZATIONS[0];
 
   return (
@@ -61,7 +73,7 @@ export function Topbar() {
                           {segment}
                         </BreadcrumbPage>
                       ) : (
-                        <BreadcrumbLink href="#" className="text-[14px] text-neutral-500 hover:text-neutral-900 transition-colors">
+                        <BreadcrumbLink href={SEGMENT_HREFS[segment] ?? "#"} className="text-[14px] text-neutral-500 hover:text-neutral-900 transition-colors">
                           {segment}
                         </BreadcrumbLink>
                       )}
@@ -99,7 +111,7 @@ export function Topbar() {
                 </span>
                 {org.count !== null && (
                   <span className="tabular-nums text-neutral-400">
-                    {org.count.toLocaleString()}
+                    {org.count.toLocaleString("en-US")}
                   </span>
                 )}
               </DropdownMenuItem>

@@ -71,20 +71,40 @@ export interface FieldDef {
 }
 
 export const FIELDS: FieldDef[] = [
-  { key: "label", label: "Label", type: "enum", options: ["Legitimate", "Suspicious", "Counterfeit", "Unlabeled"] },
-  { key: "moderation_status", label: "Moderation Status", type: "enum", options: ["Un-moderated", "Moderated", "Checked", "Validated"] },
-  { key: "takedown_status", label: "Takedown Status", type: "enum", options: ["Pending", "Success", "Failed", "Not Requested"] },
-  { key: "product_category", label: "Product Category", type: "enum", options: ["Handbags", "Watches", "Electronics", "Footwear", "Fragrances", "Accessories", "Apparel"] },
-  { key: "channel", label: "Channel", type: "enum", options: ["Marketplace", "Social Commerce", "Independent Store", "Authorized Dealer"] },
-  { key: "enforcement", label: "Enforcement", type: "enum", options: ["DMCA Filed", "C&D Sent", "Platform Report", "No Action"] },
-  { key: "account", label: "Account", type: "enum", options: ["Known Offender", "New Seller", "Verified", "Unknown"] },
-  { key: "stock", label: "Stock", type: "enum", options: ["In Stock", "Low Stock", "Out of Stock"] },
-  { key: "impact_score", label: "Impact Score", type: "number" },
-  { key: "price", label: "Price", type: "number" },
+  // Classification & Risk
+  { key: "label", label: "Label", type: "enum", options: ["All Infringements", "Adult Content", "Branded Packaging", "Copyright Infringement", "Counterfeit", "Design Infringement", "Grey Market", "Infringement Non-Commercial"] },
+  { key: "reasons", label: "Reasons", type: "enum", options: ["Obvious counterfeit", "Highly suspicious", "Suspicious"] },
   { key: "risk_score", label: "Risk Score", type: "number" },
-  { key: "geo", label: "Estimated Geo", type: "text" },
+  { key: "insight", label: "Insight", type: "enum", options: ["New Listing", "Price Drop", "Repeat Offender", "Trending"] },
   { key: "tags", label: "Tags", type: "text" },
-  { key: "contact_info", label: "Contact Info", type: "enum", options: ["Available", "Missing", "Invalid"] },
+
+  // Product & Commerce
+  { key: "product_category", label: "Product Category", type: "enum", options: ["Accessories", "Bag Wallet", "Clothing", "Cosmetics", "Entertainment", "Jewelry", "Luggage", "Shoe", "Others"] },
+  { key: "product_line", label: "Product Line", type: "text" },
+  { key: "product_name", label: "Product Name", type: "text" },
+  { key: "product_identifier", label: "Product Identifier", type: "text" },
+  { key: "price", label: "Price", type: "number" },
+  { key: "stock", label: "Stock", type: "number" },
+  { key: "bundle", label: "Items in Bundle", type: "number" },
+
+  // Source & Network
+  { key: "channel", label: "Channel", type: "enum", options: ["Social Media", "Marketplace", "Ecommerce", "Ads", "News & Blogs"] },
+  { key: "website", label: "Website", type: "text" },
+  { key: "contact_info", label: "Contact Info", type: "enum", options: ["Phone Number", "Email Address", "WeChat", "WhatsApp", "Facebook", "Instagram", "Telegram", "Line", "Zalo"] },
+  { key: "followers", label: "Followers", type: "number" },
+  { key: "geo_ships_to", label: "Estimated Geo (Ships To)", type: "enum", options: ["United States", "United Kingdom", "Germany", "France", "China", "Japan", "South Korea", "Brazil", "Italy", "Spain"] },
+  { key: "geo_ships_from", label: "Estimated Geo (Ships From)", type: "enum", options: ["United States", "United Kingdom", "Germany", "France", "China", "Japan", "South Korea", "Brazil", "Italy", "Spain"] },
+
+  // Operations & Enforcement
+  { key: "takedown_post", label: "Takedown Status (Post)", type: "enum", options: ["Pending", "Removed", "Failed", "Ignored"] },
+  { key: "takedown_account", label: "Takedown Status (Account)", type: "enum", options: ["Pending", "Removed", "Failed", "Ignored"] },
+  { key: "takedown_website", label: "Takedown Status (Website)", type: "enum", options: ["Pending", "Removed", "Failed", "Ignored"] },
+  { key: "enforcement_ip", label: "Enforcement IP Asset", type: "text" },
+  { key: "validation_errors", label: "Validation Errors", type: "text" },
+  { key: "enforcement_status", label: "Enforcement Status", type: "text" },
+  { key: "moderation_method", label: "Moderation Method", type: "enum", options: ["Automated", "Manual"] },
+  { key: "search_rank", label: "Highest Rank in Search", type: "number" },
+  { key: "users", label: "Users", type: "text" },
 ];
 
 const OPERATORS_BY_TYPE: Record<FieldType, RuleOperator[]> = {

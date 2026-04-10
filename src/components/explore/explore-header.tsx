@@ -18,6 +18,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -30,8 +36,8 @@ import {
 } from "@/components/ui/popover";
 import { ExploreFiltersMenu } from "./explore-filters-popover";
 import type { FilterMode } from "./explore-filters-popover";
-import type { FilterQuery, FilterRule, FilterNode, FieldDef } from "./advanced-filter-builder";
-import { getFieldDef, updateNodeInTree, removeNodeFromTree } from "./advanced-filter-builder";
+import type { FilterQuery, FilterNode } from "./advanced-filter-builder";
+import { DEFAULT_QUERY } from "./advanced-filter-builder";
 import { ExploreViewOptions } from "./explore-view-options";
 import { ImagesViewOptions } from "./images-view-options";
 import type { ImageVisibleProperties } from "./images-view-options";
@@ -52,7 +58,8 @@ interface ExploreHeaderProps {
   searchValue: string;
   onSearchValueChange: (value: string) => void;
   onTokenizeSearch: () => void;
-  onSelectFilter: (label: string, value: string, options: string[]) => void;
+  onSelectFilter: (label: string, value: string, options: string[], operator: string) => void;
+  onFilterOperatorChange: (id: string, operator: string) => void;
   activeTab: string;
   onTabChange: (tab: string) => void;
   tabCounts: Record<string, number>;
@@ -79,86 +86,11 @@ interface ExploreHeaderProps {
   onResetAll: () => void;
 }
 
-// ── Inline Chip Value Editor ──
+// ── Rule Counter for Advanced Query Summary ──
 
-function InlineChipValue({
-  rule,
-  fieldDef,
-  onValueChange,
-}: {
-  rule: FilterRule;
-  fieldDef: FieldDef | undefined;
-  onValueChange: (val: string) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const [draft, setDraft] = useState(rule.value);
-
-  const displayValue = rule.value || "Select…";
-  const isEnum = fieldDef?.type === "enum" && fieldDef.options;
-
-  if (isEnum) {
-    return (
-      <DropdownMenu open={open} onOpenChange={setOpen}>
-        <DropdownMenuTrigger asChild>
-          <button className="flex items-center gap-0.5 font-semibold text-neutral-900 hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap">
-            {displayValue}
-            <RiArrowDownSLine size={12} className="text-neutral-400" />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-[180px] rounded-lg p-1 shadow-md">
-          {fieldDef.options!.map((opt) => (
-            <DropdownMenuItem
-              key={opt}
-              className="cursor-pointer text-[12px]"
-              onSelect={() => {
-                onValueChange(opt);
-                setOpen(false);
-              }}
-            >
-              {opt}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    );
-  }
-
-  // Text / Number: Popover with Input
-  return (
-    <Popover
-      open={open}
-      onOpenChange={(o) => {
-        setOpen(o);
-        if (!o && draft !== rule.value) onValueChange(draft);
-      }}
-    >
-      <PopoverTrigger asChild>
-        <button
-          onClick={() => setDraft(rule.value)}
-          className="flex items-center gap-0.5 font-semibold text-neutral-900 hover:text-blue-600 transition-colors cursor-pointer whitespace-nowrap"
-        >
-          {displayValue}
-          <RiArrowDownSLine size={12} className="text-neutral-400" />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent align="start" className="w-[200px] p-2">
-        <Input
-          autoFocus
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              onValueChange(draft);
-              setOpen(false);
-            }
-          }}
-          placeholder={fieldDef?.type === "number" ? "0" : "Value…"}
-          type={fieldDef?.type === "number" ? "number" : "text"}
-          className="h-8 text-[12px] border-neutral-200 shadow-none focus-visible:ring-1 focus-visible:ring-neutral-300"
-        />
-      </PopoverContent>
-    </Popover>
-  );
+function countRules(node: FilterNode): number {
+  if (node.type === "rule") return 1;
+  return node.children.reduce((acc, child) => acc + countRules(child), 0);
 }
 
 // ── Bulk Tag Editor for Search Token Chips ──
@@ -167,12 +99,14 @@ function InlineSearchTokenEditor({
   filterId,
   value,
   label,
+  isExclusion,
   onValueChange,
   onRemove,
 }: {
   filterId: string;
   value: string | string[];
   label: string;
+  isExclusion: boolean;
   onValueChange: (id: string, value: string | string[]) => void;
   onRemove: (id: string) => void;
 }) {
@@ -217,18 +151,37 @@ function InlineSearchTokenEditor({
     setOpen(false);
   };
 
+  const triggerButton = (
+    <button className={`flex items-center gap-0.5 rounded px-1 -mx-1 font-medium outline-none transition-colors hover:bg-neutral-100 cursor-pointer ${isExclusion ? "text-red-600" : "text-blue-600"}`}>
+      {displayValue}
+      {extraCount > 0 && (
+        <span className={`ml-0.5 rounded-sm px-1 text-[10px] font-bold ${isExclusion ? "bg-red-100 text-red-700" : "bg-neutral-200 text-neutral-700"}`}>
+          +{extraCount}
+        </span>
+      )}
+    </button>
+  );
+
   return (
     <Popover open={open} onOpenChange={(o) => { setOpen(o); if (o) handleOpen(); }}>
-      <PopoverTrigger asChild>
-        <button className="flex items-center gap-0.5 rounded px-1 -mx-1 font-medium text-blue-600 outline-none transition-colors hover:bg-neutral-100 cursor-pointer">
-          {displayValue}
-          {extraCount > 0 && (
-            <span className="ml-0.5 rounded-sm bg-neutral-200 px-1 text-[10px] font-bold text-neutral-700">
-              +{extraCount}
-            </span>
-          )}
-        </button>
-      </PopoverTrigger>
+      {extraCount > 0 && !open ? (
+        <TooltipProvider delayDuration={150}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <PopoverTrigger asChild>
+                {triggerButton}
+              </PopoverTrigger>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="z-50 max-w-xs break-words text-xs">
+              {values.join(", ")}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ) : (
+        <PopoverTrigger asChild>
+          {triggerButton}
+        </PopoverTrigger>
+      )}
       <PopoverContent className="w-72 p-0" align="start">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-neutral-100 px-3 py-2">
@@ -316,97 +269,6 @@ function InlineSearchTokenEditor({
   );
 }
 
-// ── Recursive Chip Renderer (visual islands for nested groups) ──
-
-function ActiveFilterNode({
-  node,
-  rootQuery,
-  onQueryChange,
-  isRoot,
-}: {
-  node: FilterNode;
-  rootQuery: FilterQuery;
-  onQueryChange: (q: FilterQuery) => void;
-  isRoot: boolean;
-}) {
-  // Base case: a single rule → render the editable chip
-  if (node.type === "rule") {
-    const rule = node;
-    const fieldDef = getFieldDef(rule.field);
-    const fieldLabel = fieldDef?.label ?? rule.field;
-    const isUnary = rule.operator === "is empty" || rule.operator === "is not empty";
-
-    const updateRuleValue = (newValue: string) => {
-      onQueryChange(
-        updateNodeInTree(rootQuery, rule.id, (n) => ({ ...(n as FilterRule), value: newValue }))
-      );
-    };
-
-    return (
-      <div className="flex items-center gap-1.5 rounded-md border border-neutral-200 bg-white px-2 py-1 text-[12px] shadow-sm">
-        <span className="font-medium text-neutral-700">{fieldLabel}</span>
-        <span className="text-neutral-400">{rule.operator}</span>
-        {!isUnary && (
-          <InlineChipValue
-            rule={rule}
-            fieldDef={fieldDef}
-            onValueChange={updateRuleValue}
-          />
-        )}
-        <button
-          onClick={() => onQueryChange(removeNodeFromTree(rootQuery, rule.id))}
-          className="ml-0.5 rounded-full p-0.5 text-neutral-300 transition-colors hover:bg-neutral-100 hover:text-neutral-600 cursor-pointer"
-        >
-          <RiCloseLine size={12} />
-        </button>
-      </div>
-    );
-  }
-
-  // Recursive case: a group
-  const group = node;
-  if (group.children.length === 0) return null;
-
-  // Single-child group: skip brackets, just render the child
-  if (group.children.length === 1) {
-    return (
-      <ActiveFilterNode
-        node={group.children[0]}
-        rootQuery={rootQuery}
-        onQueryChange={onQueryChange}
-        isRoot={isRoot}
-      />
-    );
-  }
-
-  const groupContent = group.children.map((child, index) => (
-    <div key={child.id} className="flex items-center gap-1">
-      {index > 0 && (
-        <span className="text-[9px] font-bold uppercase tracking-wider text-neutral-400 mx-0.5 select-none">
-          {group.logicalOperator}
-        </span>
-      )}
-      <ActiveFilterNode
-        node={child}
-        rootQuery={rootQuery}
-        onQueryChange={onQueryChange}
-        isRoot={false}
-      />
-    </div>
-  ));
-
-  if (isRoot) {
-    return <>{groupContent}</>;
-  }
-
-  // Nested group → Visual Island
-  return (
-    <div className="flex items-center gap-1 rounded-lg border border-neutral-200/80 bg-neutral-100/60 p-0.5 shadow-sm">
-      {groupContent}
-    </div>
-  );
-}
-
 const TABS = ["Images", "Posts", "Websites", "Accounts"];
 
 const EXPORT_LABELS: Record<string, string> = {
@@ -424,6 +286,7 @@ export function ExploreHeader({
   onSearchValueChange,
   onTokenizeSearch,
   onSelectFilter,
+  onFilterOperatorChange,
   activeTab,
   onTabChange,
   tabCounts,
@@ -469,7 +332,7 @@ export function ExploreHeader({
           <div className="relative flex h-9 w-[480px] items-center overflow-hidden rounded-md border border-neutral-200 bg-white shadow-sm transition-all focus-within:border-neutral-900 focus-within:ring-1 focus-within:ring-neutral-900">
             <RiSearchLine size={15} className="absolute left-2.5 text-neutral-400 pointer-events-none" />
             <Input
-              placeholder="Search IDs, accounts, websites, or brands..."
+              placeholder="Search or use '-' to exclude (e.g., -12345)..."
               value={searchValue}
               onChange={(e) => onSearchValueChange(e.target.value)}
               onKeyDown={(e) => {
@@ -517,6 +380,8 @@ export function ExploreHeader({
             {filters.map((filter) => {
               const Icon = filter.type === "search" ? RiSearchLine : RiFilter3Line;
               const isFreeText = filter.type === "search";
+              const isExclusion = ["is not", "does not contain"].includes(filter.operator);
+              const valueColor = isExclusion ? "text-red-600" : "text-blue-600";
 
               return (
                 <div
@@ -525,19 +390,33 @@ export function ExploreHeader({
                 >
                   <span className="flex items-center gap-1 text-neutral-500">
                     <Icon size={14} />
-                    {filter.label} {filter.operator}
+                    {filter.label}
                   </span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onFilterOperatorChange(filter.id, filter.operator);
+                    }}
+                    className={`rounded px-1 -mx-0.5 text-neutral-400 transition-colors font-medium cursor-pointer ${
+                      isExclusion
+                        ? "hover:bg-red-50 hover:text-red-600"
+                        : "hover:bg-blue-50 hover:text-blue-600"
+                    }`}
+                  >
+                    {filter.operator}
+                  </button>
                   {isFreeText ? (
                     <InlineSearchTokenEditor
                       filterId={filter.id}
                       value={filter.value}
                       label={filter.label}
+                      isExclusion={isExclusion}
                       onValueChange={onFilterValueChange}
                       onRemove={onRemoveFilter}
                     />
                   ) : filter.options && filter.options.length > 0 ? (
                     <DropdownMenu>
-                      <DropdownMenuTrigger className="font-medium text-blue-600 hover:underline focus:outline-none">
+                      <DropdownMenuTrigger className={`font-medium hover:underline focus:outline-none ${valueColor}`}>
                         {Array.isArray(filter.value) ? filter.value[0] : filter.value}
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
@@ -552,8 +431,28 @@ export function ExploreHeader({
                         ))}
                       </DropdownMenuContent>
                     </DropdownMenu>
+                  ) : Array.isArray(filter.value) && filter.value.length > 1 ? (
+                    <TooltipProvider delayDuration={150}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex items-center cursor-help">
+                            <span className={`font-medium ${valueColor}`}>
+                              {filter.value[0]}
+                            </span>
+                            <span className={`ml-1 rounded-sm px-1 text-[10px] font-bold ${
+                              isExclusion ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"
+                            }`}>
+                              +{filter.value.length - 1}
+                            </span>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="z-50 max-w-xs break-words text-xs">
+                          {filter.value.join(", ")}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   ) : (
-                    <span className="font-medium text-blue-600">
+                    <span className={`font-medium ${valueColor}`}>
                       {Array.isArray(filter.value) ? filter.value[0] : filter.value}
                     </span>
                   )}
@@ -589,22 +488,33 @@ export function ExploreHeader({
         </div>
       )}
 
-      {/* ── ROW 2b: Advanced Filter Chips (recursive with visual parentheses) ── */}
+      {/* ── ROW 2b: Advanced Filter Summary Chip ── */}
       {advancedQuery.children.length > 0 && (
-        <div className="mb-3 flex items-center gap-2 overflow-x-auto">
-          <button
-            onClick={() => { onFilterModeChange("advanced"); onFilterOpenChange(true); }}
-            className="flex shrink-0 items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-neutral-400 hover:text-neutral-600 transition-colors cursor-pointer"
+        <div className="mb-3 flex items-center gap-2">
+          <div
+            onClick={() => {
+              onFilterModeChange("advanced");
+              onFilterOpenChange(true);
+            }}
+            className="flex items-center gap-1.5 rounded-md border border-neutral-200 bg-white px-2 py-1 text-[13px] shadow-sm cursor-pointer transition-colors hover:bg-neutral-50"
           >
-            <RiEqualizer2Line size={13} />
-            Advanced
-          </button>
-          <ActiveFilterNode
-            node={advancedQuery}
-            rootQuery={advancedQuery}
-            onQueryChange={onAdvancedQueryChange}
-            isRoot={true}
-          />
+            <span className="flex items-center gap-1 text-neutral-500">
+              <RiEqualizer2Line size={14} />
+              Advanced Filter
+            </span>
+            <span className="font-medium text-blue-600">
+              {countRules(advancedQuery)} {countRules(advancedQuery) === 1 ? "rule" : "rules"}
+            </span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onAdvancedQueryChange(DEFAULT_QUERY);
+              }}
+              className="ml-1 text-neutral-400 transition-colors hover:text-neutral-900 cursor-pointer"
+            >
+              <RiCloseLine size={14} />
+            </button>
+          </div>
         </div>
       )}
 
@@ -627,7 +537,7 @@ export function ExploreHeader({
                 {tab}
                 {isActive && tabCounts[tab] !== undefined && (
                   <span className="rounded-full bg-neutral-100 px-1.5 py-0.5 text-[11px] font-semibold tabular-nums text-neutral-500">
-                    {tabCounts[tab].toLocaleString()}
+                    {tabCounts[tab].toLocaleString("en-US")}
                   </span>
                 )}
               </button>
@@ -683,7 +593,7 @@ export function ExploreHeader({
             disabled={filteredCount === 0}
           >
             <RiPlayFill className="w-4 h-4" />
-            <span className="text-[12px] font-medium">Play Moderation on {filteredCount.toLocaleString()} Posts</span>
+            <span className="text-[12px] font-medium">Play Moderation on {filteredCount.toLocaleString("en-US")} Posts</span>
           </Button>
         </div>
       </div>

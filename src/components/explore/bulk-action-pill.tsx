@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, forwardRef } from "react";
 import {
   RiCloseLine,
   RiPriceTag3Line,
   RiArrowDownSLine,
   RiCheckLine,
   RiSearchLine,
+  RiSettings4Line,
 } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,6 +29,24 @@ import {
   CommandGroup,
   CommandItem,
 } from "@/components/ui/command";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetFooter,
+} from "@/components/ui/sheet";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import type { ExplorePost } from "@/lib/mock-data";
 
 const TAG_OPTIONS = [
@@ -59,6 +78,62 @@ const TAKEDOWN_OPTIONS = [
   "Escalate to Legal",
 ];
 
+const ACTION_OPTIONS = [
+  "Mark as Counterfeit",
+  "Mark as Legitimate",
+  "Escalate to Legal",
+  "Send Takedown",
+  "Archive",
+];
+
+const GEO_OPTIONS = [
+  "United States",
+  "China",
+  "United Kingdom",
+  "Germany",
+  "France",
+  "Japan",
+  "India",
+  "Brazil",
+  "Turkey",
+  "South Korea",
+];
+
+const PRODUCT_OPTIONS = [
+  "Handbags",
+  "Watches",
+  "Electronics",
+  "Footwear",
+  "Fragrances",
+  "Accessories",
+  "Apparel",
+];
+
+const IP_ASSET_OPTIONS = [
+  "Trademark — Word Mark",
+  "Trademark — Logo Mark",
+  "Copyright — Product Image",
+  "Design Patent",
+  "Trade Dress",
+];
+
+const IP_CERTIFICATE_OPTIONS = [
+  "US-TM-2024-0891",
+  "EU-TM-2023-4412",
+  "CN-TM-2024-1107",
+  "WIPO-PCT-2023-8834",
+  "UK-DES-2024-0223",
+];
+
+const SITE_CODE_OPTIONS = [
+  "SITE-AMZ-US",
+  "SITE-ALI-CN",
+  "SITE-EBAY-UK",
+  "SITE-WISH-GL",
+  "SITE-TEMU-US",
+  "SITE-SHEIN-GL",
+];
+
 interface FieldDisplay {
   text: string;
   isMixed: boolean;
@@ -80,6 +155,85 @@ function getFieldDisplay(
 
   return { text: defaultText, isMixed: false, hasValue: false };
 }
+
+/* ── Inline Ghost Label Trigger ── */
+interface BarDropdownTriggerProps {
+  fieldTitle: string;
+  displayValue: string;
+  isMixed: boolean;
+  isStaged: boolean;
+  isPrimary?: boolean;
+}
+
+const BarDropdownTrigger = forwardRef<HTMLButtonElement, BarDropdownTriggerProps & React.ComponentPropsWithoutRef<"button">>(
+  ({ fieldTitle, displayValue, isMixed, isStaged, isPrimary, ...props }, ref) => {
+    // Primary (Label/Verdict) button: special background treatments
+    if (isPrimary) {
+      return (
+        <Button
+          ref={ref}
+          className={`h-8 text-xs font-semibold px-4 rounded-xl shadow-sm flex items-center gap-2 transition-all ${
+            isMixed && !isStaged
+              ? "bg-neutral-700 hover:bg-neutral-600 border border-neutral-600"
+              : isStaged
+                ? "bg-blue-600 hover:bg-blue-700 text-white ring-2 ring-blue-400 ring-offset-2 ring-offset-neutral-900"
+                : "bg-red-600 hover:bg-red-700 text-white"
+          }`}
+          {...props}
+        >
+          <div className="flex items-center gap-1.5">
+            {isMixed && !isStaged ? (
+              <>
+                <span className="text-[10px] uppercase font-bold tracking-wider text-white/40">
+                  {fieldTitle}
+                </span>
+                <span className="italic text-white/80 text-xs">Mixed</span>
+              </>
+            ) : (
+              <span className="text-xs font-semibold">{displayValue}</span>
+            )}
+          </div>
+          <RiArrowDownSLine className="w-4 h-4 opacity-70" />
+        </Button>
+      );
+    }
+
+    // Standard bar dropdown trigger
+    const showGhost = isMixed && !isStaged;
+    const hasKnownValue = !isMixed && displayValue !== fieldTitle;
+
+    return (
+      <Button
+        ref={ref}
+        variant="ghost"
+        size="sm"
+        className={`h-8 px-3 rounded-xl border border-transparent hover:bg-neutral-800 transition-colors ${
+          isStaged
+            ? "text-blue-400 border-blue-500/50 bg-blue-500/10"
+            : hasKnownValue
+              ? "text-white bg-neutral-800/50 border-neutral-700/50"
+              : "text-neutral-300"
+        }`}
+        {...props}
+      >
+        <div className="flex items-center gap-1.5">
+          {showGhost ? (
+            <>
+              <span className="text-[10px] uppercase font-bold tracking-wider text-white/40">
+                {fieldTitle}
+              </span>
+              <span className="italic text-white/60 text-xs">Mixed</span>
+            </>
+          ) : (
+            <span className="text-xs font-medium">{displayValue}</span>
+          )}
+        </div>
+        <RiArrowDownSLine className="w-4 h-4 ml-1 opacity-50" />
+      </Button>
+    );
+  }
+);
+BarDropdownTrigger.displayName = "BarDropdownTrigger";
 
 export interface PendingChanges {
   label?: string;
@@ -106,6 +260,8 @@ export function BulkActionPill({
   onApplyAll,
 }: BulkActionPillProps) {
   const [tagsOpen, setTagsOpen] = useState(false);
+  const [isBatchSheetOpen, setIsBatchSheetOpen] = useState(false);
+  const [actionBarMode, setActionBarMode] = useState<"triage" | "enforce">("triage");
 
   const hasPending = Object.keys(pendingChanges).length > 0;
 
@@ -164,7 +320,44 @@ export function BulkActionPill({
           </Button>
         </div>
 
-        {/* 1. Add Tags (Searchable Popover) */}
+        {/* Mode Switcher */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center gap-1.5 px-3 h-8 rounded-xl text-xs font-medium text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors outline-none cursor-pointer">
+              {actionBarMode === "triage" ? "Triage" : "Enforce"}
+              <RiArrowDownSLine className="w-3.5 h-3.5 opacity-60" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            side="top"
+            align="start"
+            sideOffset={12}
+            className="w-[160px] bg-neutral-900 border-neutral-800 shadow-2xl rounded-xl p-1"
+          >
+            <DropdownMenuItem
+              onSelect={() => setActionBarMode("triage")}
+              className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-neutral-300 cursor-pointer focus:bg-neutral-800 focus:text-white"
+            >
+              Triage Mode
+              {actionBarMode === "triage" && (
+                <RiCheckLine className="h-3.5 w-3.5 text-blue-400" />
+              )}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() => setActionBarMode("enforce")}
+              className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-neutral-300 cursor-pointer focus:bg-neutral-800 focus:text-white"
+            >
+              Enforce Mode
+              {actionBarMode === "enforce" && (
+                <RiCheckLine className="h-3.5 w-3.5 text-blue-400" />
+              )}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <div className="w-px h-4 bg-neutral-700/50" />
+
+        {/* Always visible: Add Tags */}
         <Popover open={tagsOpen} onOpenChange={setTagsOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -224,109 +417,171 @@ export function BulkActionPill({
           </PopoverContent>
         </Popover>
 
-        {/* 2. Middle: Category + Takedown */}
+        {/* ── Dynamic Middle Section (mode-dependent) ── */}
         <div className="flex items-center gap-1 px-1">
-          {/* ── Category Dropdown ── */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`h-8 px-3 text-xs font-medium rounded-xl border border-transparent hover:bg-neutral-800 transition-colors ${
-                  isCategoryStaged
-                    ? "text-blue-400 border-blue-500/50 bg-blue-500/10"
-                    : categoryState.isMixed && !isCategoryStaged
-                      ? "text-neutral-500 italic"
-                      : categoryState.hasValue
-                        ? "text-white bg-neutral-800/50 border-neutral-700/50"
-                        : "text-neutral-300"
-                }`}
-              >
-                {displayCategory}
-                <RiArrowDownSLine className="w-4 h-4 ml-1 opacity-50" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              side="top"
-              align="center"
-              sideOffset={12}
-              className="w-[180px] bg-neutral-900 border-neutral-800 shadow-2xl rounded-xl p-1"
-            >
-              {CATEGORY_OPTIONS.map((cat) => {
-                const isActive = displayCategory === cat;
-                return (
-                  <DropdownMenuItem
-                    key={cat}
-                    onSelect={() => onStageChange("category", cat)}
-                    className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-neutral-300 cursor-pointer focus:bg-neutral-800 focus:text-white"
-                  >
-                    {cat}
-                    {isActive && <RiCheckLine className="h-3.5 w-3.5 text-blue-400" />}
-                  </DropdownMenuItem>
-                );
-              })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {actionBarMode === "triage" ? (
+            <>
+              {/* ── Category Dropdown ── */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <BarDropdownTrigger
+                    fieldTitle="Category"
+                    displayValue={displayCategory}
+                    isMixed={categoryState.isMixed}
+                    isStaged={isCategoryStaged}
+                  />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  side="top"
+                  align="center"
+                  sideOffset={12}
+                  className="w-[180px] bg-neutral-900 border-neutral-800 shadow-2xl rounded-xl p-1"
+                >
+                  {CATEGORY_OPTIONS.map((cat) => {
+                    const isActive = displayCategory === cat;
+                    return (
+                      <DropdownMenuItem
+                        key={cat}
+                        onSelect={() => onStageChange("category", cat)}
+                        className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-neutral-300 cursor-pointer focus:bg-neutral-800 focus:text-white"
+                      >
+                        {cat}
+                        {isActive && <RiCheckLine className="h-3.5 w-3.5 text-blue-400" />}
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-          {/* ── Takedown Dropdown ── */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`h-8 px-3 text-xs font-medium rounded-xl border border-transparent hover:bg-neutral-800 transition-colors ${
-                  isTakedownStaged
-                    ? "text-blue-400 border-blue-500/50 bg-blue-500/10"
-                    : takedownState.isMixed && !isTakedownStaged
-                      ? "text-neutral-500 italic"
-                      : takedownState.hasValue
-                        ? "text-white bg-neutral-800/50 border-neutral-700/50"
-                        : "text-neutral-300"
-                }`}
-              >
-                {displayTakedown}
-                <RiArrowDownSLine className="w-4 h-4 ml-1 opacity-50" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              side="top"
-              align="center"
-              sideOffset={12}
-              className="w-[200px] bg-neutral-900 border-neutral-800 shadow-2xl rounded-xl p-1"
-            >
-              {TAKEDOWN_OPTIONS.map((opt) => {
-                const isActive = displayTakedown === opt;
-                return (
-                  <DropdownMenuItem
-                    key={opt}
-                    onSelect={() => onStageChange("takedown", opt)}
-                    className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-neutral-300 cursor-pointer focus:bg-neutral-800 focus:text-white"
-                  >
-                    {opt}
-                    {isActive && <RiCheckLine className="h-3.5 w-3.5 text-blue-400" />}
-                  </DropdownMenuItem>
-                );
-              })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+              {/* ── Takedown Dropdown ── */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <BarDropdownTrigger
+                    fieldTitle="Takedown"
+                    displayValue={displayTakedown}
+                    isMixed={takedownState.isMixed}
+                    isStaged={isTakedownStaged}
+                  />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  side="top"
+                  align="center"
+                  sideOffset={12}
+                  className="w-[200px] bg-neutral-900 border-neutral-800 shadow-2xl rounded-xl p-1"
+                >
+                  {TAKEDOWN_OPTIONS.map((opt) => {
+                    const isActive = displayTakedown === opt;
+                    return (
+                      <DropdownMenuItem
+                        key={opt}
+                        onSelect={() => onStageChange("takedown", opt)}
+                        className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-neutral-300 cursor-pointer focus:bg-neutral-800 focus:text-white"
+                      >
+                        {opt}
+                        {isActive && <RiCheckLine className="h-3.5 w-3.5 text-blue-400" />}
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          ) : (
+            <>
+              {/* ── IP Asset Dropdown ── */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <BarDropdownTrigger
+                    fieldTitle="IP Asset"
+                    displayValue="IP Asset"
+                    isMixed={false}
+                    isStaged={false}
+                  />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  side="top"
+                  align="center"
+                  sideOffset={12}
+                  className="w-[220px] bg-neutral-900 border-neutral-800 shadow-2xl rounded-xl p-1"
+                >
+                  {IP_ASSET_OPTIONS.map((ip) => (
+                    <DropdownMenuItem
+                      key={ip}
+                      className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-neutral-300 cursor-pointer focus:bg-neutral-800 focus:text-white"
+                    >
+                      {ip}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* ── IP Certificate Dropdown ── */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <BarDropdownTrigger
+                    fieldTitle="IP Cert"
+                    displayValue="IP Certificate"
+                    isMixed={false}
+                    isStaged={false}
+                  />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  side="top"
+                  align="center"
+                  sideOffset={12}
+                  className="w-[200px] bg-neutral-900 border-neutral-800 shadow-2xl rounded-xl p-1"
+                >
+                  {IP_CERTIFICATE_OPTIONS.map((cert) => (
+                    <DropdownMenuItem
+                      key={cert}
+                      className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-neutral-300 cursor-pointer focus:bg-neutral-800 focus:text-white"
+                    >
+                      {cert}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* ── Site Code Dropdown ── */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <BarDropdownTrigger
+                    fieldTitle="Site Code"
+                    displayValue="Site Code"
+                    isMixed={false}
+                    isStaged={false}
+                  />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  side="top"
+                  align="center"
+                  sideOffset={12}
+                  className="w-[180px] bg-neutral-900 border-neutral-800 shadow-2xl rounded-xl p-1"
+                >
+                  {SITE_CODE_OPTIONS.map((code) => (
+                    <DropdownMenuItem
+                      key={code}
+                      className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-neutral-300 cursor-pointer focus:bg-neutral-800 focus:text-white"
+                    >
+                      {code}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          )}
         </div>
 
-        {/* 3. Right: Primary Label Action (The "Verdict") + Validate/Unvalidate */}
+        {/* Right: Label/Verdict + Apply/Unvalidate + Batch Edit (always visible) */}
         <div className="flex items-center gap-1 pl-2 border-l border-neutral-700/50">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                className={`h-8 text-xs font-semibold px-4 rounded-xl shadow-sm flex items-center gap-2 transition-all ${
-                  labelState.isMixed && !isLabelStaged
-                    ? "bg-neutral-700 text-neutral-300 hover:bg-neutral-600 italic border border-neutral-600"
-                    : isLabelStaged
-                      ? "bg-blue-600 hover:bg-blue-700 text-white ring-2 ring-blue-400 ring-offset-2 ring-offset-neutral-900"
-                      : "bg-red-600 hover:bg-red-700 text-white"
-                }`}
-              >
-                {displayLabel}
-                <RiArrowDownSLine className="w-4 h-4 opacity-70" />
-              </Button>
+              <BarDropdownTrigger
+                fieldTitle="Label"
+                displayValue={displayLabel}
+                isMixed={labelState.isMixed}
+                isStaged={isLabelStaged}
+                isPrimary
+              />
             </DropdownMenuTrigger>
             <DropdownMenuContent
               side="top"
@@ -367,8 +622,338 @@ export function BulkActionPill({
               Unvalidate
             </Button>
           )}
+
+          {/* Batch Edit trigger */}
+          <div className="pl-1.5 border-l border-neutral-700/50">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsBatchSheetOpen(true)}
+              className="h-8 px-3 text-xs font-medium text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-xl transition-colors"
+            >
+              <RiSettings4Line className="w-4 h-4 mr-1.5" />
+              Batch Edit
+            </Button>
+          </div>
         </div>
       </div>
+
+      {/* ── Batch Edit Side Sheet ── */}
+      <Sheet open={isBatchSheetOpen} onOpenChange={setIsBatchSheetOpen}>
+        <SheetContent
+          side="right"
+          className="sm:max-w-lg w-full flex flex-col p-0"
+        >
+          <SheetHeader className="border-b border-neutral-100 px-6 py-4">
+            <SheetTitle className="text-base font-semibold text-neutral-900">
+              Batch Edit
+            </SheetTitle>
+            <SheetDescription className="text-sm text-neutral-500">
+              Apply changes to{" "}
+              <span className="font-medium text-neutral-700">
+                {selectedCount}
+              </span>{" "}
+              selected items.
+            </SheetDescription>
+          </SheetHeader>
+
+          <Tabs defaultValue="moderate" className="flex-1 flex flex-col min-h-0">
+            <div className="px-6 pt-2 border-b border-neutral-100">
+              <TabsList variant="line" className="w-full justify-start">
+                <TabsTrigger value="moderate">Moderate</TabsTrigger>
+                <TabsTrigger value="details">Details</TabsTrigger>
+                <TabsTrigger value="enforce">Enforce</TabsTrigger>
+              </TabsList>
+            </div>
+
+            {/* ── Tab: Moderate ── */}
+            <TabsContent
+              value="moderate"
+              className="flex-1 overflow-y-auto px-6 py-5"
+            >
+              <div className="space-y-4">
+                {/* Tags */}
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-neutral-700">
+                    Tags
+                  </label>
+                  <Input placeholder="Add tags… (e.g. Priority, Escalated)" />
+                </div>
+
+                {/* Category + Takedown Status */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-neutral-700">
+                      Category
+                    </label>
+                    <Select>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select category…" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CATEGORY_OPTIONS.map((c) => (
+                          <SelectItem key={c} value={c}>
+                            {c}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-neutral-700">
+                      Takedown Status
+                    </label>
+                    <Select>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select status…" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {TAKEDOWN_OPTIONS.map((t) => (
+                          <SelectItem key={t} value={t}>
+                            {t}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Label + Action to Apply */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-neutral-700">
+                      Label
+                    </label>
+                    <Select>
+                      <SelectTrigger className="w-full border-red-200 focus:ring-red-500">
+                        <SelectValue placeholder="Select label…" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {VERDICT_OPTIONS.map((v) => (
+                          <SelectItem key={v.name} value={v.name}>
+                            <div className="flex items-center gap-2">
+                              <div
+                                className={`w-2 h-2 rounded-full shrink-0 ${v.color}`}
+                              />
+                              {v.name}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-neutral-700">
+                      Action to Apply
+                    </label>
+                    <Select>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select action…" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ACTION_OPTIONS.map((a) => (
+                          <SelectItem key={a} value={a}>
+                            {a}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+              </div>
+            </TabsContent>
+
+            {/* ── Tab: Details ── */}
+            <TabsContent
+              value="details"
+              className="flex-1 overflow-y-auto px-6 py-5"
+            >
+              <div className="space-y-4">
+                {/* Ships From + Ships To */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-neutral-700">
+                      Ships From
+                    </label>
+                    <Select>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select country…" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {GEO_OPTIONS.map((g) => (
+                          <SelectItem key={g} value={g}>
+                            {g}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-neutral-700">
+                      Ships To
+                    </label>
+                    <Select>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select country…" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {GEO_OPTIONS.map((g) => (
+                          <SelectItem key={g} value={g}>
+                            {g}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Account Geo + Items in Bundle */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-neutral-700">
+                      Account Geo
+                    </label>
+                    <Select>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select geo…" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {GEO_OPTIONS.map((g) => (
+                          <SelectItem key={g} value={g}>
+                            {g}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-neutral-700">
+                      Items in Bundle
+                    </label>
+                    <Input type="number" placeholder="e.g. 1" min={1} />
+                  </div>
+                </div>
+
+                {/* Product */}
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-neutral-700">
+                    Product
+                  </label>
+                  <Select>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select product…" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PRODUCT_OPTIONS.map((p) => (
+                        <SelectItem key={p} value={p}>
+                          {p}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Comments */}
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-neutral-700">
+                    Comments
+                  </label>
+                  <Textarea
+                    placeholder="Add internal notes for these items…"
+                    className="h-20 resize-none"
+                  />
+                </div>
+              </div>
+            </TabsContent>
+
+            {/* ── Tab: Enforce ── */}
+            <TabsContent
+              value="enforce"
+              className="flex-1 overflow-y-auto px-6 py-5"
+            >
+              <div className="space-y-4">
+                {/* IP Asset */}
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-neutral-700">
+                    IP Asset
+                  </label>
+                  <Select>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select IP Asset…" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {IP_ASSET_OPTIONS.map((ip) => (
+                        <SelectItem key={ip} value={ip}>
+                          {ip}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* IP Certificate */}
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-neutral-700">
+                    IP Certificate
+                  </label>
+                  <Select>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select Certificate…" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {IP_CERTIFICATE_OPTIONS.map((c) => (
+                        <SelectItem key={c} value={c}>
+                          {c}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Site Code */}
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-neutral-700">
+                    Site Code
+                  </label>
+                  <Select>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select Site Code…" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SITE_CODE_OPTIONS.map((s) => (
+                        <SelectItem key={s} value={s}>
+                          {s}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          {/* Sticky Footer */}
+          <SheetFooter className="border-t border-neutral-100 px-6 py-4 flex-row justify-end gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setIsBatchSheetOpen(false)}
+              className="px-4"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                // TODO: wire up batch apply logic
+                setIsBatchSheetOpen(false);
+              }}
+              className="px-6"
+            >
+              Apply to {selectedCount} items
+            </Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

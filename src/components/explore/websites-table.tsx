@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import Link from "next/link";
 import { RiRobot2Line, RiArrowRightSLine } from "@remixicon/react";
 import { ImageThumbnail } from "./image-thumbnail";
 import { WebsiteCell } from "./website-cell";
@@ -178,9 +179,12 @@ export function WebsitesTable() {
 
               <TableCell className="px-3">
                 <div className="flex flex-col leading-tight">
-                  <span className="text-[13px] font-medium text-blue-600 hover:underline cursor-pointer truncate">
+                  <Link
+                    href={`/website/${encodeURIComponent(site.id)}`}
+                    className="text-[13px] font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors truncate"
+                  >
                     {site.id}
-                  </span>
+                  </Link>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <span
                       className={`size-1.5 rounded-full ${

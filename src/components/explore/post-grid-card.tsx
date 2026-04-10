@@ -7,6 +7,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import type { ExplorePost, LabelType } from "@/lib/mock-data";
+import { ImageWithFallback } from "./image-with-fallback";
 import type { PendingChanges } from "./bulk-action-pill";
 
 const LABEL_DOT: Record<string, string> = {
@@ -61,15 +62,12 @@ export function PostGridCard({
     >
       {/* Top: Image & Overlay Actions */}
       <div className="relative aspect-[4/3] bg-neutral-100 overflow-hidden border-b border-neutral-100">
-        {post.imageUrl ? (
-          <img
-            src={post.imageUrl}
-            alt={post.title}
-            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-neutral-100 to-neutral-200" />
-        )}
+        <ImageWithFallback
+          src={post.imageUrl}
+          alt={post.title}
+          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+          fallbackClassName="h-full w-full"
+        />
 
         {/* Checkbox Overlay */}
         <div className="absolute top-2 left-2 z-10">
