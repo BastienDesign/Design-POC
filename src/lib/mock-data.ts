@@ -54,6 +54,15 @@ export const BREADCRUMBS: Record<string, string[]> = {
   "/labelling": ["Labelling"],
   "/clusters": ["Cluster view"],
   "/settings": ["Settings"],
+  "/settings/profile": ["Settings", "Profile"],
+  "/settings/preferences": ["Settings", "Preferences"],
+  "/settings/general": ["Settings", "General"],
+  "/settings/crawling": ["Settings", "Crawling"],
+  "/settings/moderation": ["Settings", "Moderation"],
+  "/settings/auto-moderation": ["Settings", "Auto-Moderation"],
+  "/settings/enforce": ["Settings", "Enforce"],
+  "/settings/ip-portfolio": ["Settings", "IP Portfolio"],
+  "/settings/categories": ["Settings", "Categories"],
 };
 
 // --- Explore: Listings Data ---
@@ -352,6 +361,7 @@ export const SETTINGS_NAV_SECTIONS = [
       { label: "Users", href: "/settings", icon: "RiGroupLine" },
       { label: "Crawling", href: "/settings/crawling", icon: "RiRadarLine" },
       { label: "Moderation", href: "/settings/moderation", icon: "RiShieldCheckLine" },
+      { label: "Auto-Moderation", href: "/settings/auto-moderation", icon: "RiRobot2Line" },
       { label: "Enforce", href: "/settings/enforce", icon: "RiHammerLine" },
       { label: "IP Portfolio", href: "/settings/ip-portfolio", icon: "RiFileShield2Line" },
       { label: "Categories", href: "/settings/categories", icon: "RiPriceTag3Line" },

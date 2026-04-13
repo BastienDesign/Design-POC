@@ -33,12 +33,17 @@ export function Topbar() {
   const SEGMENT_HREFS: Record<string, string> = {
     Explore: "/explore",
     Websites: "/explore",
+    Posts: "/explore",
+    Settings: "/settings",
   };
 
   let segments: string[];
   if (pathname.startsWith("/website/")) {
     const id = decodeURIComponent(pathname.split("/website/")[1] || "");
     segments = ["Explore", "Websites", id];
+  } else if (pathname.startsWith("/post/")) {
+    const id = decodeURIComponent(pathname.split("/post/")[1] || "");
+    segments = ["Explore", "Posts", id];
   } else {
     segments = BREADCRUMBS[pathname] ?? ["Dashboard"];
   }

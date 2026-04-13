@@ -131,6 +131,20 @@
   }
 }
 
+/* Pointer cursor on all interactive elements */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+[role="tab"],
+[role="switch"],
+[role="menuitem"],
+[role="option"],
+[role="checkbox"],
+[data-slot="accordion-trigger"],
+[data-slot="sidebar-menu-button"],
+summary {
+  cursor: pointer;
+}
+
 /* Premium Custom Scrollbar */
 .custom-scrollbar {
   scrollbar-width: thin; /* Firefox */

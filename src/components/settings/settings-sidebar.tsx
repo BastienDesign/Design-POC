@@ -12,9 +12,10 @@ import {
   RiHammerLine,
   RiFileShield2Line,
   RiPriceTag3Line,
+  RiRobot2Line,
   RiArrowLeftSLine,
 } from "@remixicon/react";
-import { SETTINGS_NAV_SECTIONS, ACTIVE_ORG } from "@/lib/mock-data";
+import { SETTINGS_NAV_SECTIONS } from "@/lib/mock-data";
 import type { RemixiconComponentType } from "@remixicon/react";
 
 const ICON_MAP: Record<string, RemixiconComponentType> = {
@@ -27,6 +28,7 @@ const ICON_MAP: Record<string, RemixiconComponentType> = {
   RiHammerLine,
   RiFileShield2Line,
   RiPriceTag3Line,
+  RiRobot2Line,
 };
 
 export function SettingsSidebar() {
@@ -43,23 +45,6 @@ export function SettingsSidebar() {
           <RiArrowLeftSLine className="h-[18px] w-[18px]" />
         </Link>
         <h2 className="text-sm font-semibold text-neutral-900">Settings</h2>
-      </div>
-
-      {/* Org Context Card */}
-      <div className="mx-4 mb-4 rounded-lg bg-neutral-50/80 p-3">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-xs font-bold text-white">
-            {ACTIVE_ORG.logo}
-          </div>
-          <div className="overflow-hidden">
-            <p className="truncate text-sm font-medium text-neutral-900">
-              {ACTIVE_ORG.name}
-            </p>
-            <p className="truncate text-[11px] text-neutral-400">
-              admin@acme.com
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* Nav Sections */}

@@ -170,9 +170,11 @@ function NavUser() {
                 <RiNotification3Line />
                 Notifications
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <RiSettings4Line />
-                Settings
+              <DropdownMenuItem asChild>
+                <Link href="/settings">
+                  <RiSettings4Line />
+                  Settings
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
