@@ -31,6 +31,7 @@ import {
   RiListCheck3,
   RiSearchLine,
   RiFilter3Line,
+  RiCheckboxMultipleLine,
 } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -62,6 +63,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
+  SheetTrigger,
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -1315,27 +1317,27 @@ export function WebsiteModerationView() {
   return (
     <div className="h-full flex flex-col overflow-hidden relative">
       {/* ── Top Header ── */}
-      <header className="h-14 bg-white border-b border-neutral-200 flex items-center justify-between px-4 shrink-0">
+      <header className="h-14 bg-white border-b border-neutral-200 flex items-center justify-between px-4 shrink-0 gap-2">
         {/* Left */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-3 min-w-0 shrink">
+          <div className="flex items-center gap-1.5 shrink-0">
             <span className="size-2 bg-green-500 rounded-full" />
             <span className="text-[11px] text-neutral-500">Online</span>
           </div>
-          <span className="text-lg font-bold text-neutral-900">WEB#81</span>
-          <span className="text-[11px] text-neutral-400">
+          <span className="text-lg font-bold text-neutral-900 truncate">WEB#81</span>
+          <span className="text-[11px] text-neutral-400 shrink-0">
             16 Apr 2021, 19:16
           </span>
         </div>
 
         {/* Right */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 shrink-0">
           <HoverCard openDelay={200}>
             <HoverCardTrigger asChild>
-              <div className="flex items-center gap-1.5 text-xs text-neutral-500 cursor-help hover:text-neutral-800 transition-colors group mr-2">
+              <div className="flex items-center gap-1.5 text-xs text-neutral-500 cursor-help hover:text-neutral-800 transition-colors group mr-1">
                 <div className="flex items-center gap-1 underline decoration-dashed decoration-neutral-300 underline-offset-4 group-hover:decoration-neutral-400 transition-colors">
                   <RiInformationLine className="size-3 text-neutral-400 group-hover:text-neutral-600 transition-colors" />
-                  <span>Validated by uyuusaf!</span>
+                  <span className="hidden xl:inline">Validated by uyuusaf!</span>
                 </div>
                 <div className="flex">
                   <RiCheckLine className="size-3.5 text-emerald-500 -mr-1" />
@@ -1391,14 +1393,14 @@ export function WebsiteModerationView() {
           <Button
             variant="outline"
             size="sm"
-            className="gap-2 h-8 text-xs"
+            className="gap-1.5 h-8 text-xs"
             onClick={() => setCommentsOpen(true)}
           >
             <RiMessage3Line className="size-3.5" />
-            Comments
+            <span className="hidden xl:inline">Comments</span>
             <Badge
               variant="secondary"
-              className="text-[9px] px-1 py-0 bg-neutral-200 ml-0.5"
+              className="text-[9px] px-1 py-0 bg-neutral-200"
             >
               {MOCK_COMMENTS.length}
             </Badge>
@@ -1408,12 +1410,86 @@ export function WebsiteModerationView() {
           <Button
             variant="outline"
             size="sm"
-            className="gap-2 h-8 text-xs text-neutral-600"
+            className="gap-1.5 h-8 text-xs text-neutral-600"
             onClick={() => setRulesOpen(true)}
           >
             <RiNodeTree className="size-3.5" />
-            Rules
+            <span className="hidden xl:inline">Rules</span>
           </Button>
+
+          {/* Assessment Sheet */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs">
+                <RiCheckboxMultipleLine className="size-3.5" />
+                <span className="hidden xl:inline">Assessment</span>
+                <Badge variant="secondary" className="px-1.5 py-0 text-[9px] bg-orange-100 text-orange-700">0</Badge>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[400px] sm:w-[450px] flex flex-col p-0 bg-white">
+              <SheetHeader className="px-6 py-4 border-b border-neutral-100 shrink-0">
+                <SheetTitle className="text-base">Assessment Reasons</SheetTitle>
+              </SheetHeader>
+              <div className="flex-1 flex flex-col min-h-0">
+                <Tabs defaultValue="all" className="flex-1 flex flex-col w-full">
+                  <div className="flex items-center justify-between px-6 py-3 border-b border-neutral-100 bg-neutral-50/50 shrink-0">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-800">Flag Reasons</h3>
+                    <TabsList className="h-7 bg-neutral-200/80 p-0.5">
+                      <TabsTrigger value="selected" className="text-[10px] px-2.5 h-6">Selected (0)</TabsTrigger>
+                      <TabsTrigger value="all" className="text-[10px] px-2.5 h-6">All</TabsTrigger>
+                    </TabsList>
+                  </div>
+                  <TabsContent value="all" className="flex-1 flex flex-col p-0 m-0 min-h-0">
+                    <div className="p-4 border-b border-neutral-100 shrink-0">
+                      <div className="relative">
+                        <RiSearchLine className="absolute left-3 top-2.5 size-4 text-neutral-400" />
+                        <Input placeholder="Search reasons..." className="h-9 pl-9 text-xs bg-neutral-50 border-neutral-200" />
+                      </div>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-4 space-y-6">
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-lg transition-colors">
+                          <Label htmlFor="w-r-1" className="text-sm font-medium text-neutral-700 cursor-pointer">Post has obfuscated brand name</Label>
+                          <Switch id="w-r-1" />
+                        </div>
+                        <div className="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-lg transition-colors">
+                          <Label htmlFor="w-r-2" className="text-sm font-medium text-neutral-700 cursor-pointer">Is products for sale?</Label>
+                          <Switch id="w-r-2" />
+                        </div>
+                        <div className="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-lg transition-colors">
+                          <Label htmlFor="w-r-3" className="text-sm font-medium text-neutral-700 cursor-pointer">Is product new?</Label>
+                          <Switch id="w-r-3" />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 px-2.5 py-1 mt-2">Brand Specific</h4>
+                        <div className="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-lg transition-colors">
+                          <div className="flex flex-col gap-1 pr-4">
+                            <Label htmlFor="w-r-4" className="text-sm font-medium text-neutral-700 cursor-pointer">No suspicious/counterfeit elements</Label>
+                            <span className="text-[10px] text-neutral-400 font-mono leading-none">Product_Information &gt; all &gt; all &gt; Bio</span>
+                          </div>
+                          <Switch id="w-r-4" />
+                        </div>
+                        <div className="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-lg transition-colors">
+                          <div className="flex flex-col gap-1 pr-4">
+                            <Label htmlFor="w-r-5" className="text-sm font-medium text-neutral-700 cursor-pointer">Obvious Counterfeit Keyword</Label>
+                            <span className="text-[10px] text-neutral-400 font-mono leading-none">Product_Information &gt; all &gt; all &gt; Bio</span>
+                          </div>
+                          <Switch id="w-r-5" />
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+                  <TabsContent value="selected" className="flex-1 overflow-y-auto p-4 m-0">
+                    <div className="flex flex-col items-center justify-center py-12 text-neutral-400">
+                      <RiCheckDoubleLine className="size-8 mb-2 opacity-40" />
+                      <span className="text-xs">No reasons selected yet</span>
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </div>
+            </SheetContent>
+          </Sheet>
 
           <Separator orientation="vertical" className="h-5 mx-1" />
 
@@ -1701,7 +1777,7 @@ export function WebsiteModerationView() {
         </div>
 
         {/* ── Right Pane (Sidebar) ── */}
-        <aside className="w-[450px] bg-white flex flex-col shrink-0 min-h-0">
+        <aside className="w-[380px] xl:w-[450px] bg-white flex flex-col shrink-0 min-h-0">
           <Tabs
             value={sidebarTab}
             onValueChange={setSidebarTab}
@@ -1711,7 +1787,7 @@ export function WebsiteModerationView() {
             <div className="flex items-center border-b border-neutral-200 bg-white h-12 px-4 shrink-0">
               <TabsList
                 variant="line"
-                className="flex gap-6 bg-transparent rounded-none h-full w-auto p-0"
+                className="flex gap-4 xl:gap-6 bg-transparent rounded-none h-full w-auto p-0"
               >
                 <TabsTrigger
                   value="overview"

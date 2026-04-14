@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import type { ExploreImage } from "@/lib/mock-data";
 import { ImageWithFallback } from "./image-with-fallback";
 import type { ImageVisibleProperties } from "./images-view-options";
+import Link from "next/link";
 
 const LABEL_DOT: Record<string, string> = {
   counterfeit: "bg-red-500",
@@ -99,13 +100,13 @@ export function ImageCard({
         <div className="flex flex-col gap-2 p-3">
           {/* ID */}
           {visibleProperties.imageId && (
-            <a
-              href="#"
+            <Link
+              href={`/image/${image.id}`}
               className="flex items-center gap-1 text-sm font-semibold text-blue-600 hover:underline"
             >
               {image.imageId}
               <RiExternalLinkLine size={14} />
-            </a>
+            </Link>
           )}
 
           {/* Metrics */}

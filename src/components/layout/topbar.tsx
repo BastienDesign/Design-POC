@@ -34,6 +34,8 @@ export function Topbar() {
     Explore: "/explore",
     Websites: "/explore",
     Posts: "/explore",
+    Accounts: "/explore",
+    Images: "/explore",
     Settings: "/settings",
   };
 
@@ -44,8 +46,16 @@ export function Topbar() {
   } else if (pathname.startsWith("/post/")) {
     const id = decodeURIComponent(pathname.split("/post/")[1] || "");
     segments = ["Explore", "Posts", id];
+  } else if (pathname.startsWith("/account/")) {
+    const id = decodeURIComponent(pathname.split("/account/")[1] || "");
+    segments = ["Explore", "Accounts", id];
+  } else if (pathname.startsWith("/image/")) {
+    const id = decodeURIComponent(pathname.split("/image/")[1] || "");
+    segments = ["Explore", "Images", id];
   } else {
-    segments = BREADCRUMBS[pathname] ?? ["Dashboard"];
+    segments = BREADCRUMBS[pathname] ?? [
+      pathname.split("/").filter(Boolean).pop()?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) ?? "Dashboard",
+    ];
   }
   const selectedOrg = SUB_ORGANIZATIONS.find((o) => o.id === activeOrg) ?? SUB_ORGANIZATIONS[0];
 
@@ -55,7 +65,7 @@ export function Topbar() {
       <div className="flex items-center gap-4">
         <SidebarTrigger className="text-neutral-400 hover:text-neutral-900 transition-colors" />
 
-        <Separator orientation="vertical" className="h-4 bg-neutral-200" />
+        <Separator orientation="vertical" className="!self-auto h-4 bg-neutral-200" />
 
         {/* Dynamic Breadcrumb / Page Title */}
         {segments.length === 1 ? (

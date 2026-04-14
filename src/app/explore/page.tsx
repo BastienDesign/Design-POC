@@ -11,6 +11,7 @@ import { ExplorePagination } from "@/components/explore/explore-pagination";
 import { BulkActionPill } from "@/components/explore/bulk-action-pill";
 import type { PendingChanges } from "@/components/explore/bulk-action-pill";
 import { WebsitesTable } from "@/components/explore/websites-table";
+import { AccountsTable } from "@/components/explore/accounts-table";
 import { ModerationWorkspace } from "@/components/explore/moderation-workspace";
 import { EXPLORE_POSTS, EXPLORE_IMAGES } from "@/lib/mock-data";
 import type { ExplorePost } from "@/lib/mock-data";
@@ -634,6 +635,9 @@ export default function ExplorePage() {
           )}
           {activeTab === "Websites" && (
             <WebsitesTable />
+          )}
+          {activeTab === "Accounts" && (
+            <AccountsTable />
           )}
         </div>
       </div>
