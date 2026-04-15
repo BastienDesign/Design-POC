@@ -226,7 +226,7 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href={`/post/PO%23${post.postId}`}
+                href={`/post/${post.postId}`}
                 onClick={(e) => e.stopPropagation()}
                 className="min-w-0 flex-1 cursor-pointer truncate text-[13px] font-medium text-blue-600 hover:text-blue-800 hover:underline focus:outline-none transition-colors text-left"
               >

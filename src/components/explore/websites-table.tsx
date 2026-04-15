@@ -180,7 +180,7 @@ export function WebsitesTable() {
               <TableCell className="px-3">
                 <div className="flex flex-col leading-tight">
                   <Link
-                    href={`/website/${encodeURIComponent(site.id)}`}
+                    href={`/website/${site.id.replace(/^WEB#/, "")}`}
                     className="text-[13px] font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors truncate"
                   >
                     {site.id}

@@ -3,7 +3,7 @@ import { PostModerationClient } from "./post-moderation-client";
 
 export function generateStaticParams() {
   return EXPLORE_POSTS.map((post) => ({
-    id: `PO#${post.postId}`,
+    id: post.postId,
   }));
 }
 

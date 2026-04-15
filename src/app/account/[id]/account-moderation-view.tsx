@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   RiGlobalLine,
   RiFileTextLine,
@@ -19,6 +19,10 @@ import {
   RiPriceTag3Line,
   RiGroupLine,
   RiShieldCheckLine,
+  RiAlertFill,
+  RiErrorWarningFill,
+  RiInformationFill,
+  RiSettings3Line,
 } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +35,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -43,6 +55,96 @@ import {
 } from "@/components/ui/sheet";
 import { ImageWithFallback } from "@/components/explore/image-with-fallback";
 import { useRouter } from "next/navigation";
+
+/* ─── Risk Tile Types & Styling ─── */
+
+type RiskLevel = "high" | "medium" | "low";
+
+interface RiskTile {
+  key: string;
+  level: RiskLevel;
+  label: string;
+  desc: string;
+  icon: typeof RiAlertFill;
+  fields?: string[];
+}
+
+const RISK_TILE_STYLES: Record<RiskLevel, { bg: string; border: string; icon: string; label: string; desc: string }> = {
+  high: { bg: "bg-red-50", border: "border-red-100", icon: "text-red-600", label: "text-red-800", desc: "text-red-900" },
+  medium: { bg: "bg-amber-50", border: "border-amber-100", icon: "text-amber-600", label: "text-amber-800", desc: "text-amber-900" },
+  low: { bg: "bg-emerald-50", border: "border-emerald-100", icon: "text-emerald-600", label: "text-emerald-800", desc: "text-emerald-900" },
+};
+
+const RISK_VALUE_STYLES: Record<RiskLevel, string> = {
+  high: "font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded w-fit border border-red-100",
+  medium: "font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded w-fit border border-orange-100",
+  low: "font-medium text-neutral-900",
+};
+
+const INSIGHT_SIGNALS = [
+  { id: "repeatOffender", label: "Repeat Offender", desc: "Account has been flagged multiple times." },
+  { id: "highInfringement", label: "High Infringement", desc: "Infringement rate exceeds threshold." },
+  { id: "highVolume", label: "High Volume Seller", desc: "Unusually high number of posts." },
+  { id: "suspiciousGeo", label: "Suspicious Geo", desc: "Geo mismatch with platform region." },
+  { id: "lowModeration", label: "Low Moderation", desc: "Very few posts have been moderated." },
+  { id: "clusterLinked", label: "Cluster Linked", desc: "Account is part of a known cluster." },
+] as const;
+
+type InsightPrefKey = (typeof INSIGHT_SIGNALS)[number]["id"];
+
+const DEFAULT_INSIGHT_PREFS: Record<InsightPrefKey, boolean> = {
+  repeatOffender: true,
+  highInfringement: true,
+  highVolume: true,
+  suspiciousGeo: true,
+  lowModeration: true,
+  clusterLinked: true,
+};
+
+function computeAccountRiskTiles(account: AccountData): RiskTile[] {
+  const tiles: RiskTile[] = [];
+
+  if (account.infringementPct >= 80) {
+    tiles.push({ key: "highInfringement", level: "high", label: "High Infringement", desc: `${account.infringementPct}% infringement rate`, icon: RiAlertFill, fields: ["Infringement Rate"] });
+  } else if (account.infringementPct >= 50) {
+    tiles.push({ key: "highInfringement", level: "medium", label: "Elevated Infringement", desc: `${account.infringementPct}% infringement rate`, icon: RiErrorWarningFill, fields: ["Infringement Rate"] });
+  }
+
+  if (account.tags.includes("repeat-offender")) {
+    tiles.push({ key: "repeatOffender", level: "high", label: "Repeat Offender", desc: "Previously flagged account", icon: RiAlertFill });
+  }
+
+  if (account.globalPosts >= 1000) {
+    tiles.push({ key: "highVolume", level: "medium", label: "High Volume Seller", desc: `${account.globalPosts.toLocaleString("en-US")} global posts`, icon: RiErrorWarningFill, fields: ["Global Posts"] });
+  }
+
+  if (account.moderationPct < 20) {
+    tiles.push({ key: "lowModeration", level: "high", label: "Low Moderation", desc: `Only ${account.moderationPct}% moderated`, icon: RiAlertFill, fields: ["Moderation Rate"] });
+  }
+
+  if (account.cluster !== "N/A") {
+    tiles.push({ key: "clusterLinked", level: "medium", label: "Cluster Linked", desc: `Cluster #${account.cluster}`, icon: RiErrorWarningFill, fields: ["Cluster"] });
+  }
+
+  if (account.followers <= 5 && account.globalPosts >= 500) {
+    tiles.push({ key: "suspiciousGeo", level: "medium", label: "Low Followers / High Posts", desc: `${account.followers} followers, ${account.globalPosts.toLocaleString("en-US")} posts`, icon: RiErrorWarningFill, fields: ["Followers"] });
+  }
+
+  // Sort by severity
+  const order: Record<RiskLevel, number> = { high: 0, medium: 1, low: 2 };
+  tiles.sort((a, b) => order[a.level] - order[b.level]);
+  return tiles;
+}
+
+function buildFieldRisks(tiles: RiskTile[]): Record<string, RiskLevel> {
+  const map: Record<string, RiskLevel> = {};
+  for (const tile of tiles) {
+    for (const field of tile.fields ?? []) {
+      map[field] = tile.level;
+    }
+  }
+  return map;
+}
 
 /* ─── Mock Account Data ─── */
 
@@ -187,6 +289,7 @@ const LABEL_STYLES: Record<string, string> = {
 export function AccountModerationView({ accountId }: { accountId: string }) {
   const router = useRouter();
   const [sidebarTab, setSidebarTab] = useState("overview");
+  const [insightPrefs, setInsightPrefs] = useState<Record<InsightPrefKey, boolean>>(DEFAULT_INSIGHT_PREFS);
 
   // Resolve account from mock data
   const rawId = accountId.replace(/^AC%23|^AC#/, "");
@@ -196,6 +299,12 @@ export function AccountModerationView({ accountId }: { accountId: string }) {
     ) ??
     MOCK_ACCOUNTS[accountId] ??
     DEFAULT_ACCOUNT;
+
+  const activeTiles = useMemo(
+    () => computeAccountRiskTiles(account).filter((t) => insightPrefs[t.key as InsightPrefKey] !== false),
+    [account, insightPrefs]
+  );
+  const fieldRisks = useMemo(() => buildFieldRisks(activeTiles), [activeTiles]);
 
   return (
     <div className="h-full flex flex-col overflow-hidden relative">
@@ -342,6 +451,66 @@ export function AccountModerationView({ accountId }: { accountId: string }) {
         </div>
       </header>
 
+      {/* ── QUICK CONTEXT RISK BAR ── */}
+      {activeTiles.length > 0 && (
+        <div className="flex items-center gap-3 px-6 py-2.5 border-b border-neutral-200 bg-neutral-50 shrink-0 overflow-x-auto custom-scrollbar">
+          {activeTiles.map((tile, i) => {
+            const s = RISK_TILE_STYLES[tile.level];
+            return (
+              <div key={i} className={`shrink-0 flex flex-col px-3 py-2 rounded-md border ${s.bg} ${s.border}`}>
+                <div className="flex items-center gap-1.5">
+                  <tile.icon className={`w-3 h-3 ${s.icon}`} />
+                  <span className={`text-[10px] font-bold uppercase tracking-wider ${s.label}`}>
+                    {tile.label}
+                  </span>
+                </div>
+                <span className={`text-xs font-medium mt-0.5 ${s.desc}`}>
+                  {tile.desc}
+                </span>
+              </div>
+            );
+          })}
+
+          {/* Prioritize / Customize Dialog */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="ghost"
+                className="shrink-0 h-full min-h-[48px] border border-dashed border-neutral-300 bg-neutral-50/50 hover:bg-neutral-100 text-neutral-500 hover:text-neutral-900 rounded-md px-3 flex flex-col gap-0.5 items-center justify-center transition-colors"
+              >
+                <RiSettings3Line className="w-3.5 h-3.5" />
+                <span className="text-[9px] font-bold uppercase">Prioritize</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle className="text-lg font-bold text-neutral-900">Prioritize AI Insights</DialogTitle>
+                <DialogDescription className="text-sm text-neutral-500">
+                  Select which risk signals are most critical for your current review.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-4 space-y-4">
+                {INSIGHT_SIGNALS.map((signal) => (
+                  <div key={signal.id} className="flex items-center justify-between">
+                    <div className="flex flex-col gap-0.5 pr-4">
+                      <span className="text-sm font-semibold text-neutral-900">{signal.label}</span>
+                      <span className="text-xs text-neutral-500">{signal.desc}</span>
+                    </div>
+                    <Switch
+                      checked={insightPrefs[signal.id]}
+                      onCheckedChange={(checked) =>
+                        setInsightPrefs((prev) => ({ ...prev, [signal.id]: checked }))
+                      }
+                      className="data-[state=checked]:bg-neutral-900"
+                    />
+                  </div>
+                ))}
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+      )}
+
       {/* ── Body ── */}
       <div className="flex-1 flex min-h-0 bg-white">
         {/* ── Left Pane: Cohesive Profile Card ── */}
@@ -485,7 +654,9 @@ export function AccountModerationView({ accountId }: { accountId: string }) {
                     </div>
                     <div className="flex flex-col gap-1">
                       <span className="text-xs text-neutral-500">Followers</span>
-                      <span className="font-medium text-neutral-900">{account.followers.toLocaleString("en-US")}</span>
+                      <span className={fieldRisks["Followers"] ? RISK_VALUE_STYLES[fieldRisks["Followers"]] : "font-medium text-neutral-900"}>
+                        {account.followers.toLocaleString("en-US")}
+                      </span>
                     </div>
                     <div className="flex flex-col gap-1">
                       <span className="text-xs text-neutral-500">Geo (Estimated)</span>
@@ -499,7 +670,9 @@ export function AccountModerationView({ accountId }: { accountId: string }) {
                     </div>
                     <div className="flex flex-col gap-1">
                       <span className="text-xs text-neutral-500">Global Posts</span>
-                      <span className="font-medium text-neutral-900">{account.globalPosts.toLocaleString("en-US")}</span>
+                      <span className={fieldRisks["Global Posts"] ? RISK_VALUE_STYLES[fieldRisks["Global Posts"]] : "font-medium text-neutral-900"}>
+                        {account.globalPosts.toLocaleString("en-US")}
+                      </span>
                     </div>
                     <div className="flex flex-col gap-1">
                       <span className="text-xs text-neutral-500">Posts on Brand</span>
@@ -507,7 +680,7 @@ export function AccountModerationView({ accountId }: { accountId: string }) {
                     </div>
                     <div className="flex flex-col gap-1">
                       <span className="text-xs text-neutral-500">Cluster</span>
-                      <span className={`font-medium ${account.cluster === "N/A" ? "text-neutral-400" : "text-neutral-900"}`}>
+                      <span className={fieldRisks["Cluster"] ? RISK_VALUE_STYLES[fieldRisks["Cluster"]] : `font-medium ${account.cluster === "N/A" ? "text-neutral-400" : "text-neutral-900"}`}>
                         {account.cluster}
                       </span>
                     </div>
@@ -528,17 +701,15 @@ export function AccountModerationView({ accountId }: { accountId: string }) {
                     </div>
                     <div className="flex flex-col gap-1">
                       <span className="text-xs text-neutral-500">Moderation Rate</span>
-                      <span className="font-medium text-neutral-900">{account.moderationPct}%</span>
+                      <span className={fieldRisks["Moderation Rate"] ? RISK_VALUE_STYLES[fieldRisks["Moderation Rate"]] : "font-medium text-neutral-900"}>
+                        {account.moderationPct}%
+                      </span>
                     </div>
                     <div className="flex flex-col gap-1">
                       <span className="text-xs text-neutral-500">Infringement Rate</span>
-                      {account.infringementPct >= 50 ? (
-                        <span className="font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded w-fit border border-red-100">
-                          {account.infringementPct}%
-                        </span>
-                      ) : (
-                        <span className="font-medium text-neutral-900">{account.infringementPct}%</span>
-                      )}
+                      <span className={fieldRisks["Infringement Rate"] ? RISK_VALUE_STYLES[fieldRisks["Infringement Rate"]] : "font-medium text-neutral-900"}>
+                        {account.infringementPct}%
+                      </span>
                     </div>
                   </div>
                 </div>
