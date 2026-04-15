@@ -1,0 +1,245 @@
+// Prisma schema — Brand Protection SaaS
+// Database: Vercel Postgres (Neon)
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ── Organizations ──
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  logo      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subOrganizations SubOrganization[]
+  users            User[]
+  posts            Post[]
+  websites         Website[]
+  accounts         Account[]
+}
+
+model SubOrganization {
+  id             String       @id @default(cuid())
+  name           String
+  count          Int?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  @@index([organizationId])
+}
+
+// ── Users ──
+
+model User {
+  id             String       @id @default(cuid())
+  name           String
+  subtitle       String?
+  email          String       @unique
+  role           UserRole     @default(Viewer)
+  roleLabel      String?
+  status         UserStatus   @default(active)
+  lastLogin      String?
+  initials       String?
+  avatarUrl      String?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId])
+}
+
+enum UserRole {
+  Admin
+  Editor
+  Viewer
+  Analyst
+}
+
+enum UserStatus {
+  active
+  invited
+}
+
+// ── Posts ──
+
+model Post {
+  id                  String     @id @default(cuid())
+  postId              String     @unique
+  title               String
+  keyword             String?
+  imageUrl            String?
+  status              PostStatus @default(up)
+  websiteDomain       String
+  domainCount         Int        @default(0)
+  accountName         String?
+  accountTag          String?
+  accountTagType      String?
+  price               String?
+  pricePct            String?
+  suspiciousCount     Int        @default(0)
+  suspiciousReasons   String?
+  label               LabelType  @default(unlabeled)
+  labelText           String?
+  impactScore         Int        @default(0)
+  bundleItems         Int        @default(0)
+  platformGeo         String?
+  accountGeo          String?
+  daysSinceTakedown   Int?
+  takedownDate        DateTime?
+  validationErrors    String?
+  ipCertificate       String?
+  websiteCategory     String?
+  listedBrand         String?
+  shipsFrom           String?
+  shipsTo             String[]   @default([])
+  daysSinceModeration Int        @default(0)
+  daysSinceNoticeSent Int?
+  volumeSold          Int        @default(0)
+  imageReasons        String?
+  stock               String?
+  productCategory     String?
+  crawlingDate        DateTime?
+  lastCreatedDate     DateTime?
+  tags                String[]   @default([])
+  relatedDomains      String[]   @default([])
+  organizationId      String
+  organization        Organization @relation(fields: [organizationId], references: [id])
+  media               Media[]
+  images              Image[]
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  @@index([organizationId])
+  @@index([label])
+  @@index([status])
+  @@index([websiteDomain])
+}
+
+enum PostStatus {
+  down
+  up
+  redirected
+  unknown
+}
+
+enum LabelType {
+  counterfeit
+  legitimate
+  suspicious
+  trademark_infringement
+  unlabeled
+}
+
+// ── Media ──
+
+model Media {
+  id            String     @id @default(cuid())
+  type          MediaType
+  url           String
+  label         MediaLabel @default(unlabeled)
+  subtitlesUrl  String?
+  postId        String
+  post          Post       @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parentMediaId String?
+  parentMedia   Media?     @relation("MediaFrames", fields: [parentMediaId], references: [id])
+  frames        Media[]    @relation("MediaFrames")
+  createdAt     DateTime   @default(now())
+
+  @@index([postId])
+}
+
+enum MediaType {
+  image
+  video
+}
+
+enum MediaLabel {
+  counterfeit
+  suspicious
+  legitimate
+  unlabeled
+}
+
+// ── Images (derived/aggregated) ──
+
+model Image {
+  id              String     @id @default(cuid())
+  imageId         String     @unique
+  thumbnailUrl    String
+  parentPostId    String
+  parentPost      Post       @relation(fields: [parentPostId], references: [id], onDelete: Cascade)
+  parentPostTitle String?
+  postsCount      Int        @default(0)
+  accountsCount   Int        @default(0)
+  websitesCount   Int        @default(0)
+  label           MediaLabel @default(unlabeled)
+  labelText       String?
+  firstSeen       DateTime?
+  similarity      Int        @default(0)
+  createdAt       DateTime   @default(now())
+
+  @@index([parentPostId])
+  @@index([label])
+}
+
+// ── Websites ──
+
+model Website {
+  id                 String       @id @default(cuid())
+  domain             String       @unique
+  topLevelDomain     String?
+  category           String?
+  creationDate       DateTime?
+  expiryDate         DateTime?
+  registrar          String?
+  domainContact      String?
+  metaKeywords       String?
+  description        String?
+  hostingProvider    String?
+  abuseContact       String?
+  estimatedGeo       String?
+  dnsProvider        String?
+  emailInfra         String?
+  riskScore          Int          @default(0)
+  globalRank         String?
+  firstDetected      DateTime?
+  lastCrawled        DateTime?
+  tags               String[]     @default([])
+  organizationId     String
+  organization       Organization @relation(fields: [organizationId], references: [id])
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  @@index([organizationId])
+}
+
+// ── Accounts ──
+
+model Account {
+  id              String       @id @default(cuid())
+  accountName     String
+  accountTag      String?
+  tagType         String?
+  platform        String?
+  geo             String?
+  postsCount      Int          @default(0)
+  riskScore       Int          @default(0)
+  label           LabelType    @default(unlabeled)
+  labelText       String?
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id])
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([organizationId])
+  @@index([accountName])
+}

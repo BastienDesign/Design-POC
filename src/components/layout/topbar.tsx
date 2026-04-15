@@ -32,10 +32,10 @@ export function Topbar() {
   // Dynamic breadcrumbs for entity routes
   const SEGMENT_HREFS: Record<string, string> = {
     Explore: "/explore",
-    Websites: "/explore",
-    Posts: "/explore",
-    Accounts: "/explore",
-    Images: "/explore",
+    Websites: "/explore?tab=Websites",
+    Posts: "/explore?tab=Posts",
+    Accounts: "/explore?tab=Accounts",
+    Images: "/explore?tab=Images",
     Settings: "/settings",
   };
 

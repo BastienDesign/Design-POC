@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo, useDeferredValue } from "react";
+import { useSearchParams } from "next/navigation";
 import { ExploreHeader } from "@/components/explore/explore-header";
 import type { ActiveFilter } from "@/components/explore/explore-header";
 import { ExploreTable } from "@/components/explore/explore-table";
@@ -55,9 +56,13 @@ const DEFAULT_IMAGE_PROPERTIES: ImageVisibleProperties = {
 
 let filterIdCounter = 0;
 
+const VALID_TABS = ["Posts", "Images", "Websites", "Accounts"];
+
 export default function ExplorePage() {
+  const searchParams = useSearchParams();
+  const initialTab = VALID_TABS.includes(searchParams.get("tab") ?? "") ? searchParams.get("tab")! : "Posts";
   const [posts, setPosts] = useState<ExplorePost[]>(EXPLORE_POSTS);
-  const [activeTab, setActiveTab] = useState("Posts");
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [filters, setFilters] = useState<ActiveFilter[]>([]);
   const [searchValue, setSearchValue] = useState("");
   const [advancedQuery, setAdvancedQuery] = useState<FilterQuery>(DEFAULT_QUERY);

@@ -519,7 +519,7 @@ export function ModerationWorkspace({
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="text-neutral-400" />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/explore" className="text-[14px] text-neutral-500 hover:text-neutral-900 transition-colors">
+                  <BreadcrumbLink href="/explore?tab=Posts" className="text-[14px] text-neutral-500 hover:text-neutral-900 transition-colors">
                     Posts
                   </BreadcrumbLink>
                 </BreadcrumbItem>
