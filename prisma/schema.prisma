@@ -136,6 +136,7 @@ enum LabelType {
   legitimate
   suspicious
   trademark_infringement
+  copyright_violation
   unlabeled
 }
 
@@ -166,6 +167,8 @@ enum MediaLabel {
   counterfeit
   suspicious
   legitimate
+  trademark_infringement
+  copyright_violation
   unlabeled
 }
 

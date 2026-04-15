@@ -24,6 +24,8 @@ const SEED_LABELS = [
   { type: "suspicious" as const, text: "Suspicious" },
   { type: "legitimate" as const, text: "Legitimate" },
   { type: "unlabeled" as const, text: "Unlabeled" },
+  { type: "trademark_infringement" as const, text: "Trademark Infringement" },
+  { type: "copyright_violation" as const, text: "Copyright Violation" },
 ];
 const SEED_TAG_TYPES = ["counterfeit", "suspicious", "legitimate", "unknown"];
 const SEED_DOMAINS = ["ebay.com", "amazon.de", "shopify.com", "aliexpress.com", "ebay.co.uk", "zalando.de", "amazon.com", "etsy.com", "wish.com", "rakuten.co.jp"];
@@ -120,7 +122,7 @@ async function main() {
   for (let i = 0; i < POST_COUNT; i++) {
     const s = i * 7;
     const status = SEED_STATUSES[i % 4];
-    const labelSeed = SEED_LABELS[i % 4];
+    const labelSeed = SEED_LABELS[i % 6];
     const tagType = SEED_TAG_TYPES[i % 4];
     const suspCount = Math.floor(seededRandom(s + 1) * 6);
     const reasons = Array.from({ length: suspCount }, (_, j) => pick(SEED_REASONS, s + j + 10)).join(", ");
@@ -252,7 +254,7 @@ async function main() {
               postsCount: Math.floor(seededRandom((i * 7 + fi) * 31 + 4) * 800) + 1,
               accountsCount: Math.floor(seededRandom((i * 7 + fi) * 31 + 5) * 120) + 1,
               websitesCount: Math.floor(seededRandom((i * 7 + fi) * 31 + 6) * 40) + 1,
-              label: labelType as any,
+              label: labelType,
               labelText: labelSeed.text,
               firstSeen: crawlingDate,
               similarity: Math.floor(seededRandom((i * 7 + fi) * 31 + 9) * 40) + 60,
@@ -280,7 +282,7 @@ async function main() {
             postsCount: Math.floor(seededRandom((i * 7 + j) * 31 + 4) * 800) + 1,
             accountsCount: Math.floor(seededRandom((i * 7 + j) * 31 + 5) * 120) + 1,
             websitesCount: Math.floor(seededRandom((i * 7 + j) * 31 + 6) * 40) + 1,
-            label: labelType as any,
+            label: labelType,
             labelText: labelSeed.text,
             firstSeen: crawlingDate,
             similarity: Math.floor(seededRandom((i * 7 + j) * 31 + 9) * 40) + 60,
@@ -316,8 +318,8 @@ async function main() {
     geo: pick(SEED_GEOS, i),
     postsCount: Math.floor(seededRandom(i * 3) * 500) + 1,
     riskScore: Math.floor(seededRandom(i * 5) * 100),
-    label: SEED_LABELS[i % 4].type,
-    labelText: SEED_LABELS[i % 4].text,
+    label: SEED_LABELS[i % 6].type,
+    labelText: SEED_LABELS[i % 6].text,
   }));
   for (const a of accounts) {
     await prisma.account.create({
