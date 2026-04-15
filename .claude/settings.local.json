@@ -9,7 +9,11 @@
       "Bash(node:*)",
       "Bash(yes:*)",
       "Bash(git push:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(grep \"RiFullscreen\\\\|RiCollapse\\\\|RiExpand\\\\|RiContract\\\\|RiListCheck\" node_modules/@remixicon/react/dist/icons/*.d.ts)",
+      "Bash(ls node_modules/@remixicon/react/*.d.ts)",
+      "mcp__shadcn__get_add_command_for_items",
+      "Bash(git commit:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

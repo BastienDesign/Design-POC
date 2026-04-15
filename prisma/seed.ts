@@ -158,9 +158,7 @@ async function main() {
     })();
 
     // Map label type for Prisma enum
-    const labelType = labelSeed.type === "trademark_infringement"
-      ? "trademark_infringement" as const
-      : labelSeed.type;
+    const labelType = labelSeed.type;
 
     // Build first image URL
     const firstImgId = mediaIdCounter;
@@ -254,8 +252,8 @@ async function main() {
               postsCount: Math.floor(seededRandom((i * 7 + fi) * 31 + 4) * 800) + 1,
               accountsCount: Math.floor(seededRandom((i * 7 + fi) * 31 + 5) * 120) + 1,
               websitesCount: Math.floor(seededRandom((i * 7 + fi) * 31 + 6) * 40) + 1,
-              label: labelType === "trademark_infringement" ? "suspicious" : (labelType === "unlabeled" ? "unlabeled" : labelType as any),
-              labelText: labelType === "trademark_infringement" ? "Suspicious" : labelSeed.text,
+              label: labelType as any,
+              labelText: labelSeed.text,
               firstSeen: crawlingDate,
               similarity: Math.floor(seededRandom((i * 7 + fi) * 31 + 9) * 40) + 60,
             },
@@ -282,8 +280,8 @@ async function main() {
             postsCount: Math.floor(seededRandom((i * 7 + j) * 31 + 4) * 800) + 1,
             accountsCount: Math.floor(seededRandom((i * 7 + j) * 31 + 5) * 120) + 1,
             websitesCount: Math.floor(seededRandom((i * 7 + j) * 31 + 6) * 40) + 1,
-            label: labelType === "trademark_infringement" ? "suspicious" : (labelType === "unlabeled" ? "unlabeled" : labelType as any),
-            labelText: labelType === "trademark_infringement" ? "Suspicious" : labelSeed.text,
+            label: labelType as any,
+            labelText: labelSeed.text,
             firstSeen: crawlingDate,
             similarity: Math.floor(seededRandom((i * 7 + j) * 31 + 9) * 40) + 60,
           },

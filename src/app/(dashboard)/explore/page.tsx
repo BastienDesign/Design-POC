@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, useDeferredValue } from "react";
+import { useState, useCallback, useMemo, useDeferredValue, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { ExploreHeader } from "@/components/explore/explore-header";
 import type { ActiveFilter } from "@/components/explore/explore-header";
@@ -59,6 +59,14 @@ let filterIdCounter = 0;
 const VALID_TABS = ["Posts", "Images", "Websites", "Accounts"];
 
 export default function ExplorePage() {
+  return (
+    <Suspense>
+      <ExplorePageContent />
+    </Suspense>
+  );
+}
+
+function ExplorePageContent() {
   const searchParams = useSearchParams();
   const initialTab = VALID_TABS.includes(searchParams.get("tab") ?? "") ? searchParams.get("tab")! : "Posts";
   const [posts, setPosts] = useState<ExplorePost[]>(EXPLORE_POSTS);
