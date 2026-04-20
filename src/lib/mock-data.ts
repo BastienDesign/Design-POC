@@ -43,7 +43,7 @@ export const CURRENT_USER = {
 
 // --- Breadcrumbs ---
 export const BREADCRUMBS: Record<string, string[]> = {
-  "/overview": ["Overview"],
+  "/overview": ["Dashboard"],
   "/performance": ["Performance"],
   "/explore": ["Explore"],
   "/ask-cortex": ["Ask Cortex"],
