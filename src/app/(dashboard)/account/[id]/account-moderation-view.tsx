@@ -55,6 +55,7 @@ import {
 } from "@/components/ui/sheet";
 import { ImageWithFallback } from "@/components/explore/image-with-fallback";
 import { useRouter } from "next/navigation";
+import { NetworkTab, type NetworkEntity } from "@/components/moderation/network-tab";
 
 /* ─── Risk Tile Types & Styling ─── */
 
@@ -147,6 +148,53 @@ function buildFieldRisks(tiles: RiskTile[]): Record<string, RiskLevel> {
 }
 
 /* ─── Mock Account Data ─── */
+
+function buildAccountNetwork(account: AccountData): {
+  summary: string;
+  directClones: NetworkEntity[];
+  suspiciousLinks: NetworkEntity[];
+  totalRelated: number;
+} {
+  const seed = account.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  const cloneCount = Math.min(3, Math.floor(account.postsOnBrand / 200) + 1);
+  const directClones: NetworkEntity[] = Array.from({ length: cloneCount }, (_, i) => ({
+    id: `${account.id}-alias-${i}`,
+    kind: "account",
+    name: `${account.name}_${["backup", "official", "outlet"][i] ?? `alt${i}`}`,
+    subtitle: `${account.platform} · cloned profile`,
+    riskScore: 90 - i * 5,
+    href: "#",
+  }));
+  const suspiciousLinks: NetworkEntity[] = [
+    {
+      id: `${account.id}-site`,
+      kind: "website",
+      name: account.platform,
+      subtitle: account.websiteCategory,
+      riskScore: 72,
+      href: "#",
+    },
+    {
+      id: `${account.id}-posts`,
+      kind: "post",
+      name: `${account.postsOnBrand} infringing posts`,
+      subtitle: `${account.infringementPct}% infringement rate`,
+      riskScore: Math.min(95, 40 + account.infringementPct / 2),
+      href: "#",
+    },
+    ...account.tags.slice(0, 2).map((t, i) => ({
+      id: `${account.id}-tag-${i}`,
+      kind: "seller" as const,
+      name: `Tagged "${t}"`,
+      subtitle: `Seed ${seed % 1000} · behavioural cluster`,
+      riskScore: 58 - i * 6,
+      href: "#",
+    })),
+  ];
+  const totalRelated = directClones.length + suspiciousLinks.length + account.postsOnBrand;
+  const summary = `${account.postsOnBrand} posts on brand with ${directClones.length} cloned profiles detected.`;
+  return { summary, directClones, suspiciousLinks, totalRelated };
+}
 
 interface AccountData {
   id: string;
@@ -848,35 +896,18 @@ export function AccountModerationView({ accountId }: { accountId: string }) {
 
               {/* ── Network Tab ── */}
               <TabsContent value="network" className="m-0 p-6 pb-20">
-                <h3 className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-4">Related Entities</h3>
-                <div className="space-y-3">
-                  {[
-                    { type: "Website", name: account.platform, count: "1 site" },
-                    { type: "Posts", name: `${account.postsOnBrand} posts on brand`, count: account.postsOnBrand.toLocaleString("en-US") },
-                  ].map((entity) => (
-                    <div
-                      key={entity.type}
-                      className="flex items-center justify-between p-3 rounded-lg border border-neutral-200 bg-neutral-50 hover:bg-neutral-100 transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="size-8 rounded-full bg-white border border-neutral-200 flex items-center justify-center">
-                          {entity.type === "Website" ? (
-                            <RiGlobalLine className="size-3.5 text-neutral-500" />
-                          ) : (
-                            <RiGroupLine className="size-3.5 text-neutral-500" />
-                          )}
-                        </div>
-                        <div>
-                          <div className="text-[12px] font-medium text-neutral-900">{entity.name}</div>
-                          <div className="text-[10px] text-neutral-500">{entity.type}</div>
-                        </div>
-                      </div>
-                      <Badge variant="secondary" className="text-[10px] bg-neutral-200">
-                        {entity.count}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
+                {(() => {
+                  const net = buildAccountNetwork(account);
+                  return (
+                    <NetworkTab
+                      clusterLabel={account.label}
+                      summary={net.summary}
+                      directClones={net.directClones}
+                      suspiciousLinks={net.suspiciousLinks}
+                      totalRelated={net.totalRelated}
+                    />
+                  );
+                })()}
               </TabsContent>
             </ScrollArea>
           </Tabs>

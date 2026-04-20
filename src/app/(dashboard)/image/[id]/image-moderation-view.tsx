@@ -58,6 +58,7 @@ import {
 } from "@/components/ui/sheet";
 import { ImageWithFallback } from "@/components/explore/image-with-fallback";
 import { useRouter } from "next/navigation";
+import { NetworkTab, type NetworkEntity } from "@/components/moderation/network-tab";
 import { EXPLORE_IMAGES } from "@/lib/mock-data";
 
 /* ─── Risk Tile Types & Styling ─── */
@@ -159,6 +160,53 @@ function buildFieldRisks(tiles: RiskTile[]): Record<string, RiskLevel> {
 }
 
 /* ─── Mock Image Data ─── */
+
+function buildImageNetwork(image: ImageData): {
+  summary: string;
+  directClones: NetworkEntity[];
+  suspiciousLinks: NetworkEntity[];
+  totalRelated: number;
+} {
+  const seed = image.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  const cloneCount = Math.min(image.postsCount, 5);
+  const directClones: NetworkEntity[] = Array.from({ length: cloneCount }, (_, i) => ({
+    id: `${image.id}-post-${i}`,
+    kind: "post",
+    name: `PO#${2000000 + ((seed * (i + 5)) % 8000000)}`,
+    subtitle: `${image.platform} · ${image.similarity}% similarity`,
+    riskScore: 95 - i * 4,
+    href: "#",
+  }));
+  const suspiciousLinks: NetworkEntity[] = [
+    {
+      id: `${image.id}-accounts`,
+      kind: "account",
+      name: `${image.accountsCount} related accounts`,
+      subtitle: `Posting this image across ${image.platform}`,
+      riskScore: Math.min(90, 40 + image.accountsCount),
+      href: "#",
+    },
+    {
+      id: `${image.id}-websites`,
+      kind: "website",
+      name: `${image.websitesCount} hosting websites`,
+      subtitle: "Distributed across marketplaces",
+      riskScore: Math.min(85, 35 + image.websitesCount * 2),
+      href: "#",
+    },
+    ...image.detections.slice(0, 2).map((d, i) => ({
+      id: `${image.id}-brand-${i}`,
+      kind: "image" as const,
+      name: `${d.brand} brand match`,
+      subtitle: `${d.type} · ${d.confidence}% confidence`,
+      riskScore: d.confidence,
+      href: "#",
+    })),
+  ];
+  const totalRelated = image.postsCount + image.accountsCount + image.websitesCount;
+  const summary = `${image.postsCount} posts and ${image.accountsCount} accounts share this image across ${image.websitesCount} sites.`;
+  return { summary, directClones, suspiciousLinks, totalRelated };
+}
 
 interface ImageData {
   id: string;
@@ -862,32 +910,18 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
 
               {/* ── Network Tab ── */}
               <TabsContent value="network" className="m-0 p-6 pb-20">
-                <h3 className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-4">Related Entities</h3>
-                <div className="space-y-3">
-                  {[
-                    { type: "Posts", name: `Found in ${image.postsCount} posts`, count: image.postsCount.toLocaleString("en-US"), icon: RiFileTextLine },
-                    { type: "Accounts", name: `Across ${image.accountsCount} accounts`, count: image.accountsCount.toLocaleString("en-US"), icon: RiGroupLine },
-                    { type: "Websites", name: `On ${image.websitesCount} websites`, count: image.websitesCount.toLocaleString("en-US"), icon: RiGlobalLine },
-                  ].map((entity) => (
-                    <div
-                      key={entity.type}
-                      className="flex items-center justify-between p-3 rounded-lg border border-neutral-200 bg-neutral-50 hover:bg-neutral-100 transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="size-8 rounded-full bg-white border border-neutral-200 flex items-center justify-center">
-                          <entity.icon className="size-3.5 text-neutral-500" />
-                        </div>
-                        <div>
-                          <div className="text-[12px] font-medium text-neutral-900">{entity.name}</div>
-                          <div className="text-[10px] text-neutral-500">{entity.type}</div>
-                        </div>
-                      </div>
-                      <Badge variant="secondary" className="text-[10px] bg-neutral-200">
-                        {entity.count}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
+                {(() => {
+                  const net = buildImageNetwork(image);
+                  return (
+                    <NetworkTab
+                      clusterLabel={image.label}
+                      summary={net.summary}
+                      directClones={net.directClones}
+                      suspiciousLinks={net.suspiciousLinks}
+                      totalRelated={net.totalRelated}
+                    />
+                  );
+                })()}
               </TabsContent>
             </ScrollArea>
           </Tabs>

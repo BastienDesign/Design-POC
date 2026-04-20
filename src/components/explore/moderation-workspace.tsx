@@ -89,6 +89,54 @@ import { EXPLORE_POSTS, SUB_ORGANIZATIONS } from "@/lib/mock-data";
 import { ImageWithFallback } from "./image-with-fallback";
 import { VERDICT_OPTIONS, VERDICT_TRIGGER_STYLE } from "./verdict-options";
 import { useAuth } from "@/lib/auth-context";
+import { NetworkTab, type NetworkEntity } from "@/components/moderation/network-tab";
+
+function buildExploreNetwork(item: ExplorePost): {
+  summary: string;
+  directClones: NetworkEntity[];
+  suspiciousLinks: NetworkEntity[];
+  totalRelated: number;
+} {
+  const seed = item.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  const clones = Math.min(item.domainCount, 6);
+  const directClones: NetworkEntity[] = Array.from({ length: clones }, (_, i) => ({
+    id: `${item.id}-clone-${i}`,
+    kind: i % 2 === 0 ? "post" : "image",
+    name: `PO#${1000000 + ((seed * (i + 3)) % 9000000)}`,
+    subtitle: item.relatedDomains[i % item.relatedDomains.length] ?? item.websiteDomain,
+    riskScore: 92 - i * 3,
+    href: "#",
+  }));
+  const suspiciousLinks: NetworkEntity[] = [
+    {
+      id: `${item.id}-site`,
+      kind: "website",
+      name: item.websiteDomain,
+      subtitle: `${item.domainCount} related listings`,
+      riskScore: 74,
+      href: "#",
+    },
+    {
+      id: `${item.id}-seller`,
+      kind: "seller",
+      name: item.accountName,
+      subtitle: item.accountTag,
+      riskScore: item.accountTagType === "counterfeit" ? 88 : item.accountTagType === "suspicious" ? 62 : 40,
+      href: "#",
+    },
+    ...item.relatedDomains.slice(0, 3).map((d, i) => ({
+      id: `${item.id}-rel-${i}`,
+      kind: "website" as const,
+      name: d,
+      subtitle: "Related domain",
+      riskScore: 55 - i * 4,
+      href: "#",
+    })),
+  ];
+  const totalRelated = directClones.length + suspiciousLinks.length + item.domainCount;
+  const summary = `${directClones.length} direct clones and ${suspiciousLinks.length} suspicious links detected in this cluster.`;
+  return { summary, directClones, suspiciousLinks, totalRelated };
+}
 
 const LABEL_COLORS: Record<string, string> = {
   counterfeit: "bg-red-500",
@@ -1416,35 +1464,18 @@ export function ModerationWorkspace({
 
               {/* ── Network Tab ── */}
               <TabsContent value="network" className="m-0 p-5 pb-20">
-                <SectionHeader icon={RiNodeTree} label="Related Entities" />
-                <div className="space-y-3">
-                  {[
-                    { type: "Website", name: currentItem.websiteDomain, count: currentItem.domainCount },
-                    { type: "Seller", name: currentItem.accountName, count: "1 account" },
-                  ].map((entity) => (
-                    <div
-                      key={entity.type}
-                      className="flex items-center justify-between p-3 rounded-lg border border-neutral-200 bg-neutral-50 hover:bg-neutral-100 transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="size-8 rounded-full bg-white border border-neutral-200 flex items-center justify-center">
-                          {entity.type === "Website" ? (
-                            <RiGlobalLine className="size-3.5 text-neutral-500" />
-                          ) : (
-                            <RiUserLine className="size-3.5 text-neutral-500" />
-                          )}
-                        </div>
-                        <div>
-                          <div className="text-[12px] font-medium text-neutral-900">{entity.name}</div>
-                          <div className="text-[10px] text-neutral-500">{entity.type}</div>
-                        </div>
-                      </div>
-                      <Badge variant="secondary" className="text-[10px] bg-neutral-200">
-                        {entity.count}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
+                {(() => {
+                  const network = buildExploreNetwork(currentItem);
+                  return (
+                    <NetworkTab
+                      clusterLabel={currentItem.labelText}
+                      summary={network.summary}
+                      directClones={network.directClones}
+                      suspiciousLinks={network.suspiciousLinks}
+                      totalRelated={network.totalRelated}
+                    />
+                  );
+                })()}
               </TabsContent>
             </ScrollArea>
           </Tabs>
