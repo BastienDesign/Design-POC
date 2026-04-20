@@ -1,148 +1,258 @@
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+"use client";
+
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-  FieldSeparator,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+  RiShieldKeyholeLine,
+  RiSparkling2Line,
+  RiEyeLine,
+  RiScales3Line,
+  RiRadarLine,
+} from "@remixicon/react";
+import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
+import { toast } from "sonner";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const router = useRouter()
-  const [isLogin, setIsLogin] = useState(true)
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const { login } = useAuth();
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setTimeout(() => {
-      router.push(isLogin ? "/explore" : "/onboarding")
-    }, 800)
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setIsSubmitting(true);
+    try {
+      if (isLogin) {
+        const ok = await login(email.trim().toLowerCase());
+        if (!ok) {
+          toast.error("No account found for that email.");
+          return;
+        }
+        toast.success("Welcome back");
+        router.push("/explore");
+      } else {
+        router.push(`/onboarding?email=${encodeURIComponent(email.trim())}`);
+      }
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="overflow-hidden p-0">
+      <Card className="overflow-hidden p-0 shadow-2xl">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8" onSubmit={handleSubmit}>
+          {/* Left: form */}
+          <form onSubmit={handleSubmit} className="p-6 md:p-10">
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
-                <h1 className="text-2xl font-bold">
+                <div className="mb-2 inline-flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <RiShieldKeyholeLine className="size-5" />
+                </div>
+                <h1 className="text-2xl font-bold tracking-tight">
                   {isLogin ? "Welcome back" : "Create your account"}
                 </h1>
-                <p className="text-balance text-muted-foreground">
+                <p className="text-balance text-sm text-muted-foreground">
                   {isLogin
-                    ? "Login to your Sentinel account"
+                    ? "Sign in to your Sentinel workspace"
                     : "Set up your workspace and start protecting your brand"}
                 </p>
               </div>
-              {!isLogin && (
-                <>
-                  <div className="grid grid-cols-2 gap-4">
-                    <Field>
-                      <FieldLabel htmlFor="firstName">First name</FieldLabel>
-                      <Input id="firstName" placeholder="Sarah" required />
-                    </Field>
-                    <Field>
-                      <FieldLabel htmlFor="lastName">Last name</FieldLabel>
-                      <Input id="lastName" placeholder="Chen" required />
-                    </Field>
-                  </div>
-                  <Field>
-                    <FieldLabel htmlFor="company">Company</FieldLabel>
-                    <Input id="company" placeholder="Acme Corp" required />
-                  </Field>
-                </>
-              )}
+
               <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <FieldLabel htmlFor="email">Work email</FieldLabel>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="name@company.com"
                   required
+                  autoComplete="email"
+                  placeholder="you@company.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-10"
                 />
               </Field>
-              <Field>
-                <div className="flex items-center">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                  {isLogin && (
+
+              {isLogin && (
+                <Field>
+                  <div className="flex items-center justify-between">
+                    <FieldLabel htmlFor="password">Password</FieldLabel>
                     <a
                       href="#"
-                      className="ml-auto text-sm underline-offset-2 hover:underline"
+                      className="text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
                     >
-                      Forgot your password?
+                      Forgot?
                     </a>
-                  )}
-                </div>
-                <Input id="password" type="password" required />
-              </Field>
-              <Field>
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? "Processing..." : isLogin ? "Sign In" : "Get Started"}
-                </Button>
-              </Field>
-              <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
-                Or continue with
-              </FieldSeparator>
-              <Field className="grid grid-cols-3 gap-4">
-                <Button variant="outline" type="button">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path
-                      d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  <span className="sr-only">Login with Apple</span>
-                </Button>
-                <Button variant="outline" type="button">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path
-                      d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  <span className="sr-only">Login with Google</span>
-                </Button>
-                <Button variant="outline" type="button">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path
-                      d="M6.915 4.03c-1.968 0-3.683 1.28-4.871 3.113C.704 9.208 0 11.883 0 14.449c0 .706.07 1.369.21 1.973a6.624 6.624 0 0 0 .265.86 5.297 5.297 0 0 0 .371.761c.696 1.159 1.818 1.927 3.593 1.927 1.497 0 2.633-.671 3.965-2.444.76-1.012 1.144-1.626 2.663-4.32l.756-1.339.186-.325c.061.1.121.196.183.3l2.152 3.595c.724 1.21 1.665 2.556 2.47 3.314 1.046.987 1.992 1.22 3.06 1.22 1.075 0 1.876-.355 2.455-.843a3.743 3.743 0 0 0 .81-.973c.542-.939.861-2.127.861-3.745 0-2.72-.681-5.357-2.084-7.45-1.282-1.912-2.957-2.93-4.716-2.93-1.047 0-2.088.467-3.053 1.308-.652.57-1.257 1.29-1.82 2.05-.69-.875-1.335-1.547-1.958-2.056-1.182-.966-2.315-1.303-3.454-1.303zm10.16 2.053c1.147 0 2.188.758 2.992 1.999 1.132 1.748 1.647 4.195 1.647 6.4 0 1.548-.368 2.9-1.839 2.9-.58 0-1.027-.23-1.664-1.004-.496-.601-1.343-1.878-2.832-4.358l-.617-1.028a44.908 44.908 0 0 0-1.255-1.98c.07-.109.141-.224.211-.327 1.12-1.667 2.118-2.602 3.358-2.602zm-10.201.553c1.265 0 2.058.791 2.675 1.446.307.327.737.871 1.234 1.579l-1.02 1.566c-.757 1.163-1.882 3.017-2.837 4.338-1.191 1.649-1.81 1.817-2.486 1.817-.524 0-1.038-.237-1.383-.794-.263-.426-.464-1.13-.464-2.046 0-2.221.63-4.535 1.66-6.088.454-.687.964-1.226 1.533-1.533a2.264 2.264 0 0 1 1.088-.285z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  <span className="sr-only">Login with Meta</span>
-                </Button>
-              </Field>
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="h-10"
+                  />
+                </Field>
+              )}
+
+              <Button
+                type="submit"
+                size="lg"
+                disabled={isSubmitting || !email.trim()}
+                className="w-full"
+              >
+                <RiShieldKeyholeLine className="size-4" />
+                {isSubmitting
+                  ? isLogin
+                    ? "Signing in…"
+                    : "Continuing…"
+                  : isLogin
+                    ? "Sign in"
+                    : "Get started"}
+              </Button>
+
               <FieldDescription className="text-center">
                 {isLogin ? "Don't have an account? " : "Already have an account? "}
-                <button type="button" onClick={() => setIsLogin(!isLogin)} className="underline underline-offset-2">
+                <button
+                  type="button"
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="font-medium underline underline-offset-4 hover:text-foreground"
+                >
                   {isLogin ? "Sign up" : "Sign in"}
                 </button>
               </FieldDescription>
             </FieldGroup>
           </form>
-          <div className="relative hidden md:block bg-gradient-to-br from-[#1a1040] via-[#6b1a3a] to-[#e82030]">
-            <img
-              src="/login-hero.png"
-              alt="AI-powered brand protection"
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-          </div>
+
+          {/* Right: brand upsell panel */}
+          <BrandPanel />
         </CardContent>
       </Card>
-      <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+
+      <FieldDescription className="px-6 text-center text-white/70 [&_a:hover]:text-white [&_a]:text-white/90 [&_a]:underline [&_a]:underline-offset-4">
+        By clicking continue, you agree to our{" "}
+        <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
       </FieldDescription>
     </div>
-  )
+  );
+}
+
+function BrandPanel() {
+  const features = [
+    {
+      icon: RiRadarLine,
+      title: "24/7 autonomous monitoring",
+      copy: "Watches 120+ marketplaces, social platforms and domains.",
+    },
+    {
+      icon: RiSparkling2Line,
+      title: "AI moderation copilot",
+      copy: "Reviews every infringement and drafts takedowns in seconds.",
+    },
+    {
+      icon: RiScales3Line,
+      title: "One-click enforcement",
+      copy: "File DMCA and platform takedowns without leaving Sentinel.",
+    },
+  ];
+
+  return (
+    <div className="relative hidden overflow-hidden md:block">
+      {/* Base gradient */}
+      <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_80%_0%,#2a1670_0%,#6b1a3a_55%,#e82030_100%)]" />
+
+      {/* Mesh accents */}
+      <div className="absolute -left-20 top-10 h-72 w-72 rounded-full bg-[#4d2cd9] opacity-40 blur-3xl" />
+      <div className="absolute -right-16 bottom-0 h-72 w-72 rounded-full bg-[#ff3355] opacity-35 blur-3xl" />
+
+      {/* Grid texture */}
+      <div
+        aria-hidden
+        className="absolute inset-0 opacity-[0.07]"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
+        }}
+      />
+
+      {/* Content */}
+      <div className="relative z-10 flex h-full min-h-[560px] flex-col justify-between p-10 text-white">
+        <div className="flex items-center gap-2">
+          <div className="inline-flex size-8 items-center justify-center rounded-lg bg-white/15 backdrop-blur-sm ring-1 ring-white/20">
+            <RiShieldKeyholeLine className="size-4" />
+          </div>
+          <span className="text-sm font-semibold tracking-tight">Sentinel</span>
+          <span className="ml-2 rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white/90">
+            New
+          </span>
+        </div>
+
+        <div className="space-y-7">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-sm">
+            <RiSparkling2Line className="size-3.5" />
+            AI Moderation Copilot — out now
+          </div>
+
+          <div>
+            <h2 className="text-3xl font-bold leading-tight tracking-tight">
+              Protect your brand
+              <br />
+              at the speed of the internet.
+            </h2>
+            <p className="mt-3 max-w-sm text-sm text-white/80">
+              Sentinel finds, reviews and takes down counterfeits and IP
+              violations across the web — powered by agentic AI.
+            </p>
+          </div>
+
+          <ul className="space-y-3.5">
+            {features.map(({ icon: Icon, title, copy }) => (
+              <li key={title} className="flex items-start gap-3">
+                <div className="mt-0.5 inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/12 ring-1 ring-inset ring-white/15 backdrop-blur-sm">
+                  <Icon className="size-4" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold leading-tight">{title}</p>
+                  <p className="mt-0.5 text-xs leading-relaxed text-white/70">
+                    {copy}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="flex items-center justify-between text-xs text-white/70">
+          <div className="flex items-center gap-2">
+            <RiEyeLine className="size-3.5" />
+            <span>1.2M infringements removed last quarter</span>
+          </div>
+          <div className="flex -space-x-2">
+            {["#ffcf70", "#70d1ff", "#c9a5ff"].map((c) => (
+              <span
+                key={c}
+                className="size-6 rounded-full ring-2 ring-white/30"
+                style={{ background: c }}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

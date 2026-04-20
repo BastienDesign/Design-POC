@@ -431,9 +431,9 @@ export const FOLLOW_UP_QUESTIONS = [
 
 // --- Explore: Posts Grid Data ---
 export type PostStatus = "down" | "up" | "redirected" | "unknown";
-export type LabelType = "counterfeit" | "legitimate" | "suspicious" | "trademark infringement" | "unlabeled";
+export type LabelType = "counterfeit" | "legitimate" | "suspicious" | "trademark_infringement" | "trademark infringement" | "copyright_violation" | "unlabeled";
 
-export type MediaLabel = "counterfeit" | "suspicious" | "legitimate" | "unlabeled";
+export type MediaLabel = "counterfeit" | "suspicious" | "legitimate" | "trademark_infringement" | "copyright_violation" | "unlabeled";
 
 export interface PostMedia {
   id: string;
@@ -685,7 +685,7 @@ export const EXPLORE_ACTIVE_FILTERS = [
 ];
 
 // --- Explore: Images (derived from Posts — single source of truth) ---
-export type ImageLabel = "counterfeit" | "suspicious" | "legitimate" | "unlabeled";
+export type ImageLabel = "counterfeit" | "suspicious" | "legitimate" | "trademark_infringement" | "copyright_violation" | "unlabeled";
 
 export interface ExploreImage {
   id: string;
@@ -724,8 +724,8 @@ function deriveExploreImages(posts: ExplorePost[]): ExploreImage[] {
         postsCount: Math.floor(seededRandom(s + 4) * 800) + 1,
         accountsCount: Math.floor(seededRandom(s + 5) * 120) + 1,
         websitesCount: Math.floor(seededRandom(s + 6) * 40) + 1,
-        label: post.label === "trademark infringement" ? "suspicious" as ImageLabel : post.label as ImageLabel,
-        labelText: post.label === "trademark infringement" ? "Suspicious" : post.labelText,
+        label: post.label as ImageLabel,
+        labelText: post.labelText,
         firstSeen: post.crawlingDate,
         similarity: Math.floor(seededRandom(s + 9) * 40) + 60,
       };

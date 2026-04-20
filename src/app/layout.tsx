@@ -4,6 +4,7 @@ import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
 import { cn } from "@/lib/utils";
+import { AuthProvider } from "@/lib/auth-context";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -20,10 +21,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn("font-sans", inter.variable)}>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <TooltipProvider>
-          {children}
-          <Toaster richColors position="bottom-right" />
-        </TooltipProvider>
+        <AuthProvider>
+          <TooltipProvider>
+            {children}
+            <Toaster richColors position="bottom-right" />
+          </TooltipProvider>
+        </AuthProvider>
       </body>
     </html>
   );

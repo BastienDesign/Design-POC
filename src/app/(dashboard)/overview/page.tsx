@@ -9,17 +9,12 @@ import {
   RiFolder3Line,
   RiDownloadCloud2Line,
 } from "@remixicon/react";
+import { OrganizationView } from "@/components/overview/organization-view";
 
-// Placeholders for future atomic components
+// Placeholder for future atomic component
 const ProgramView = () => (
   <div className="w-full h-64 border border-dashed border-neutral-200 rounded-xl flex items-center justify-center text-sm text-neutral-400 mt-6 bg-neutral-50/50">
     [Program View Content: Aggregated KPIs &amp; Comparison Tables]
-  </div>
-);
-
-const OrganizationView = () => (
-  <div className="w-full h-64 border border-dashed border-neutral-200 rounded-xl flex items-center justify-center text-sm text-neutral-400 mt-6 bg-neutral-50/50">
-    [Organization View Content: Single Brand Deep-Dive &amp; Charts]
   </div>
 );
 

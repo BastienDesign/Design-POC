@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 import {
   RiFlag2Line,
   RiNodeTree,
@@ -17,6 +19,8 @@ import {
   RiDeleteBinLine,
   RiAlertLine,
 } from "@remixicon/react";
+import { useAuth } from "@/lib/auth-context";
+import { saveOnboardingData } from "./actions";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -93,7 +97,66 @@ interface AccessUser {
 
 /* ─── Main Wizard ─── */
 export function ClientOnboardingWizard() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const signupEmail = searchParams.get("email");
+  const { user, login } = useAuth();
+  const [isPending, startTransition] = useTransition();
   const [activePhase, setActivePhase] = useState(0);
+
+  /* Phase 1 — Controlled fields */
+  const [programName, setProgramName] = useState("");
+  const [orgName, setOrgName] = useState("");
+  const [orgDescription, setOrgDescription] = useState("");
+  const [brandNames, setBrandNames] = useState("");
+  const [projectScope, setProjectScope] = useState("");
+
+  /* Exit Setup — toast confirmation */
+  const handleExitSetup = () => {
+    toast("Exit the Setup Wizard?", {
+      description: "You can resume from where you left off later.",
+      action: { label: "Exit", onClick: () => router.push("/explore") },
+      cancel: { label: "Stay", onClick: () => {} },
+      duration: 6000,
+    });
+  };
+
+  /* Save as Draft — toast only */
+  const handleSaveDraft = () => {
+    toast.success("Draft saved", {
+      description: "You can resume this setup from the Getting Started page.",
+    });
+  };
+
+  /* Complete Setup — persist to DB, refresh auth, redirect */
+  const handleCompleteSetup = () => {
+    startTransition(async () => {
+      try {
+        const result = await saveOnboardingData({
+          programName,
+          orgName,
+          orgDescription,
+          brandNames,
+          projectScope,
+          currentUserId: user?.id ?? null,
+          signupEmail: user ? null : signupEmail,
+        });
+
+        const emailToLogin = user?.email ?? result.userEmail;
+        if (emailToLogin) {
+          await login(emailToLogin);
+        }
+
+        toast.success(`Setup complete — welcome to ${result.orgName}!`);
+        router.push("/explore");
+      } catch (err) {
+        console.error(err);
+        toast.error("Setup failed", {
+          description: "Could not save your configuration. Please try again.",
+        });
+      }
+    });
+  };
 
   /* Phase 1.4 — Access Control */
   const [accessUsers, setAccessUsers] = useState<AccessUser[]>([
@@ -176,7 +239,11 @@ export function ClientOnboardingWizard() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm">Program Name</Label>
-                <Input placeholder="e.g. Unilever" />
+                <Input
+                  placeholder="e.g. Unilever"
+                  value={programName}
+                  onChange={(e) => setProgramName(e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label className="text-sm">Program Admin Email</Label>
@@ -234,7 +301,11 @@ export function ClientOnboardingWizard() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm">Organization Name</Label>
-                <Input placeholder="e.g. Dove" />
+                <Input
+                  placeholder="e.g. Dove"
+                  value={orgName}
+                  onChange={(e) => setOrgName(e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label className="text-sm">Org Admin Email</Label>
@@ -243,7 +314,11 @@ export function ClientOnboardingWizard() {
             </div>
             <div className="space-y-2">
               <Label className="text-sm">Organization Description</Label>
-              <Input placeholder="e.g. Personal care & beauty products" />
+              <Input
+                placeholder="e.g. Personal care & beauty products"
+                value={orgDescription}
+                onChange={(e) => setOrgDescription(e.target.value)}
+              />
               <p className="text-xs text-neutral-400">
                 Additional organizations can be added after onboarding from the
                 Program settings.
@@ -267,7 +342,11 @@ export function ClientOnboardingWizard() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label className="text-sm">Core Brand Name(s)</Label>
-            <Input placeholder="Comma-separated, e.g. Acme, Acme Pro, AcmeWear" />
+            <Input
+              placeholder="Comma-separated, e.g. Acme, Acme Pro, AcmeWear"
+              value={brandNames}
+              onChange={(e) => setBrandNames(e.target.value)}
+            />
             <p className="text-xs text-neutral-400">
               Include all registered names, sub-brands, and common misspellings
               to monitor.
@@ -278,6 +357,8 @@ export function ClientOnboardingWizard() {
             <Textarea
               placeholder="Describe the focus of this protection program&#8230;"
               className="min-h-[100px] resize-none"
+              value={projectScope}
+              onChange={(e) => setProjectScope(e.target.value)}
             />
           </div>
         </CardContent>
@@ -932,7 +1013,7 @@ export function ClientOnboardingWizard() {
             Setup Wizard
           </span>
           <h2 className="text-lg font-bold mt-1 text-neutral-900">
-            Acme Corp Deployment
+            {orgName.trim() || programName.trim() || "New Deployment"}
           </h2>
           <p className="text-xs text-neutral-500 mt-1">
             Phase {current.num} of {PHASES.length}
@@ -1005,6 +1086,7 @@ export function ClientOnboardingWizard() {
           <Button
             variant="ghost"
             className="w-full text-neutral-500 hover:text-neutral-700 gap-2"
+            onClick={handleExitSetup}
           >
             <RiCloseLine className="size-4" />
             Exit Setup
@@ -1051,18 +1133,19 @@ export function ClientOnboardingWizard() {
                 Previous
               </Button>
             )}
-            <Button variant="ghost" className="text-neutral-500 gap-2">
+            <Button variant="ghost" className="text-neutral-500 gap-2" onClick={handleSaveDraft}>
               <RiDraftLine className="size-4" />
               Save as Draft
             </Button>
           </div>
           <Button
-            className="bg-neutral-900 text-white hover:bg-neutral-800 gap-2 px-6 h-10"
-            onClick={() => !isLast && setActivePhase((p) => p + 1)}
+            className="bg-neutral-900 text-white hover:bg-neutral-800 gap-2 px-6 h-10 disabled:opacity-60"
+            disabled={isPending}
+            onClick={isLast ? handleCompleteSetup : () => setActivePhase((p) => p + 1)}
           >
             {isLast ? (
               <>
-                Complete Setup
+                {isPending ? "Saving…" : "Complete Setup"}
                 <RiCheckLine className="size-4" />
               </>
             ) : (

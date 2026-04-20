@@ -88,12 +88,15 @@ import type { ExplorePost, LabelType, MediaLabel, PostMedia } from "@/lib/mock-d
 import { EXPLORE_POSTS, SUB_ORGANIZATIONS } from "@/lib/mock-data";
 import { ImageWithFallback } from "./image-with-fallback";
 import { VERDICT_OPTIONS, VERDICT_TRIGGER_STYLE } from "./verdict-options";
+import { useAuth } from "@/lib/auth-context";
 
 const LABEL_COLORS: Record<string, string> = {
   counterfeit: "bg-red-500",
   suspicious: "bg-amber-500",
   legitimate: "bg-emerald-500",
+  trademark_infringement: "bg-orange-400",
   "trademark infringement": "bg-orange-400",
+  copyright_violation: "bg-purple-400",
   unlabeled: "bg-neutral-400",
 };
 
@@ -101,6 +104,8 @@ const MEDIA_LABEL_DOT: Record<string, string> = {
   counterfeit: "bg-red-500",
   suspicious: "bg-amber-500",
   legitimate: "bg-emerald-500",
+  trademark_infringement: "bg-orange-400",
+  copyright_violation: "bg-purple-500",
   unlabeled: "bg-neutral-300",
 };
 
@@ -364,14 +369,26 @@ export function ModerationWorkspace({
   onVerdict: externalVerdict,
 }: ModerationWorkspaceProps) {
   const router = useRouter();
+  const { organization } = useAuth();
 
-  // Standalone mode: resolve post from EXPLORE_POSTS by postId
-  const standalonePost = useMemo(() => {
+  // Standalone mode: resolve post by postId — try API first, fall back to mock data
+  const [standalonePost, setStandalonePost] = useState<ExplorePost | null>(() => {
     if (!standalonePostId) return null;
-    // postId could be "PO#2168513" or just "2168513"
     const cleanId = standalonePostId.replace(/^PO#/, "");
     return EXPLORE_POSTS.find((p) => p.postId === cleanId) ?? null;
-  }, [standalonePostId]);
+  });
+
+  useEffect(() => {
+    if (!standalonePostId || !organization?.id) return;
+    fetch(`/api/posts?organizationId=${encodeURIComponent(organization.id)}`)
+      .then((res) => res.json())
+      .then((data: ExplorePost[]) => {
+        const cleanId = standalonePostId.replace(/^PO#/, "");
+        const found = data.find((p) => p.postId === cleanId);
+        if (found) setStandalonePost(found);
+      })
+      .catch(() => {});
+  }, [standalonePostId, organization?.id]);
 
   const isStandalone = !!standalonePostId;
   const queue = externalQueue ?? (standalonePost ? [standalonePost] : []);

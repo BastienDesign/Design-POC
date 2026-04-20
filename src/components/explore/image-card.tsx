@@ -16,7 +16,9 @@ const LABEL_DOT: Record<string, string> = {
   counterfeit: "bg-red-500",
   suspicious: "bg-amber-500",
   legitimate: "bg-emerald-500",
+  trademark_infringement: "bg-orange-400",
   "trademark infringement": "bg-orange-400",
+  copyright_violation: "bg-purple-500",
   unlabeled: "bg-neutral-300",
 };
 

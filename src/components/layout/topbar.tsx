@@ -24,10 +24,13 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { BREADCRUMBS, SUB_ORGANIZATIONS } from "@/lib/mock-data";
+import { useAuth } from "@/lib/auth-context";
 
 export function Topbar() {
   const pathname = usePathname();
-  const [activeOrg, setActiveOrg] = useState<string>(SUB_ORGANIZATIONS[0].id);
+  const { subOrganizations } = useAuth();
+  const subs = subOrganizations.length > 0 ? subOrganizations : SUB_ORGANIZATIONS;
+  const [activeOrg, setActiveOrg] = useState<string>(subs[0]?.id ?? "");
 
   // Dynamic breadcrumbs for entity routes
   const SEGMENT_HREFS: Record<string, string> = {
@@ -57,7 +60,7 @@ export function Topbar() {
       pathname.split("/").filter(Boolean).pop()?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) ?? "Dashboard",
     ];
   }
-  const selectedOrg = SUB_ORGANIZATIONS.find((o) => o.id === activeOrg) ?? SUB_ORGANIZATIONS[0];
+  const selectedOrg = subs.find((o) => o.id === activeOrg) ?? subs[0];
 
   return (
     <header className="sticky top-0 z-10 flex h-14 w-full shrink-0 items-center gap-4 border-b border-neutral-100 bg-white px-2">
@@ -115,7 +118,7 @@ export function Topbar() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[220px]">
-            {SUB_ORGANIZATIONS.map((org) => (
+            {subs.map((org) => (
               <DropdownMenuItem
                 key={org.id}
                 className="flex cursor-pointer items-center justify-between text-[13px]"

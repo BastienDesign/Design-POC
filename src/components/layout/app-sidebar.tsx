@@ -45,6 +45,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { ORGANIZATIONS, ACTIVE_ORG, ORG_COUNT, CURRENT_USER } from "@/lib/mock-data";
+import { useAuth } from "@/lib/auth-context";
 import { useState } from "react";
 
 // ─── Navigation Data ───
@@ -123,6 +124,11 @@ function NavMain({ groups }: { groups: NavGroup[] }) {
 
 function NavUser() {
   const { isMobile } = useSidebar();
+  const { user, logout } = useAuth();
+
+  const displayName = user?.name ?? CURRENT_USER.name;
+  const displayEmail = user?.email ?? CURRENT_USER.email;
+  const displayInitials = user?.initials ?? CURRENT_USER.initials;
 
   return (
     <SidebarMenu>
@@ -135,12 +141,12 @@ function NavUser() {
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarFallback className="rounded-lg bg-neutral-100 text-xs font-semibold text-neutral-600">
-                  {CURRENT_USER.initials}
+                  {displayInitials}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{CURRENT_USER.name}</span>
-                <span className="truncate text-xs">{CURRENT_USER.email}</span>
+                <span className="truncate font-medium">{displayName}</span>
+                <span className="truncate text-xs">{displayEmail}</span>
               </div>
               <RiArrowUpSLine className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -155,12 +161,12 @@ function NavUser() {
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarFallback className="rounded-lg bg-neutral-100 text-xs font-semibold text-neutral-600">
-                    {CURRENT_USER.initials}
+                    {displayInitials}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{CURRENT_USER.name}</span>
-                  <span className="truncate text-xs">{CURRENT_USER.email}</span>
+                  <span className="truncate font-medium">{displayName}</span>
+                  <span className="truncate text-xs">{displayEmail}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -178,7 +184,10 @@ function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600 focus:text-red-600">
+            <DropdownMenuItem
+              className="text-red-600 focus:text-red-600"
+              onClick={() => { logout(); window.location.href = "/"; }}
+            >
               <RiLogoutBoxRLine />
               Log out
             </DropdownMenuItem>
@@ -192,7 +201,11 @@ function NavUser() {
 // ─── App Sidebar ───
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { organization } = useAuth();
   const [activeOrg, setActiveOrg] = useState<(typeof ORGANIZATIONS)[number]>(ACTIVE_ORG);
+
+  const orgName = organization?.name ?? activeOrg.name;
+  const orgLogo = organization?.logo ?? activeOrg.logo;
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -206,10 +219,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
                   <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground text-xs font-bold">
-                    {activeOrg.logo}
+                    {orgLogo}
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">{activeOrg.name}</span>
+                    <span className="truncate font-medium">{orgName}</span>
                     <span className="truncate text-xs">{ORG_COUNT} Organizations</span>
                   </div>
                   <RiExpandUpDownLine className="ml-auto size-4" />

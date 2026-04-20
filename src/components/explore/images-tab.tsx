@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { RiArrowRightSLine } from "@remixicon/react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -16,6 +16,7 @@ import { ImageThumbnail } from "./image-thumbnail";
 import type { ImageVisibleProperties } from "./images-view-options";
 import { EXPLORE_IMAGES } from "@/lib/mock-data";
 import type { ExploreImage } from "@/lib/mock-data";
+import { useAuth } from "@/lib/auth-context";
 
 interface ImagesTabProps {
   viewType: "grid" | "list";
@@ -25,8 +26,20 @@ interface ImagesTabProps {
 
 export function ImagesTab({ viewType, visibleProperties, gridColumns = 4 }: ImagesTabProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const { organization } = useAuth();
+  const [images, setImages] = useState<ExploreImage[]>(EXPLORE_IMAGES);
 
-  const allIds = EXPLORE_IMAGES.map((img) => img.id);
+  useEffect(() => {
+    if (!organization?.id) return;
+    fetch(`/api/images?organizationId=${encodeURIComponent(organization.id)}`)
+      .then((res) => res.json())
+      .then((data: ExploreImage[]) => {
+        if (data.length > 0) setImages(data);
+      })
+      .catch(() => {});
+  }, [organization?.id]);
+
+  const allIds = images.map((img) => img.id);
   const allSelected =
     allIds.length > 0 && allIds.every((id) => selectedIds.includes(id));
   const someSelected = selectedIds.length > 0 && !allSelected;
@@ -47,7 +60,7 @@ export function ImagesTab({ viewType, visibleProperties, gridColumns = 4 }: Imag
       <div className="flex-1 min-h-0 overflow-auto">
         {viewType === "grid" ? (
           <GridView
-            images={EXPLORE_IMAGES}
+            images={images}
             selectedIds={selectedIds}
             allSelected={allSelected}
             someSelected={someSelected}
@@ -58,7 +71,7 @@ export function ImagesTab({ viewType, visibleProperties, gridColumns = 4 }: Imag
           />
         ) : (
           <ListView
-            images={EXPLORE_IMAGES}
+            images={images}
             selectedIds={selectedIds}
             allSelected={allSelected}
             someSelected={someSelected}

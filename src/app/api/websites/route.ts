@@ -1,0 +1,18 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const organizationId = searchParams.get("organizationId");
+
+  if (!organizationId) {
+    return NextResponse.json({ error: "organizationId required" }, { status: 400 });
+  }
+
+  const websites = await prisma.website.findMany({
+    where: { organizationId },
+    orderBy: { riskScore: "desc" },
+  });
+
+  return NextResponse.json(websites);
+}

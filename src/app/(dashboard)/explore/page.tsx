@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, useDeferredValue, Suspense } from "react";
+import { useState, useCallback, useMemo, useDeferredValue, Suspense, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { ExploreHeader } from "@/components/explore/explore-header";
 import type { ActiveFilter } from "@/components/explore/explore-header";
@@ -21,6 +21,7 @@ import type { FilterQuery, FilterRule, FilterNode } from "@/components/explore/a
 import type { FilterMode } from "@/components/explore/explore-filters-popover";
 import { DEFAULT_VISIBLE, DEFAULT_ORDER } from "@/components/explore/explore-columns";
 import type { ImageVisibleProperties } from "@/components/explore/images-view-options";
+import { useAuth } from "@/lib/auth-context";
 
 // ── Heuristic Engine: auto-categorize a search term ──
 const KNOWN_BRANDS = ["rolex", "gucci", "prada", "hermès", "hermes", "nike", "apple", "louis vuitton", "chanel", "dior", "burberry", "cartier", "fendi", "balenciaga", "versace"];
@@ -68,11 +69,25 @@ export default function ExplorePage() {
 
 function ExplorePageContent() {
   const searchParams = useSearchParams();
+  const { organization } = useAuth();
   const initialTab = VALID_TABS.includes(searchParams.get("tab") ?? "") ? searchParams.get("tab")! : "Posts";
   const [posts, setPosts] = useState<ExplorePost[]>(EXPLORE_POSTS);
   const [activeTab, setActiveTab] = useState(initialTab);
   const [filters, setFilters] = useState<ActiveFilter[]>([]);
   const [searchValue, setSearchValue] = useState("");
+
+  // Fetch posts from API when organization is available
+  useEffect(() => {
+    if (!organization?.id) return;
+    fetch(`/api/posts?organizationId=${encodeURIComponent(organization.id)}`)
+      .then((res) => res.json())
+      .then((data: ExplorePost[]) => {
+        if (data.length > 0) setPosts(data);
+      })
+      .catch(() => {
+        // Keep mock data as fallback
+      });
+  }, [organization?.id]);
   const [advancedQuery, setAdvancedQuery] = useState<FilterQuery>(DEFAULT_QUERY);
   const [filterMode, setFilterMode] = useState<FilterMode>("basic");
   const [filterOpen, setFilterOpen] = useState(false);
