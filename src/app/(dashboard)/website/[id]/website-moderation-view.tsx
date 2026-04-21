@@ -1329,14 +1329,14 @@ export function WebsiteModerationView() {
       </Sheet>
 
       {/* ── Body ── */}
-      <div className="flex-1 flex min-h-0 bg-white">
+      <div className="flex-1 flex overflow-hidden">
         {/* ── Left Pane (Main Stage — full height, horizontal split when entity selected) ── */}
-        <div className="flex-1 bg-white flex flex-col min-w-0 border-r border-neutral-200">
+        <div className="flex-1 bg-white flex flex-col min-w-0 min-h-0 overflow-hidden h-full border-r border-neutral-200">
           <MainStage />
         </div>
 
         {/* ── Right Pane (Sidebar) ── */}
-        <aside className="w-[380px] xl:w-[450px] bg-white flex flex-col shrink-0 min-h-0">
+        <aside className="w-[380px] xl:w-[450px] shrink-0 bg-white flex flex-col">
           <Tabs
             value={sidebarTab}
             onValueChange={setSidebarTab}
