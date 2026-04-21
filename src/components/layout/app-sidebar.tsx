@@ -140,7 +140,7 @@ function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarFallback className="rounded-lg bg-neutral-100 text-xs font-semibold text-neutral-600">
+                <AvatarFallback className="rounded-lg bg-muted text-xs font-semibold text-muted-foreground">
                   {displayInitials}
                 </AvatarFallback>
               </Avatar>
@@ -160,7 +160,7 @@ function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarFallback className="rounded-lg bg-neutral-100 text-xs font-semibold text-neutral-600">
+                  <AvatarFallback className="rounded-lg bg-muted text-xs font-semibold text-muted-foreground">
                     {displayInitials}
                   </AvatarFallback>
                 </Avatar>
@@ -185,7 +185,7 @@ function NavUser() {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="text-red-600 focus:text-red-600"
+              className="text-destructive focus:text-destructive"
               onClick={() => { logout(); window.location.href = "/"; }}
             >
               <RiLogoutBoxRLine />
@@ -239,7 +239,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     onClick={() => setActiveOrg(org)}
                     className="flex items-center gap-3"
                   >
-                    <div className="flex size-6 items-center justify-center rounded bg-neutral-100 text-[10px] font-bold text-neutral-600">
+                    <div className="flex size-6 items-center justify-center rounded bg-muted text-[10px] font-bold text-muted-foreground">
                       {org.logo}
                     </div>
                     <span className="flex-1 truncate text-sm">{org.name}</span>

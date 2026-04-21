@@ -321,15 +321,15 @@ function RuleBuilder({ onSave, onCancel, initialData }: RuleBuilderProps) {
   return (
     <>
       {/* Scrollable Form Body */}
-      <div className="max-h-[65vh] overflow-y-auto p-6 space-y-8 bg-white">
+      <div className="max-h-[65vh] overflow-y-auto p-6 space-y-8 bg-card">
         {/* Rule Name */}
         <div className="space-y-2">
-          <Label className="text-sm font-semibold text-neutral-900">
+          <Label className="text-sm font-semibold text-foreground">
             Rule Name
           </Label>
           <Input
             placeholder="e.g., Reject counterfeit luxury goods"
-            className="bg-white max-w-lg"
+            className="bg-card max-w-lg"
             value={ruleName}
             onChange={(e) => setRuleName(e.target.value)}
           />
@@ -337,14 +337,14 @@ function RuleBuilder({ onSave, onCancel, initialData }: RuleBuilderProps) {
 
         {/* Conditions (IF) */}
         <div className="space-y-3">
-          <Label className="text-sm font-semibold text-neutral-900">
+          <Label className="text-sm font-semibold text-foreground">
             Conditions
           </Label>
 
-          <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-5 space-y-4 shadow-sm">
+          <div className="bg-accent border border-border rounded-xl p-5 space-y-4 shadow-sm">
             {conditions.map((condition, index) => (
               <div key={condition.id} className="flex items-center gap-3">
-                <div className="w-8 text-[11px] font-bold text-neutral-400 text-center tracking-wider shrink-0">
+                <div className="w-8 text-[11px] font-bold text-muted-foreground text-center tracking-wider shrink-0">
                   {index === 0 ? "IF" : condition.logic}
                 </div>
 
@@ -354,7 +354,7 @@ function RuleBuilder({ onSave, onCancel, initialData }: RuleBuilderProps) {
                     updateCondition(condition.id, "field", v)
                   }
                 >
-                  <SelectTrigger className="h-9 w-[180px] shrink-0 text-xs bg-white">
+                  <SelectTrigger className="h-9 w-[180px] shrink-0 text-xs bg-card">
                     <SelectValue placeholder="Field" />
                   </SelectTrigger>
                   <SelectContent>
@@ -372,7 +372,7 @@ function RuleBuilder({ onSave, onCancel, initialData }: RuleBuilderProps) {
                     updateCondition(condition.id, "operator", v)
                   }
                 >
-                  <SelectTrigger className="h-9 w-[150px] shrink-0 text-xs bg-white">
+                  <SelectTrigger className="h-9 w-[150px] shrink-0 text-xs bg-card">
                     <SelectValue placeholder="Operator" />
                   </SelectTrigger>
                   <SelectContent>
@@ -387,7 +387,7 @@ function RuleBuilder({ onSave, onCancel, initialData }: RuleBuilderProps) {
                 <div className="flex-1 min-w-0">
                   <Input
                     placeholder="Value..."
-                    className="h-9 w-full text-xs bg-white"
+                    className="h-9 w-full text-xs bg-card"
                     value={condition.value}
                     onChange={(e) =>
                       updateCondition(condition.id, "value", e.target.value)
@@ -398,7 +398,7 @@ function RuleBuilder({ onSave, onCancel, initialData }: RuleBuilderProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-9 w-9 shrink-0 text-neutral-400 hover:text-red-600"
+                  className="h-9 w-9 shrink-0 text-muted-foreground hover:text-destructive"
                   onClick={() => removeCondition(condition.id)}
                   disabled={conditions.length === 1}
                 >
@@ -411,7 +411,7 @@ function RuleBuilder({ onSave, onCancel, initialData }: RuleBuilderProps) {
               <Button
                 variant="outline"
                 size="sm"
-                className="h-7 text-xs border-dashed text-neutral-600 gap-1"
+                className="h-7 text-xs border-dashed text-foreground gap-1"
                 onClick={() => addCondition("AND")}
               >
                 <RiAddLine className="size-3" /> AND
@@ -419,7 +419,7 @@ function RuleBuilder({ onSave, onCancel, initialData }: RuleBuilderProps) {
               <Button
                 variant="outline"
                 size="sm"
-                className="h-7 text-xs border-dashed text-neutral-600 gap-1"
+                className="h-7 text-xs border-dashed text-foreground gap-1"
                 onClick={() => addCondition("OR")}
               >
                 <RiAddLine className="size-3" /> OR
@@ -430,19 +430,19 @@ function RuleBuilder({ onSave, onCancel, initialData }: RuleBuilderProps) {
 
         {/* Action (THEN) */}
         <div className="space-y-3">
-          <Label className="text-sm font-semibold text-neutral-900">
+          <Label className="text-sm font-semibold text-foreground">
             Action
           </Label>
-          <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4 flex items-center gap-4">
-            <div className="w-8 text-[11px] font-bold text-blue-500 text-center tracking-wider shrink-0">
+          <div className="bg-primary/50 border border-primary/20 rounded-xl p-4 flex items-center gap-4">
+            <div className="w-8 text-[11px] font-bold text-primary text-center tracking-wider shrink-0">
               THEN
             </div>
             <div className="flex-1 flex items-center gap-3">
-              <span className="text-sm text-neutral-700 whitespace-nowrap">
+              <span className="text-sm text-foreground whitespace-nowrap">
                 Apply label:
               </span>
               <Select value={actionLabel} onValueChange={setActionLabel}>
-                <SelectTrigger className="w-[200px] text-xs bg-white border-blue-200 focus:ring-blue-500">
+                <SelectTrigger className="w-[200px] text-xs bg-card border-primary/30 focus:ring-ring">
                   <SelectValue placeholder="Select label…" />
                 </SelectTrigger>
                 <SelectContent>
@@ -459,17 +459,17 @@ function RuleBuilder({ onSave, onCancel, initialData }: RuleBuilderProps) {
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-neutral-100 bg-neutral-50 shrink-0">
+      <div className="p-4 border-t border-border bg-accent shrink-0">
         <DialogFooter className="flex items-center justify-end gap-2">
           <Button
             variant="ghost"
-            className="text-neutral-600"
+            className="text-foreground"
             onClick={onCancel}
           >
             Cancel
           </Button>
           <Button
-            className="bg-neutral-900 text-white hover:bg-neutral-800 px-6"
+            className="bg-foreground text-primary-foreground hover:bg-foreground/90 px-6"
             onClick={handleSave}
           >
             Save Rule
@@ -489,7 +489,7 @@ function SimulationResults({
 }) {
   return (
     <div className="space-y-3 mt-6">
-      <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
         Evaluation Trace
       </p>
       {results.map((rule, index) => {
@@ -499,13 +499,13 @@ function SimulationResults({
         return (
           <div
             key={rule.id}
-            className="border border-neutral-200 rounded-lg overflow-hidden bg-white"
+            className="border border-border rounded-lg overflow-hidden bg-card"
           >
-            <div className="px-4 py-3 border-b border-neutral-100 space-y-2">
+            <div className="px-4 py-3 border-b border-border space-y-2">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <span className="text-sm font-semibold text-neutral-900 leading-tight">
-                    <span className="text-neutral-400 mr-2">#{index + 1}</span>
+                  <span className="text-sm font-semibold text-foreground leading-tight">
+                    <span className="text-muted-foreground mr-2">#{index + 1}</span>
                     {rule.name}
                   </span>
                   {isFullMatch ? (
@@ -514,16 +514,16 @@ function SimulationResults({
                       {rule.decision}
                     </p>
                   ) : firstFailed ? (
-                    <p className="text-[11px] text-neutral-500 mt-1">
+                    <p className="text-[11px] text-muted-foreground mt-1">
                       Failed on:{" "}
-                      <span className="font-medium text-neutral-700">
+                      <span className="font-medium text-foreground">
                         {firstFailed.name}
                       </span>
                     </p>
                   ) : null}
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-lg font-bold text-neutral-900">
+                  <span className="text-lg font-bold text-foreground">
                     {rule.matchPercentage}%
                   </span>
                   <Badge
@@ -543,7 +543,7 @@ function SimulationResults({
                 className={`h-1.5 ${
                   isFullMatch
                     ? "bg-emerald-100 [&>div]:bg-emerald-500"
-                    : "bg-neutral-200"
+                    : "bg-secondary"
                 }`}
               />
             </div>
@@ -554,15 +554,15 @@ function SimulationResults({
                   key={idx}
                   className={`flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm ${
                     condition.passed
-                      ? "text-neutral-600"
-                      : "bg-red-50 border border-red-100 text-red-900 font-semibold"
+                      ? "text-foreground"
+                      : "bg-destructive/10 border border-red-100 text-red-900 font-semibold"
                   }`}
                 >
                   {condition.passed ? (
                     <RiCheckLine className="size-3.5 text-emerald-500 shrink-0" />
                   ) : (
-                    <div className="bg-red-100 rounded-full p-0.5 shrink-0">
-                      <RiCloseLine className="size-2.5 text-red-600" />
+                    <div className="bg-destructive/15 rounded-full p-0.5 shrink-0">
+                      <RiCloseLine className="size-2.5 text-destructive" />
                     </div>
                   )}
                   {condition.name}
@@ -633,18 +633,18 @@ export function AutoModerationEngine() {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-neutral-50 overflow-auto">
+    <div className="flex-1 flex flex-col h-full bg-accent overflow-auto">
       <div className="px-8 pt-8 pb-2">
-        <h1 className="text-xl font-bold text-neutral-900">
+        <h1 className="text-xl font-bold text-foreground">
           Auto-Moderation Engine
         </h1>
-        <p className="text-sm text-neutral-500 mt-1">
+        <p className="text-sm text-muted-foreground mt-1">
           Manage cascading rules, simulate outcomes, and optimize performance.
         </p>
       </div>
 
       <Tabs defaultValue="library" className="flex-1 flex flex-col px-8 pb-8">
-        <TabsList className="bg-white border border-neutral-200 h-10 w-fit">
+        <TabsList className="bg-card border border-border h-10 w-fit">
           <TabsTrigger value="library" className="text-xs">
             Rules Library
           </TabsTrigger>
@@ -659,7 +659,7 @@ export function AutoModerationEngine() {
         {/* ── LIBRARY & BUILDER ── */}
         <TabsContent value="library" className="space-y-4 pt-4 flex-1">
           <div className="flex justify-between items-center">
-            <h2 className="text-sm font-semibold text-neutral-900">
+            <h2 className="text-sm font-semibold text-foreground">
               Active Rules
             </h2>
             <Dialog
@@ -672,18 +672,18 @@ export function AutoModerationEngine() {
               <DialogTrigger asChild>
                 <Button
                   size="sm"
-                  className="gap-2 bg-neutral-900 text-white hover:bg-neutral-800"
+                  className="gap-2 bg-foreground text-primary-foreground hover:bg-foreground/90"
                 >
                   <RiAddLine className="size-3.5" /> Create Rule
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-3xl p-0 overflow-hidden bg-white shadow-2xl">
-                <div className="p-6 border-b border-neutral-100 bg-white shrink-0">
+              <DialogContent className="sm:max-w-3xl p-0 overflow-hidden bg-card shadow-2xl">
+                <div className="p-6 border-b border-border bg-card shrink-0">
                   <DialogHeader>
                     <DialogTitle className="text-xl">
                       {editingRule ? "Edit Rule" : "Rule Builder"}
                     </DialogTitle>
-                    <DialogDescription className="text-xs text-neutral-500">
+                    <DialogDescription className="text-xs text-muted-foreground">
                       {editingRule
                         ? "Update the conditions and action for this rule."
                         : "Define cascading conditions and the label to apply when all conditions match."}
@@ -712,42 +712,42 @@ export function AutoModerationEngine() {
             </Dialog>
           </div>
 
-          <div className="rounded-lg border border-neutral-200 bg-white overflow-hidden">
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 h-10">
+                  <TableHead className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground h-10">
                     Rule Name
                   </TableHead>
-                  <TableHead className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 h-10">
+                  <TableHead className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground h-10">
                     Conditions
                   </TableHead>
-                  <TableHead className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 h-10">
+                  <TableHead className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground h-10">
                     Label
                   </TableHead>
-                  <TableHead className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 h-10">
+                  <TableHead className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground h-10">
                     Hit Rate
                   </TableHead>
-                  <TableHead className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 h-10">
+                  <TableHead className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground h-10">
                     Conflicts
                   </TableHead>
-                  <TableHead className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 h-10 text-right">
+                  <TableHead className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground h-10 text-right">
                     Status
                   </TableHead>
-                  <TableHead className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 h-10 w-10" />
+                  <TableHead className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground h-10 w-10" />
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {rules.map((rule) => (
                   <TableRow key={rule.id} className="group">
-                    <TableCell className="text-sm font-medium text-neutral-900 py-3">
+                    <TableCell className="text-sm font-medium text-foreground py-3">
                       <div className="flex items-center gap-2">
-                        <RiNodeTree className="size-3.5 text-neutral-400" />
+                        <RiNodeTree className="size-3.5 text-muted-foreground" />
                         {rule.name}
                       </div>
                     </TableCell>
                     <TableCell className="py-3">
-                      <span className="text-xs text-neutral-500">
+                      <span className="text-xs text-muted-foreground">
                         {rule.conditionsCount} condition
                         {rule.conditionsCount !== 1 ? "s" : ""}
                       </span>
@@ -765,16 +765,16 @@ export function AutoModerationEngine() {
                         <div className="flex items-center gap-2">
                           <Progress
                             value={rule.hitRate}
-                            className="h-1.5 w-16 bg-neutral-200"
+                            className="h-1.5 w-16 bg-secondary"
                           />
-                          <span className="text-xs text-neutral-600 font-medium tabular-nums">
+                          <span className="text-xs text-foreground font-medium tabular-nums">
                             {rule.hitRate}%
                           </span>
                         </div>
                       ) : (
                         <Badge
                           variant="secondary"
-                          className="text-[10px] bg-blue-50 text-blue-600"
+                          className="text-[10px] bg-primary/10 text-primary"
                         >
                           New
                         </Badge>
@@ -784,10 +784,10 @@ export function AutoModerationEngine() {
                       <span
                         className={`text-xs font-medium tabular-nums ${
                           rule.conflicts > 15
-                            ? "text-red-600"
+                            ? "text-destructive"
                             : rule.conflicts > 8
                             ? "text-amber-600"
-                            : "text-neutral-500"
+                            : "text-muted-foreground"
                         }`}
                       >
                         {rule.conflicts}
@@ -799,7 +799,7 @@ export function AutoModerationEngine() {
                           className={`text-[11px] font-medium ${
                             rule.status === "active"
                               ? "text-emerald-600"
-                              : "text-neutral-400"
+                              : "text-muted-foreground"
                           }`}
                         >
                           {rule.status === "active" ? "Active" : "Paused"}
@@ -816,7 +816,7 @@ export function AutoModerationEngine() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="size-8 text-neutral-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="size-8 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             <RiMoreLine className="size-4" />
                           </Button>
@@ -831,7 +831,7 @@ export function AutoModerationEngine() {
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
-                            className="text-xs gap-2 text-red-600 focus:text-red-600"
+                            className="text-xs gap-2 text-destructive focus:text-destructive"
                             onClick={() => handleDeleteRule(rule.id)}
                           >
                             <RiDeleteBinLine className="size-3.5" />
@@ -846,7 +846,7 @@ export function AutoModerationEngine() {
                   <TableRow>
                     <TableCell
                       colSpan={7}
-                      className="text-center py-8 text-sm text-neutral-500"
+                      className="text-center py-8 text-sm text-muted-foreground"
                     >
                       No rules found. Create one to get started.
                     </TableCell>
@@ -859,10 +859,10 @@ export function AutoModerationEngine() {
 
         {/* ── SIMULATOR ── */}
         <TabsContent value="simulator" className="space-y-4 pt-4 flex-1">
-          <Card className="border-neutral-200">
+          <Card className="border-border">
             <CardHeader className="pb-4">
               <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <RiPlayCircleLine className="size-4 text-neutral-500" />
+                <RiPlayCircleLine className="size-4 text-muted-foreground" />
                 Trace Entity ID
               </CardTitle>
               <CardDescription className="text-xs">
@@ -880,7 +880,7 @@ export function AutoModerationEngine() {
                 />
                 <Button
                   size="sm"
-                  className="gap-2 bg-neutral-900 text-white hover:bg-neutral-800 h-9"
+                  className="gap-2 bg-foreground text-primary-foreground hover:bg-foreground/90 h-9"
                   onClick={() => setSimulationRan(true)}
                 >
                   <RiPlayCircleLine className="size-3.5" /> Simulate
@@ -896,9 +896,9 @@ export function AutoModerationEngine() {
                     >
                       Simulation Complete
                     </Badge>
-                    <span className="text-xs text-neutral-500">
+                    <span className="text-xs text-muted-foreground">
                       Entity{" "}
-                      <span className="font-medium text-neutral-700">
+                      <span className="font-medium text-foreground">
                         {simulationEntityId || MOCK_SIMULATION.entityId}
                       </span>{" "}
                       evaluated against {MOCK_SIMULATION.results.length} rules
@@ -915,11 +915,11 @@ export function AutoModerationEngine() {
         <TabsContent value="insights" className="space-y-4 pt-4 flex-1">
           <div className="grid grid-cols-2 gap-4">
             {/* Underperforming Rules */}
-            <Card className="border-neutral-200">
+            <Card className="border-border">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <RiAlertFill className="size-4 text-red-500" />
-                  <span className="text-red-700">Needs Attention</span>
+                  <RiAlertFill className="size-4 text-destructive" />
+                  <span className="text-destructive">Needs Attention</span>
                 </CardTitle>
                 <CardDescription className="text-xs">
                   Rules with high false-positive rates or low accuracy.
@@ -929,15 +929,15 @@ export function AutoModerationEngine() {
                 {INSIGHTS_RULES.map((rule) => (
                   <div
                     key={rule.id}
-                    className="border border-neutral-200 rounded-lg p-3 space-y-2"
+                    className="border border-border rounded-lg p-3 space-y-2"
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <span className="text-sm font-medium text-neutral-900">
+                      <span className="text-sm font-medium text-foreground">
                         {rule.name}
                       </span>
                       <Badge
                         variant="secondary"
-                        className="text-[10px] bg-red-100 text-red-700 shrink-0"
+                        className="text-[10px] bg-destructive/15 text-destructive shrink-0"
                       >
                         {rule.falsePositiveRate}% FP
                       </Badge>
@@ -945,13 +945,13 @@ export function AutoModerationEngine() {
                     <div className="flex items-center gap-2">
                       <Progress
                         value={rule.hitRate}
-                        className="h-1.5 flex-1 bg-neutral-200"
+                        className="h-1.5 flex-1 bg-secondary"
                       />
-                      <span className="text-[11px] text-neutral-500 font-medium tabular-nums">
+                      <span className="text-[11px] text-muted-foreground font-medium tabular-nums">
                         {rule.hitRate}% hits
                       </span>
                     </div>
-                    <p className="text-[11px] text-neutral-500 leading-relaxed">
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
                       {rule.issue}
                     </p>
                   </div>
@@ -960,9 +960,9 @@ export function AutoModerationEngine() {
             </Card>
 
             {/* AI Suggestions */}
-            <Card className="border-blue-200 bg-gradient-to-br from-blue-50/60 to-white">
+            <Card className="border-primary/30 bg-gradient-to-br from-primary/10 to-white">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2 text-blue-700">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2 text-primary">
                   <RiMagicLine className="size-4" />
                   Cortex AI Suggestions
                 </CardTitle>
@@ -971,11 +971,11 @@ export function AutoModerationEngine() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="border border-blue-200 rounded-lg p-3 bg-white/80 space-y-2">
-                  <p className="text-sm text-neutral-800 leading-relaxed">
+                <div className="border border-primary/30 rounded-lg p-3 bg-background space-y-2">
+                  <p className="text-sm text-foreground leading-relaxed">
                     <strong>Rule #12 (High-Risk Geo + New Domain)</strong> has a
                     38% false-positive rate. Adding the condition{" "}
-                    <code className="text-xs bg-blue-100 px-1.5 py-0.5 rounded text-blue-800">
+                    <code className="text-xs bg-primary/15 px-1.5 py-0.5 rounded text-primary">
                       Traffic &gt; 10k/mo
                     </code>{" "}
                     could improve accuracy by an estimated 14%.
@@ -983,17 +983,17 @@ export function AutoModerationEngine() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="text-xs h-8 gap-1.5 border-blue-200 text-blue-700 hover:bg-blue-50"
+                    className="text-xs h-8 gap-1.5 border-primary/30 text-primary hover:bg-primary/10"
                   >
                     <RiAddLine className="size-3" /> Apply Suggestion
                   </Button>
                 </div>
 
-                <div className="border border-blue-200 rounded-lg p-3 bg-white/80 space-y-2">
-                  <p className="text-sm text-neutral-800 leading-relaxed">
+                <div className="border border-primary/30 rounded-lg p-3 bg-background space-y-2">
+                  <p className="text-sm text-foreground leading-relaxed">
                     <strong>Rule #56 (Cloned Site Template)</strong> is
                     currently paused. Reactivating with an additional{" "}
-                    <code className="text-xs bg-blue-100 px-1.5 py-0.5 rounded text-blue-800">
+                    <code className="text-xs bg-primary/15 px-1.5 py-0.5 rounded text-primary">
                       Domain Age &lt; 90 days
                     </code>{" "}
                     filter would reduce false positives by 19%.
@@ -1001,14 +1001,14 @@ export function AutoModerationEngine() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="text-xs h-8 gap-1.5 border-blue-200 text-blue-700 hover:bg-blue-50"
+                    className="text-xs h-8 gap-1.5 border-primary/30 text-primary hover:bg-primary/10"
                   >
                     <RiAddLine className="size-3" /> Apply Suggestion
                   </Button>
                 </div>
 
-                <div className="border border-blue-200 rounded-lg p-3 bg-white/80 space-y-2">
-                  <p className="text-sm text-neutral-800 leading-relaxed">
+                <div className="border border-primary/30 rounded-lg p-3 bg-background space-y-2">
+                  <p className="text-sm text-foreground leading-relaxed">
                     Rules <strong>#88</strong> and <strong>#34</strong> overlap
                     on 3 conditions. Consider merging into a single rule with OR
                     logic to reduce evaluation time by ~40ms per entity.
@@ -1016,7 +1016,7 @@ export function AutoModerationEngine() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="text-xs h-8 gap-1.5 border-blue-200 text-blue-700 hover:bg-blue-50"
+                    className="text-xs h-8 gap-1.5 border-primary/30 text-primary hover:bg-primary/10"
                   >
                     <RiMagicLine className="size-3" /> Review Merge
                   </Button>

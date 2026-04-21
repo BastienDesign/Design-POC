@@ -42,7 +42,7 @@ const MOCK_WEBSITES: WebsiteRow[] = [
     posts: 51,
     notices: 0,
     label: "Phishing",
-    labelColor: "bg-red-500",
+    labelColor: "bg-destructive/100",
     clusters: "-",
     enforcement: "-",
     lastCrawled: "2026-03-01T00:00:00Z",
@@ -110,7 +110,7 @@ const MOCK_WEBSITES: WebsiteRow[] = [
     posts: 89,
     notices: 0,
     label: "Phishing",
-    labelColor: "bg-red-500",
+    labelColor: "bg-destructive/100",
     clusters: "1",
     enforcement: "-",
     lastCrawled: "2026-03-20T00:00:00Z",
@@ -137,8 +137,8 @@ const MOCK_WEBSITES: WebsiteRow[] = [
   },
 ];
 
-const STICKY = "sticky top-0 z-10 bg-white shadow-[0_1px_0_0_#e5e5e5]";
-const HEAD_TEXT = "text-[10px] uppercase font-bold text-neutral-700 tracking-wider";
+const STICKY = "sticky top-0 z-10 bg-card shadow-[0_1px_0_0_#e5e5e5]";
+const HEAD_TEXT = "text-[10px] uppercase font-bold text-foreground tracking-wider";
 
 export function WebsitesTable() {
   return (
@@ -181,7 +181,7 @@ export function WebsitesTable() {
                 <div className="flex flex-col leading-tight">
                   <Link
                     href={`/website/${site.id.replace(/^WEB#/, "")}`}
-                    className="text-[13px] font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors truncate"
+                    className="text-[13px] font-medium text-link hover:underline underline-offset-4 transition-colors truncate"
                   >
                     {site.id}
                   </Link>
@@ -190,14 +190,14 @@ export function WebsitesTable() {
                       className={`size-1.5 rounded-full ${
                         site.status === "Online"
                           ? "bg-emerald-500"
-                          : "bg-neutral-400"
+                          : "bg-muted-foreground"
                       }`}
                     />
                     <span
                       className={`text-[11px] font-medium ${
                         site.status === "Online"
                           ? "text-emerald-700"
-                          : "text-neutral-500"
+                          : "text-muted-foreground"
                       }`}
                     >
                       {site.status}
@@ -220,7 +220,7 @@ export function WebsitesTable() {
 
               <TableCell className="px-3">
                 {site.aiInsight ? (
-                  <RiRobot2Line className="size-4 text-neutral-400" />
+                  <RiRobot2Line className="size-4 text-muted-foreground" />
                 ) : (
                   <span className="text-[13px] text-muted-foreground">&mdash;</span>
                 )}
@@ -250,7 +250,7 @@ export function WebsitesTable() {
               </TableCell>
 
               <TableCell className="pr-3">
-                <div className="flex items-center justify-center text-neutral-400 group-hover:text-neutral-900">
+                <div className="flex items-center justify-center text-muted-foreground group-hover:text-foreground">
                   <RiArrowRightSLine className="h-5 w-5" />
                 </div>
               </TableCell>

@@ -13,13 +13,13 @@ import type { ImageVisibleProperties } from "./images-view-options";
 import Link from "next/link";
 
 const LABEL_DOT: Record<string, string> = {
-  counterfeit: "bg-red-500",
+  counterfeit: "bg-destructive/100",
   suspicious: "bg-amber-500",
   legitimate: "bg-emerald-500",
   trademark_infringement: "bg-orange-400",
   "trademark infringement": "bg-orange-400",
   copyright_violation: "bg-purple-500",
-  unlabeled: "bg-neutral-300",
+  unlabeled: "bg-muted-foreground/60",
 };
 
 interface ImageCardProps {
@@ -56,18 +56,18 @@ export function ImageCard({
   const hasContent =
     visibleProperties.imageId || metrics.length > 0 || visibleProperties.label;
 
-  const dotColor = LABEL_DOT[image.label] ?? "bg-neutral-300";
+  const dotColor = LABEL_DOT[image.label] ?? "bg-muted-foreground/60";
 
   return (
     <div
-      className={`group relative overflow-hidden rounded-xl border bg-white transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 ${
+      className={`group relative overflow-hidden rounded-xl border bg-card transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 ${
         selected
-          ? "border-neutral-900 ring-1 ring-neutral-900"
-          : "border-neutral-200"
+          ? "border-foreground ring-1 ring-foreground"
+          : "border-border"
       }`}
     >
       {/* Image area with overlays */}
-      <div className="relative aspect-square overflow-hidden bg-neutral-100 border-b border-neutral-100">
+      <div className="relative aspect-square overflow-hidden bg-muted border-b border-border">
         <ImageWithFallback
           src={image.thumbnailUrl}
           alt={image.imageId}
@@ -80,16 +80,16 @@ export function ImageCard({
           <Checkbox
             checked={selected}
             onCheckedChange={(checked) => onSelect(checked === true)}
-            className="bg-white/80 backdrop-blur-md border-neutral-300 data-[state=checked]:bg-neutral-900 data-[state=checked]:border-neutral-900"
+            className="bg-background backdrop-blur-md border-border data-[state=checked]:bg-foreground data-[state=checked]:border-foreground"
           />
         </div>
 
         {/* Label Badge Overlay (Top Right) */}
         {visibleProperties.label && image.label !== "unlabeled" && (
           <div className="absolute top-2 right-2 z-10">
-            <div className="flex items-center gap-1.5 px-2 py-1 bg-white/90 backdrop-blur-md rounded-full shadow-sm border border-neutral-100">
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-background backdrop-blur-md rounded-full shadow-sm border border-border">
               <div className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
-              <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-700">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-foreground">
                 {image.labelText}
               </span>
             </div>
@@ -104,7 +104,7 @@ export function ImageCard({
           {visibleProperties.imageId && (
             <Link
               href={`/image/${image.id}`}
-              className="flex items-center gap-1 text-sm font-semibold text-blue-600 hover:underline"
+              className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
             >
               {image.imageId}
               <RiExternalLinkLine size={14} />
@@ -124,11 +124,11 @@ export function ImageCard({
             >
               {metrics.map((m) => (
                 <div key={m.label} className="flex flex-col">
-                  <span className="flex items-center gap-1 text-xs font-semibold text-neutral-900">
-                    <m.icon size={12} className="text-neutral-400" />
+                  <span className="flex items-center gap-1 text-xs font-semibold text-foreground">
+                    <m.icon size={12} className="text-muted-foreground" />
                     {m.value}
                   </span>
-                  <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-500">
+                  <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
                     {m.label}
                   </span>
                 </div>

@@ -174,20 +174,20 @@ const BarDropdownTrigger = forwardRef<HTMLButtonElement, BarDropdownTriggerProps
           ref={ref}
           className={`h-8 text-xs font-semibold px-4 rounded-xl shadow-sm flex items-center gap-2 transition-all ${
             isMixed && !isStaged
-              ? "bg-neutral-700 hover:bg-neutral-600 border border-neutral-600"
+              ? "bg-background/15 hover:bg-background/20 border border-background/20"
               : isStaged
-                ? "bg-blue-600 hover:bg-blue-700 text-white ring-2 ring-blue-400 ring-offset-2 ring-offset-neutral-900"
-                : "bg-red-600 hover:bg-red-700 text-white"
+                ? "bg-chart-3 hover:bg-chart-3/90 text-background ring-2 ring-chart-3 ring-offset-2 ring-offset-foreground"
+                : "bg-destructive hover:bg-destructive/90 text-background"
           }`}
           {...props}
         >
           <div className="flex items-center gap-1.5">
             {isMixed && !isStaged ? (
               <>
-                <span className="text-[10px] uppercase font-bold tracking-wider text-white/40">
+                <span className="text-[10px] uppercase font-bold tracking-wider text-background/40">
                   {fieldTitle}
                 </span>
-                <span className="italic text-white/80 text-xs">Mixed</span>
+                <span className="italic text-background/80 text-xs">Mixed</span>
               </>
             ) : (
               <span className="text-xs font-semibold">{displayValue}</span>
@@ -207,22 +207,22 @@ const BarDropdownTrigger = forwardRef<HTMLButtonElement, BarDropdownTriggerProps
         ref={ref}
         variant="ghost"
         size="sm"
-        className={`h-8 px-3 rounded-xl border border-transparent hover:bg-neutral-800 transition-colors ${
+        className={`h-8 px-3 rounded-xl border border-transparent hover:bg-background/10 transition-colors ${
           isStaged
-            ? "text-blue-400 border-blue-500/50 bg-blue-500/10"
+            ? "text-chart-3 border-chart-3/50 bg-chart-3/15"
             : hasKnownValue
-              ? "text-white bg-neutral-800/50 border-neutral-700/50"
-              : "text-neutral-300"
+              ? "text-background bg-background/5 border-background/10"
+              : "text-background/80"
         }`}
         {...props}
       >
         <div className="flex items-center gap-1.5">
           {showGhost ? (
             <>
-              <span className="text-[10px] uppercase font-bold tracking-wider text-white/40">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-background/40">
                 {fieldTitle}
               </span>
-              <span className="italic text-white/60 text-xs">Mixed</span>
+              <span className="italic text-background/60 text-xs">Mixed</span>
             </>
           ) : (
             <span className="text-xs font-medium">{displayValue}</span>
@@ -303,18 +303,18 @@ export function BulkActionPill({
           : "translate-y-8 opacity-0 pointer-events-none"
       }`}
     >
-      <div className="flex items-center gap-2 p-1.5 bg-neutral-900 border border-neutral-800 shadow-2xl rounded-2xl">
+      <div className="flex items-center gap-2 p-1.5 bg-foreground border border-background/10 shadow-2xl rounded-2xl">
         {/* Left: Count & Clear */}
-        <div className="flex items-center gap-3 pl-3 pr-2 border-r border-neutral-700/50 h-8">
+        <div className="flex items-center gap-3 pl-3 pr-2 border-r border-background/10 h-8">
           <div className="flex items-center gap-1.5 text-sm">
-            <span className="font-semibold text-white">{selectedCount}</span>
-            <span className="text-neutral-400 font-medium">selected</span>
+            <span className="font-semibold text-background">{selectedCount}</span>
+            <span className="text-background/60 font-medium">selected</span>
           </div>
           <Button
             variant="ghost"
             size="icon"
             onClick={onClearSelection}
-            className="h-6 w-6 rounded-full text-neutral-400 hover:text-white hover:bg-neutral-800"
+            className="h-6 w-6 rounded-full text-background/60 hover:text-background hover:bg-background/10"
           >
             <RiCloseLine className="w-4 h-4" />
           </Button>
@@ -323,7 +323,7 @@ export function BulkActionPill({
         {/* Mode Switcher */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-1.5 px-3 h-8 rounded-xl text-xs font-medium text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors outline-none cursor-pointer">
+            <button className="flex items-center gap-1.5 px-3 h-8 rounded-xl text-xs font-medium text-background/60 hover:text-background hover:bg-background/10 transition-colors outline-none cursor-pointer">
               {actionBarMode === "triage" ? "Triage" : "Enforce"}
               <RiArrowDownSLine className="w-3.5 h-3.5 opacity-60" />
             </button>
@@ -332,30 +332,30 @@ export function BulkActionPill({
             side="top"
             align="start"
             sideOffset={12}
-            className="w-[160px] bg-neutral-900 border-neutral-800 shadow-2xl rounded-xl p-1"
+            className="w-[160px] bg-foreground border-background/10 shadow-2xl rounded-xl p-1"
           >
             <DropdownMenuItem
               onSelect={() => setActionBarMode("triage")}
-              className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-neutral-300 cursor-pointer focus:bg-neutral-800 focus:text-white"
+              className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-background/80 cursor-pointer focus:bg-background/10 focus:text-background"
             >
               Triage Mode
               {actionBarMode === "triage" && (
-                <RiCheckLine className="h-3.5 w-3.5 text-blue-400" />
+                <RiCheckLine className="h-3.5 w-3.5 text-chart-3" />
               )}
             </DropdownMenuItem>
             <DropdownMenuItem
               onSelect={() => setActionBarMode("enforce")}
-              className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-neutral-300 cursor-pointer focus:bg-neutral-800 focus:text-white"
+              className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-background/80 cursor-pointer focus:bg-background/10 focus:text-background"
             >
               Enforce Mode
               {actionBarMode === "enforce" && (
-                <RiCheckLine className="h-3.5 w-3.5 text-blue-400" />
+                <RiCheckLine className="h-3.5 w-3.5 text-chart-3" />
               )}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="w-px h-4 bg-neutral-700/50" />
+        <div className="w-px h-4 bg-background/15/50" />
 
         {/* Always visible: Add Tags */}
         <Popover open={tagsOpen} onOpenChange={setTagsOpen}>
@@ -365,8 +365,8 @@ export function BulkActionPill({
               size="sm"
               className={`h-8 px-3 text-xs font-medium rounded-xl transition-colors ${
                 stagedTags.length > 0
-                  ? "text-blue-400 border border-blue-500/50 bg-blue-500/10 hover:bg-blue-500/20"
-                  : "text-neutral-300 hover:text-white hover:bg-neutral-800"
+                  ? "text-chart-3 border border-chart-3/50 bg-chart-3/15 hover:bg-chart-3/20"
+                  : "text-background/80 hover:text-background hover:bg-background/10"
               }`}
             >
               <RiPriceTag3Line className="w-4 h-4 mr-1.5" />
@@ -377,18 +377,18 @@ export function BulkActionPill({
             side="top"
             align="center"
             sideOffset={12}
-            className="w-[200px] p-0 bg-neutral-900 border-neutral-800 shadow-2xl rounded-xl"
+            className="w-[200px] p-0 bg-foreground border-background/10 shadow-2xl rounded-xl"
           >
             <Command className="bg-transparent">
-              <div className="flex items-center gap-2 border-b border-neutral-800 px-3 py-2">
-                <RiSearchLine className="w-3.5 h-3.5 text-neutral-500" />
+              <div className="flex items-center gap-2 border-b border-background/10 px-3 py-2">
+                <RiSearchLine className="w-3.5 h-3.5 text-background/50" />
                 <CommandInput
                   placeholder="Search tags..."
-                  className="h-auto border-0 bg-transparent p-0 text-xs text-neutral-200 placeholder:text-neutral-500 focus:ring-0"
+                  className="h-auto border-0 bg-transparent p-0 text-xs text-background/90 placeholder:text-background/50 focus:ring-0"
                 />
               </div>
               <CommandList className="max-h-[180px] overflow-auto">
-                <CommandEmpty className="py-4 text-center text-xs text-neutral-500">
+                <CommandEmpty className="py-4 text-center text-xs text-background/50">
                   No tags found.
                 </CommandEmpty>
                 <CommandGroup className="p-1">
@@ -404,10 +404,10 @@ export function BulkActionPill({
                             : [...stagedTags, tag];
                           onStageChange("tags", next);
                         }}
-                        className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-neutral-300 cursor-pointer data-[selected=true]:bg-neutral-800 data-[selected=true]:text-white"
+                        className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-background/80 cursor-pointer data-[selected=true]:bg-background/10 data-[selected=true]:text-background"
                       >
                         {tag}
-                        <RiCheckLine className={`h-3.5 w-3.5 ${isActive ? "opacity-100 text-blue-400" : "opacity-0"}`} />
+                        <RiCheckLine className={`h-3.5 w-3.5 ${isActive ? "opacity-100 text-chart-3" : "opacity-0"}`} />
                       </CommandItem>
                     );
                   })}
@@ -435,7 +435,7 @@ export function BulkActionPill({
                   side="top"
                   align="center"
                   sideOffset={12}
-                  className="w-[180px] bg-neutral-900 border-neutral-800 shadow-2xl rounded-xl p-1"
+                  className="w-[180px] bg-foreground border-background/10 shadow-2xl rounded-xl p-1"
                 >
                   {CATEGORY_OPTIONS.map((cat) => {
                     const isActive = displayCategory === cat;
@@ -443,10 +443,10 @@ export function BulkActionPill({
                       <DropdownMenuItem
                         key={cat}
                         onSelect={() => onStageChange("category", cat)}
-                        className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-neutral-300 cursor-pointer focus:bg-neutral-800 focus:text-white"
+                        className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-background/80 cursor-pointer focus:bg-background/10 focus:text-background"
                       >
                         {cat}
-                        {isActive && <RiCheckLine className="h-3.5 w-3.5 text-blue-400" />}
+                        {isActive && <RiCheckLine className="h-3.5 w-3.5 text-chart-3" />}
                       </DropdownMenuItem>
                     );
                   })}
@@ -467,7 +467,7 @@ export function BulkActionPill({
                   side="top"
                   align="center"
                   sideOffset={12}
-                  className="w-[200px] bg-neutral-900 border-neutral-800 shadow-2xl rounded-xl p-1"
+                  className="w-[200px] bg-foreground border-background/10 shadow-2xl rounded-xl p-1"
                 >
                   {TAKEDOWN_OPTIONS.map((opt) => {
                     const isActive = displayTakedown === opt;
@@ -475,10 +475,10 @@ export function BulkActionPill({
                       <DropdownMenuItem
                         key={opt}
                         onSelect={() => onStageChange("takedown", opt)}
-                        className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-neutral-300 cursor-pointer focus:bg-neutral-800 focus:text-white"
+                        className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-background/80 cursor-pointer focus:bg-background/10 focus:text-background"
                       >
                         {opt}
-                        {isActive && <RiCheckLine className="h-3.5 w-3.5 text-blue-400" />}
+                        {isActive && <RiCheckLine className="h-3.5 w-3.5 text-chart-3" />}
                       </DropdownMenuItem>
                     );
                   })}
@@ -501,12 +501,12 @@ export function BulkActionPill({
                   side="top"
                   align="center"
                   sideOffset={12}
-                  className="w-[220px] bg-neutral-900 border-neutral-800 shadow-2xl rounded-xl p-1"
+                  className="w-[220px] bg-foreground border-background/10 shadow-2xl rounded-xl p-1"
                 >
                   {IP_ASSET_OPTIONS.map((ip) => (
                     <DropdownMenuItem
                       key={ip}
-                      className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-neutral-300 cursor-pointer focus:bg-neutral-800 focus:text-white"
+                      className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-background/80 cursor-pointer focus:bg-background/10 focus:text-background"
                     >
                       {ip}
                     </DropdownMenuItem>
@@ -528,12 +528,12 @@ export function BulkActionPill({
                   side="top"
                   align="center"
                   sideOffset={12}
-                  className="w-[200px] bg-neutral-900 border-neutral-800 shadow-2xl rounded-xl p-1"
+                  className="w-[200px] bg-foreground border-background/10 shadow-2xl rounded-xl p-1"
                 >
                   {IP_CERTIFICATE_OPTIONS.map((cert) => (
                     <DropdownMenuItem
                       key={cert}
-                      className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-neutral-300 cursor-pointer focus:bg-neutral-800 focus:text-white"
+                      className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-background/80 cursor-pointer focus:bg-background/10 focus:text-background"
                     >
                       {cert}
                     </DropdownMenuItem>
@@ -555,12 +555,12 @@ export function BulkActionPill({
                   side="top"
                   align="center"
                   sideOffset={12}
-                  className="w-[180px] bg-neutral-900 border-neutral-800 shadow-2xl rounded-xl p-1"
+                  className="w-[180px] bg-foreground border-background/10 shadow-2xl rounded-xl p-1"
                 >
                   {SITE_CODE_OPTIONS.map((code) => (
                     <DropdownMenuItem
                       key={code}
-                      className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-neutral-300 cursor-pointer focus:bg-neutral-800 focus:text-white"
+                      className="flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs text-background/80 cursor-pointer focus:bg-background/10 focus:text-background"
                     >
                       {code}
                     </DropdownMenuItem>
@@ -572,7 +572,7 @@ export function BulkActionPill({
         </div>
 
         {/* Right: Label/Verdict + Apply/Unvalidate + Batch Edit (always visible) */}
-        <div className="flex items-center gap-1 pl-2 border-l border-neutral-700/50">
+        <div className="flex items-center gap-1 pl-2 border-l border-background/10">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <BarDropdownTrigger
@@ -587,7 +587,7 @@ export function BulkActionPill({
               side="top"
               align="end"
               sideOffset={12}
-              className="w-56 bg-neutral-900 border-neutral-800 text-neutral-200 shadow-2xl rounded-xl p-1"
+              className="w-56 bg-foreground border-background/10 text-background/90 shadow-2xl rounded-xl p-1"
             >
               {VERDICT_OPTIONS.map((l) => {
                 const isActive = displayLabel === l.name;
@@ -595,11 +595,11 @@ export function BulkActionPill({
                   <DropdownMenuItem
                     key={l.name}
                     onSelect={() => onStageChange("label", l.name)}
-                    className="flex items-center gap-2 text-sm cursor-pointer rounded-lg px-3 py-2 focus:bg-neutral-800 focus:text-white"
+                    className="flex items-center gap-2 text-sm cursor-pointer rounded-lg px-3 py-2 focus:bg-background/10 focus:text-background"
                   >
                     <div className={`w-2 h-2 rounded-full shrink-0 ${l.color}`} />
                     <span className="flex-1">{l.name}</span>
-                    {isActive && <RiCheckLine className="h-3.5 w-3.5 text-blue-400" />}
+                    {isActive && <RiCheckLine className="h-3.5 w-3.5 text-chart-3" />}
                   </DropdownMenuItem>
                 );
               })}
@@ -617,19 +617,19 @@ export function BulkActionPill({
           ) : (
             <Button
               variant="outline"
-              className="h-8 border-neutral-700 bg-transparent text-neutral-300 hover:bg-neutral-800 hover:text-white text-xs font-semibold px-4 rounded-xl"
+              className="h-8 border-background/20 bg-transparent text-background/80 hover:bg-background/10 hover:text-background text-xs font-semibold px-4 rounded-xl"
             >
               Unvalidate
             </Button>
           )}
 
           {/* Batch Edit trigger */}
-          <div className="pl-1.5 border-l border-neutral-700/50">
+          <div className="pl-1.5 border-l border-background/10">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsBatchSheetOpen(true)}
-              className="h-8 px-3 text-xs font-medium text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-xl transition-colors"
+              className="h-8 px-3 text-xs font-medium text-background/60 hover:text-background hover:bg-background/10 rounded-xl transition-colors"
             >
               <RiSettings4Line className="w-4 h-4 mr-1.5" />
               Batch Edit
@@ -644,13 +644,13 @@ export function BulkActionPill({
           side="right"
           className="sm:max-w-lg w-full flex flex-col p-0"
         >
-          <SheetHeader className="border-b border-neutral-100 px-6 py-4">
-            <SheetTitle className="text-base font-semibold text-neutral-900">
+          <SheetHeader className="border-b border-border px-6 py-4">
+            <SheetTitle className="text-base font-semibold text-foreground">
               Batch Edit
             </SheetTitle>
-            <SheetDescription className="text-sm text-neutral-500">
+            <SheetDescription className="text-sm text-background/50">
               Apply changes to{" "}
-              <span className="font-medium text-neutral-700">
+              <span className="font-medium text-foreground">
                 {selectedCount}
               </span>{" "}
               selected items.
@@ -658,7 +658,7 @@ export function BulkActionPill({
           </SheetHeader>
 
           <Tabs defaultValue="moderate" className="flex-1 flex flex-col min-h-0">
-            <div className="px-6 pt-2 border-b border-neutral-100">
+            <div className="px-6 pt-2 border-b border-border">
               <TabsList variant="line" className="w-full justify-start">
                 <TabsTrigger value="moderate">Moderate</TabsTrigger>
                 <TabsTrigger value="details">Details</TabsTrigger>
@@ -674,7 +674,7 @@ export function BulkActionPill({
               <div className="space-y-4">
                 {/* Tags */}
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-neutral-700">
+                  <label className="text-sm font-medium text-foreground">
                     Tags
                   </label>
                   <Input placeholder="Add tags… (e.g. Priority, Escalated)" />
@@ -683,7 +683,7 @@ export function BulkActionPill({
                 {/* Category + Takedown Status */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-neutral-700">
+                    <label className="text-sm font-medium text-foreground">
                       Category
                     </label>
                     <Select>
@@ -700,7 +700,7 @@ export function BulkActionPill({
                     </Select>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-neutral-700">
+                    <label className="text-sm font-medium text-foreground">
                       Takedown Status
                     </label>
                     <Select>
@@ -721,11 +721,11 @@ export function BulkActionPill({
                 {/* Label + Action to Apply */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-neutral-700">
+                    <label className="text-sm font-medium text-foreground">
                       Label
                     </label>
                     <Select>
-                      <SelectTrigger className="w-full border-red-200 focus:ring-red-500">
+                      <SelectTrigger className="w-full border-destructive/30 focus:ring-destructive">
                         <SelectValue placeholder="Select label…" />
                       </SelectTrigger>
                       <SelectContent>
@@ -743,7 +743,7 @@ export function BulkActionPill({
                     </Select>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-neutral-700">
+                    <label className="text-sm font-medium text-foreground">
                       Action to Apply
                     </label>
                     <Select>
@@ -773,7 +773,7 @@ export function BulkActionPill({
                 {/* Ships From + Ships To */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-neutral-700">
+                    <label className="text-sm font-medium text-foreground">
                       Ships From
                     </label>
                     <Select>
@@ -790,7 +790,7 @@ export function BulkActionPill({
                     </Select>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-neutral-700">
+                    <label className="text-sm font-medium text-foreground">
                       Ships To
                     </label>
                     <Select>
@@ -811,7 +811,7 @@ export function BulkActionPill({
                 {/* Account Geo + Items in Bundle */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-neutral-700">
+                    <label className="text-sm font-medium text-foreground">
                       Account Geo
                     </label>
                     <Select>
@@ -828,7 +828,7 @@ export function BulkActionPill({
                     </Select>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-neutral-700">
+                    <label className="text-sm font-medium text-foreground">
                       Items in Bundle
                     </label>
                     <Input type="number" placeholder="e.g. 1" min={1} />
@@ -837,7 +837,7 @@ export function BulkActionPill({
 
                 {/* Product */}
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-neutral-700">
+                  <label className="text-sm font-medium text-foreground">
                     Product
                   </label>
                   <Select>
@@ -856,7 +856,7 @@ export function BulkActionPill({
 
                 {/* Comments */}
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-neutral-700">
+                  <label className="text-sm font-medium text-foreground">
                     Comments
                   </label>
                   <Textarea
@@ -875,7 +875,7 @@ export function BulkActionPill({
               <div className="space-y-4">
                 {/* IP Asset */}
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-neutral-700">
+                  <label className="text-sm font-medium text-foreground">
                     IP Asset
                   </label>
                   <Select>
@@ -894,7 +894,7 @@ export function BulkActionPill({
 
                 {/* IP Certificate */}
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-neutral-700">
+                  <label className="text-sm font-medium text-foreground">
                     IP Certificate
                   </label>
                   <Select>
@@ -913,7 +913,7 @@ export function BulkActionPill({
 
                 {/* Site Code */}
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-neutral-700">
+                  <label className="text-sm font-medium text-foreground">
                     Site Code
                   </label>
                   <Select>
@@ -934,7 +934,7 @@ export function BulkActionPill({
           </Tabs>
 
           {/* Sticky Footer */}
-          <SheetFooter className="border-t border-neutral-100 px-6 py-4 flex-row justify-end gap-3">
+          <SheetFooter className="border-t border-border px-6 py-4 flex-row justify-end gap-3">
             <Button
               variant="outline"
               onClick={() => setIsBatchSheetOpen(false)}

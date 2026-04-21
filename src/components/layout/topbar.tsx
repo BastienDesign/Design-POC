@@ -63,16 +63,16 @@ export function Topbar() {
   const selectedOrg = subs.find((o) => o.id === activeOrg) ?? subs[0];
 
   return (
-    <header className="sticky top-0 z-10 flex h-14 w-full shrink-0 items-center gap-4 border-b border-neutral-100 bg-white px-2">
+    <header className="sticky top-0 z-10 flex h-14 w-full shrink-0 items-center gap-4 border-b bg-background px-2">
       {/* Left: Toggle + Separator + Title/Breadcrumbs */}
       <div className="flex items-center gap-4">
-        <SidebarTrigger className="text-neutral-400 hover:text-neutral-900 transition-colors" />
+        <SidebarTrigger className="text-muted-foreground hover:text-foreground transition-colors" />
 
-        <Separator orientation="vertical" className="!self-auto h-4 bg-neutral-200" />
+        <Separator orientation="vertical" className="!self-auto h-4" />
 
         {/* Dynamic Breadcrumb / Page Title */}
         {segments.length === 1 ? (
-          <span className="text-[14px] font-medium text-neutral-900 tracking-tight">
+          <span className="text-[14px] font-medium text-foreground tracking-tight">
             {segments[0]}
           </span>
         ) : (
@@ -83,15 +83,15 @@ export function Topbar() {
                 return (
                   <React.Fragment key={index}>
                     {index > 0 && (
-                      <BreadcrumbSeparator className="text-neutral-400" />
+                      <BreadcrumbSeparator className="text-muted-foreground" />
                     )}
                     <BreadcrumbItem>
                       {isLast ? (
-                        <BreadcrumbPage className="text-[14px] font-medium text-neutral-900 tracking-tight">
+                        <BreadcrumbPage className="text-[14px] font-medium text-foreground tracking-tight">
                           {segment}
                         </BreadcrumbPage>
                       ) : (
-                        <BreadcrumbLink href={SEGMENT_HREFS[segment] ?? "#"} className="text-[14px] text-neutral-500 hover:text-neutral-900 transition-colors">
+                        <BreadcrumbLink href={SEGMENT_HREFS[segment] ?? "#"} className="text-[14px] text-muted-foreground hover:text-foreground transition-colors">
                           {segment}
                         </BreadcrumbLink>
                       )}
@@ -110,11 +110,11 @@ export function Topbar() {
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className="h-8 gap-2 border-neutral-200 px-3 text-[13px] font-medium text-neutral-700 shadow-sm"
+              className="h-8 gap-2 px-3 text-[13px] font-medium shadow-sm"
             >
-              <RiBuildingLine size={14} className="text-neutral-400" />
+              <RiBuildingLine size={14} className="text-muted-foreground" />
               {selectedOrg.name}
-              <RiArrowDownSLine size={14} className="text-neutral-400" />
+              <RiArrowDownSLine size={14} className="text-muted-foreground" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[220px]">
@@ -124,11 +124,11 @@ export function Topbar() {
                 className="flex cursor-pointer items-center justify-between text-[13px]"
                 onSelect={() => setActiveOrg(org.id)}
               >
-                <span className={org.id === activeOrg ? "font-medium text-neutral-900" : ""}>
+                <span className={org.id === activeOrg ? "font-medium text-foreground" : ""}>
                   {org.name}
                 </span>
                 {org.count !== null && (
-                  <span className="tabular-nums text-neutral-400">
+                  <span className="tabular-nums text-muted-foreground">
                     {org.count.toLocaleString("en-US")}
                   </span>
                 )}

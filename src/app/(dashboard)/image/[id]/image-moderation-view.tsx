@@ -75,15 +75,15 @@ interface RiskTile {
 }
 
 const RISK_TILE_STYLES: Record<RiskLevel, { bg: string; border: string; icon: string; label: string; desc: string }> = {
-  high: { bg: "bg-red-50", border: "border-red-100", icon: "text-red-600", label: "text-red-800", desc: "text-red-900" },
+  high: { bg: "bg-destructive/10", border: "border-red-100", icon: "text-destructive", label: "text-red-800", desc: "text-red-900" },
   medium: { bg: "bg-amber-50", border: "border-amber-100", icon: "text-amber-600", label: "text-amber-800", desc: "text-amber-900" },
   low: { bg: "bg-emerald-50", border: "border-emerald-100", icon: "text-emerald-600", label: "text-emerald-800", desc: "text-emerald-900" },
 };
 
 const RISK_VALUE_STYLES: Record<RiskLevel, string> = {
-  high: "font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded w-fit border border-red-100",
+  high: "font-bold text-destructive bg-destructive/10 px-1.5 py-0.5 rounded w-fit border border-red-100",
   medium: "font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded w-fit border border-orange-100",
-  low: "font-medium text-neutral-900",
+  low: "font-medium text-foreground",
 };
 
 const INSIGHT_SIGNALS = [
@@ -356,9 +356,9 @@ const DEFAULT_IMAGE: ImageData = {
 };
 
 const LABEL_STYLES: Record<string, string> = {
-  Counterfeit: "bg-red-600 hover:bg-red-700 text-white",
-  Suspicious: "bg-orange-500 hover:bg-orange-600 text-white",
-  Unlabeled: "bg-neutral-200 hover:bg-neutral-300 text-neutral-700",
+  Counterfeit: "bg-destructive hover:bg-destructive text-primary-foreground",
+  Suspicious: "bg-orange-500 hover:bg-orange-600 text-primary-foreground",
+  Unlabeled: "bg-secondary hover:bg-secondary text-foreground",
 };
 
 /* ─── Related Image Thumbnails ─── */
@@ -389,13 +389,13 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
   return (
     <div className="h-full flex flex-col overflow-hidden relative">
       {/* ── Entity Header ── */}
-      <header className="h-14 bg-white border-b border-neutral-200 flex items-center justify-between px-4 shrink-0 gap-2">
+      <header className="h-14 bg-card border-b border-border flex items-center justify-between px-4 shrink-0 gap-2">
         {/* Left */}
         <div className="flex items-center gap-3 min-w-0 shrink">
-          <span className="text-lg font-bold text-neutral-900 truncate">
+          <span className="text-lg font-bold text-foreground truncate">
             {image.id}
           </span>
-          <span className="text-[11px] text-neutral-400 shrink-0">
+          <span className="text-[11px] text-muted-foreground shrink-0">
             {image.crawlingDate}
           </span>
         </div>
@@ -404,21 +404,21 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
         <div className="flex items-center gap-1.5 shrink-0">
           {/* Validated by */}
           {image.validatedBy !== "\u2014" && (
-            <div className="flex items-center gap-1.5 text-xs text-neutral-500 mr-1">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mr-1">
               <RiShieldCheckLine className="size-3 text-emerald-500" />
-              <span>Validated by <span className="font-medium text-neutral-700">{image.validatedBy}</span></span>
+              <span>Validated by <span className="font-medium text-foreground">{image.validatedBy}</span></span>
             </div>
           )}
 
           <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs">
             <RiMessage3Line className="size-3.5" />
             <span className="hidden xl:inline">Comments</span>
-            <Badge variant="secondary" className="text-[9px] px-1 py-0 bg-neutral-200">
+            <Badge variant="secondary" className="text-[9px] px-1 py-0 bg-secondary">
               0
             </Badge>
           </Button>
 
-          <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs text-neutral-600">
+          <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs text-foreground">
             <RiNodeTree className="size-3.5" />
             <span className="hidden xl:inline">Rules</span>
           </Button>
@@ -432,45 +432,45 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
                 <Badge variant="secondary" className="px-1.5 py-0 text-[9px] bg-orange-100 text-orange-700">0</Badge>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[400px] sm:w-[450px] flex flex-col p-0 bg-white">
-              <SheetHeader className="px-6 py-4 border-b border-neutral-100 shrink-0">
+            <SheetContent side="right" className="w-[400px] sm:w-[450px] flex flex-col p-0 bg-card">
+              <SheetHeader className="px-6 py-4 border-b border-border shrink-0">
                 <SheetTitle className="text-base">Assessment Reasons</SheetTitle>
               </SheetHeader>
               <div className="flex-1 flex flex-col min-h-0">
                 <Tabs defaultValue="all" className="flex-1 flex flex-col w-full">
-                  <div className="flex items-center justify-between px-6 py-3 border-b border-neutral-100 bg-neutral-50/50 shrink-0">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-800">Flag Reasons</h3>
-                    <TabsList className="h-7 bg-neutral-200/80 p-0.5">
+                  <div className="flex items-center justify-between px-6 py-3 border-b border-border bg-background shrink-0">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">Flag Reasons</h3>
+                    <TabsList className="h-7 bg-secondary/80 p-0.5">
                       <TabsTrigger value="selected" className="text-[10px] px-2.5 h-6">Selected (0)</TabsTrigger>
                       <TabsTrigger value="all" className="text-[10px] px-2.5 h-6">All</TabsTrigger>
                     </TabsList>
                   </div>
                   <TabsContent value="all" className="flex-1 flex flex-col p-0 m-0 min-h-0">
-                    <div className="p-4 border-b border-neutral-100 shrink-0">
+                    <div className="p-4 border-b border-border shrink-0">
                       <div className="relative">
-                        <RiSearchLine className="absolute left-3 top-2.5 size-4 text-neutral-400" />
-                        <Input placeholder="Search reasons..." className="h-9 pl-9 text-xs bg-neutral-50 border-neutral-200" />
+                        <RiSearchLine className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+                        <Input placeholder="Search reasons..." className="h-9 pl-9 text-xs bg-accent border-border" />
                       </div>
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-6">
                       <div className="space-y-1">
-                        <div className="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-lg transition-colors">
-                          <Label htmlFor="i-r-1" className="text-sm font-medium text-neutral-700 cursor-pointer">Counterfeit product image</Label>
+                        <div className="flex items-center justify-between p-2.5 hover:bg-accent rounded-lg transition-colors">
+                          <Label htmlFor="i-r-1" className="text-sm font-medium text-foreground cursor-pointer">Counterfeit product image</Label>
                           <Switch id="i-r-1" />
                         </div>
-                        <div className="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-lg transition-colors">
-                          <Label htmlFor="i-r-2" className="text-sm font-medium text-neutral-700 cursor-pointer">Trademark logo visible</Label>
+                        <div className="flex items-center justify-between p-2.5 hover:bg-accent rounded-lg transition-colors">
+                          <Label htmlFor="i-r-2" className="text-sm font-medium text-foreground cursor-pointer">Trademark logo visible</Label>
                           <Switch id="i-r-2" />
                         </div>
-                        <div className="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-lg transition-colors">
-                          <Label htmlFor="i-r-3" className="text-sm font-medium text-neutral-700 cursor-pointer">Low-quality replica</Label>
+                        <div className="flex items-center justify-between p-2.5 hover:bg-accent rounded-lg transition-colors">
+                          <Label htmlFor="i-r-3" className="text-sm font-medium text-foreground cursor-pointer">Low-quality replica</Label>
                           <Switch id="i-r-3" />
                         </div>
                       </div>
                     </div>
                   </TabsContent>
                   <TabsContent value="selected" className="flex-1 overflow-y-auto p-4 m-0">
-                    <div className="flex flex-col items-center justify-center py-12 text-neutral-400">
+                    <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
                       <RiCheckDoubleLine className="size-8 mb-2 opacity-40" />
                       <span className="text-xs">No reasons selected yet</span>
                     </div>
@@ -486,8 +486,8 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
           <div className="flex items-center gap-1.5 mr-1">
             <div className={`h-8 px-3 rounded-md text-xs font-medium flex items-center gap-1.5 border transition-colors cursor-pointer ${
               image.isOfficialPhoto
-                ? "bg-blue-50 border-blue-200 text-blue-700"
-                : "bg-white border-neutral-200 text-neutral-500 hover:bg-neutral-50"
+                ? "bg-primary/10 border-primary/30 text-primary"
+                : "bg-card border-border text-muted-foreground hover:bg-accent"
             }`}>
               <RiImageLine className="size-3.5" />
               <span className="hidden xl:inline">Official Photo</span>
@@ -511,34 +511,34 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
                   <div
                     className={`w-2 h-2 rounded-full shrink-0 ${
                       opt === "Counterfeit"
-                        ? "bg-red-500"
+                        ? "bg-destructive/100"
                         : opt === "Suspicious"
                           ? "bg-orange-500"
                           : opt === "Legitimate"
                             ? "bg-emerald-500"
-                            : "bg-neutral-400"
+                            : "bg-muted-foreground"
                     }`}
                   />
                   {opt}
-                  {opt === image.label && <RiCheckLine className="h-3.5 w-3.5 text-blue-600 ml-auto" />}
+                  {opt === image.label && <RiCheckLine className="h-3.5 w-3.5 text-primary ml-auto" />}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button className="bg-neutral-900 hover:bg-neutral-800 text-white h-8 text-xs px-4 rounded-md">
+          <Button className="bg-foreground hover:bg-foreground/90 text-primary-foreground h-8 text-xs px-4 rounded-md">
             Enforce
           </Button>
 
           <Button variant="ghost" size="icon" className="size-8 p-0" onClick={() => router.push("/explore")}>
-            <RiMoreLine className="size-4 text-neutral-500" />
+            <RiMoreLine className="size-4 text-muted-foreground" />
           </Button>
         </div>
       </header>
 
       {/* ── QUICK CONTEXT RISK BAR ── */}
       {activeTiles.length > 0 && (
-        <div className="flex items-center gap-3 px-6 py-2.5 border-b border-neutral-200 bg-neutral-50 shrink-0 overflow-x-auto custom-scrollbar">
+        <div className="flex items-center gap-3 px-6 py-2.5 border-b border-border bg-background shrink-0 overflow-x-auto custom-scrollbar">
           {activeTiles.map((tile, i) => {
             const s = RISK_TILE_STYLES[tile.level];
             return (
@@ -561,7 +561,7 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
             <DialogTrigger asChild>
               <Button
                 variant="ghost"
-                className="shrink-0 h-full min-h-[48px] border border-dashed border-neutral-300 bg-neutral-50/50 hover:bg-neutral-100 text-neutral-500 hover:text-neutral-900 rounded-md px-3 flex flex-col gap-0.5 items-center justify-center transition-colors"
+                className="shrink-0 h-full min-h-[48px] border border-dashed border-border bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground rounded-md px-3 flex flex-col gap-0.5 items-center justify-center transition-colors"
               >
                 <RiSettings3Line className="w-3.5 h-3.5" />
                 <span className="text-[9px] font-bold uppercase">Prioritize</span>
@@ -569,8 +569,8 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle className="text-lg font-bold text-neutral-900">Prioritize AI Insights</DialogTitle>
-                <DialogDescription className="text-sm text-neutral-500">
+                <DialogTitle className="text-lg font-bold text-foreground">Prioritize AI Insights</DialogTitle>
+                <DialogDescription className="text-sm text-muted-foreground">
                   Select which risk signals are most critical for your current review.
                 </DialogDescription>
               </DialogHeader>
@@ -578,15 +578,15 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
                 {INSIGHT_SIGNALS.map((signal) => (
                   <div key={signal.id} className="flex items-center justify-between">
                     <div className="flex flex-col gap-0.5 pr-4">
-                      <span className="text-sm font-semibold text-neutral-900">{signal.label}</span>
-                      <span className="text-xs text-neutral-500">{signal.desc}</span>
+                      <span className="text-sm font-semibold text-foreground">{signal.label}</span>
+                      <span className="text-xs text-muted-foreground">{signal.desc}</span>
                     </div>
                     <Switch
                       checked={insightPrefs[signal.id]}
                       onCheckedChange={(checked) =>
                         setInsightPrefs((prev) => ({ ...prev, [signal.id]: checked }))
                       }
-                      className="data-[state=checked]:bg-neutral-900"
+                      className="data-[state=checked]:bg-foreground"
                     />
                   </div>
                 ))}
@@ -597,13 +597,13 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
       )}
 
       {/* ── Body ── */}
-      <div className="flex-1 flex min-h-0 bg-white">
+      <div className="flex-1 flex min-h-0 bg-card">
         {/* ── Left Pane: Image + Tags ── */}
-        <div className="flex-1 bg-neutral-50 flex flex-col min-w-0 border-r border-neutral-200 overflow-hidden">
+        <div className="flex-1 bg-accent flex flex-col min-w-0 border-r border-border overflow-hidden">
           <div className="flex-1 flex flex-col min-h-0 p-6 gap-6">
 
             {/* Image Stage */}
-            <div className="flex-1 min-h-0 bg-white border border-neutral-200 rounded-xl shadow-sm overflow-hidden flex items-center justify-center relative">
+            <div className="flex-1 min-h-0 bg-card border border-border rounded-xl shadow-sm overflow-hidden flex items-center justify-center relative">
               <ImageWithFallback
                 src={image.imageUrl}
                 alt={image.id}
@@ -616,7 +616,7 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
                 <div className="absolute inset-0 pointer-events-none">
                   {/* Mock bounding box */}
                   <div className="absolute top-[15%] left-[20%] w-[35%] h-[40%] border-2 border-emerald-400 rounded bg-emerald-400/5">
-                    <div className="absolute -top-6 left-0 bg-neutral-900 text-white text-[10px] font-medium px-2 py-0.5 rounded flex items-center gap-1.5">
+                    <div className="absolute -top-6 left-0 bg-foreground text-primary-foreground text-[10px] font-medium px-2 py-0.5 rounded flex items-center gap-1.5">
                       <RiSparklingLine className="size-3 text-emerald-400" />
                       {image.detections[0].brand} &mdash; {image.detections[0].type}
                     </div>
@@ -625,7 +625,7 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
               )}
 
               {/* Magic pill */}
-              <div className="absolute top-3 right-3 bg-neutral-900/80 text-white text-[10px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5 backdrop-blur-sm">
+              <div className="absolute top-3 right-3 bg-foreground/80 text-primary-foreground text-[10px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5 backdrop-blur-sm">
                 <RiSparklingLine className="size-3" />
                 Magic pill
               </div>
@@ -633,22 +633,22 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
 
             {/* Tags */}
             <div className="shrink-0">
-              <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">Tags</h3>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Tags</h3>
               <div className="flex items-center gap-1.5 flex-wrap">
                 {image.tags.length > 0 ? (
                   image.tags.map((tag) => (
                     <Badge
                       key={tag}
                       variant="secondary"
-                      className="h-6 px-2 py-0 text-[10px] font-medium bg-neutral-100 border border-neutral-200 text-neutral-600 rounded-sm shadow-none max-w-[260px] truncate"
+                      className="h-6 px-2 py-0 text-[10px] font-medium bg-muted border border-border text-foreground rounded-sm shadow-none max-w-[260px] truncate"
                     >
                       {tag}
                     </Badge>
                   ))
                 ) : (
-                  <span className="text-sm text-neutral-400 italic">No tags</span>
+                  <span className="text-sm text-muted-foreground italic">No tags</span>
                 )}
-                <button className="h-6 px-2 text-[11px] font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-sm transition-colors flex items-center gap-1">
+                <button className="h-6 px-2 text-[11px] font-medium text-primary hover:text-primary hover:bg-primary/10 rounded-sm transition-colors flex items-center gap-1">
                   <RiPriceTag3Line className="size-3" /> New Tag
                 </button>
               </div>
@@ -656,14 +656,14 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
 
             {/* Related Images Strip */}
             <div className="shrink-0">
-              <h3 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">Related Images</h3>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Related Images</h3>
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {RELATED_IMAGES.map((ri) => (
                   <div
                     key={ri.id}
                     className="shrink-0 w-[90px] cursor-pointer group"
                   >
-                    <div className="w-[90px] h-[90px] rounded-lg overflow-hidden border border-neutral-200 bg-neutral-100 group-hover:border-neutral-400 transition-colors">
+                    <div className="w-[90px] h-[90px] rounded-lg overflow-hidden border border-border bg-muted group-hover:border-border transition-colors">
                       <ImageWithFallback
                         src={ri.thumbnailUrl}
                         alt={ri.imageId}
@@ -671,7 +671,7 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
                         fallbackClassName="w-full h-full"
                       />
                     </div>
-                    <div className="text-[10px] text-neutral-500 mt-1 truncate text-center">{ri.imageId}</div>
+                    <div className="text-[10px] text-muted-foreground mt-1 truncate text-center">{ri.imageId}</div>
                   </div>
                 ))}
               </div>
@@ -681,42 +681,42 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
         </div>
 
         {/* ── Right Pane (Sidebar with Tabs) ── */}
-        <aside className="w-[380px] xl:w-[450px] bg-white flex flex-col shrink-0 min-h-0">
+        <aside className="w-[380px] xl:w-[450px] bg-card flex flex-col shrink-0 min-h-0">
           <Tabs
             value={sidebarTab}
             onValueChange={setSidebarTab}
             className="flex-1 flex flex-col min-h-0"
           >
             {/* Tabs Header */}
-            <div className="flex items-center border-b border-neutral-200 bg-white h-12 px-4 shrink-0">
+            <div className="flex items-center border-b border-border bg-card h-12 px-4 shrink-0">
               <TabsList
                 variant="line"
                 className="flex gap-4 xl:gap-6 bg-transparent rounded-none h-full w-auto p-0"
               >
                 <TabsTrigger
                   value="overview"
-                  className="text-xs font-medium text-neutral-500 data-[state=active]:text-neutral-900 data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
+                  className="text-xs font-medium text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
                 >
                   <RiGlobalLine className="size-3.5" />
                   Overview
                 </TabsTrigger>
                 <TabsTrigger
                   value="details"
-                  className="text-xs font-medium text-neutral-500 data-[state=active]:text-neutral-900 data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
+                  className="text-xs font-medium text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
                 >
                   <RiFileTextLine className="size-3.5" />
                   Details
                 </TabsTrigger>
                 <TabsTrigger
                   value="activity"
-                  className="text-xs font-medium text-neutral-500 data-[state=active]:text-neutral-900 data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
+                  className="text-xs font-medium text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
                 >
                   <RiPulseLine className="size-3.5" />
                   Activity
                 </TabsTrigger>
                 <TabsTrigger
                   value="network"
-                  className="text-xs font-medium text-neutral-500 data-[state=active]:text-neutral-900 data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
+                  className="text-xs font-medium text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
                 >
                   <RiNodeTree className="size-3.5" />
                   Network
@@ -731,48 +731,48 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
 
                 {/* Image Intelligence */}
                 <div className="space-y-4">
-                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Image Intelligence</h3>
+                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Image Intelligence</h3>
                   <div className="grid grid-cols-2 gap-y-5 text-sm">
                     <div className="flex flex-col gap-1">
-                      <span className="text-xs text-neutral-500">Objective</span>
-                      <span className={`font-medium ${image.objective === "N/A" ? "text-neutral-400" : "text-neutral-900"}`}>
+                      <span className="text-xs text-muted-foreground">Objective</span>
+                      <span className={`font-medium ${image.objective === "N/A" ? "text-muted-foreground" : "text-foreground"}`}>
                         {image.objective}
                       </span>
                     </div>
                     <div className="flex flex-col gap-1">
-                      <span className="text-xs text-neutral-500">Product Category</span>
-                      <span className={`font-medium ${image.productCategory === "N/A" ? "text-neutral-400" : "text-neutral-900"}`}>
+                      <span className="text-xs text-muted-foreground">Product Category</span>
+                      <span className={`font-medium ${image.productCategory === "N/A" ? "text-muted-foreground" : "text-foreground"}`}>
                         {image.productCategory}
                       </span>
                     </div>
                     <div className="flex flex-col gap-1">
-                      <span className="text-xs text-neutral-500">Platform</span>
+                      <span className="text-xs text-muted-foreground">Platform</span>
                       <a
                         href={`https://${image.platform}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="font-medium text-blue-600 hover:underline cursor-pointer"
+                        className="font-medium text-primary hover:underline cursor-pointer"
                       >
                         {image.platform}
                       </a>
                     </div>
                     <div className="flex flex-col gap-1">
-                      <span className="text-xs text-neutral-500">Similarity</span>
-                      <span className={fieldRisks["Similarity"] ? RISK_VALUE_STYLES[fieldRisks["Similarity"]] : "font-medium text-neutral-900"}>{image.similarity}%</span>
+                      <span className="text-xs text-muted-foreground">Similarity</span>
+                      <span className={fieldRisks["Similarity"] ? RISK_VALUE_STYLES[fieldRisks["Similarity"]] : "font-medium text-foreground"}>{image.similarity}%</span>
                     </div>
                     <div className="flex flex-col gap-1 col-span-2">
-                      <span className="text-xs text-neutral-500">Source Original URL</span>
+                      <span className="text-xs text-muted-foreground">Source Original URL</span>
                       {image.sourceOriginalUrl ? (
                         <a
                           href={image.sourceOriginalUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="font-medium text-blue-600 hover:underline cursor-pointer text-xs break-all"
+                          className="font-medium text-primary hover:underline cursor-pointer text-xs break-all"
                         >
                           {image.sourceOriginalUrl}
                         </a>
                       ) : (
-                        <span className="font-medium text-neutral-400">N/A</span>
+                        <span className="font-medium text-muted-foreground">N/A</span>
                       )}
                     </div>
                   </div>
@@ -780,22 +780,22 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
 
                 {/* Detections */}
                 <div className="space-y-4">
-                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Detections</h3>
+                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Detections</h3>
                   {image.detections.length > 0 ? (
                     <div className="space-y-2">
                       {image.detections.map((d, i) => (
                         <div
                           key={i}
-                          className="flex items-center gap-3 p-3 rounded-lg border border-neutral-200 bg-neutral-50"
+                          className="flex items-center gap-3 p-3 rounded-lg border border-border bg-accent"
                         >
                           <div className="size-8 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
                             <RiEyeLine className="size-3.5 text-emerald-600" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-[13px] font-medium text-neutral-900">
+                            <div className="text-[13px] font-medium text-foreground">
                               {d.brand} &mdash; {d.type}
                             </div>
-                            <div className="text-[11px] text-neutral-500">
+                            <div className="text-[11px] text-muted-foreground">
                               Confidence: {d.confidence}%
                             </div>
                           </div>
@@ -803,22 +803,22 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-sm text-neutral-400 italic">No detections</div>
+                    <div className="text-sm text-muted-foreground italic">No detections</div>
                   )}
                 </div>
 
                 {/* Comments */}
                 <div className="space-y-4">
-                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Comments</h3>
+                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Comments</h3>
                   <div className="relative">
                     <Input
                       placeholder="Add a New Comment..."
-                      className="h-10 text-sm bg-neutral-50 border-neutral-200 pr-20"
+                      className="h-10 text-sm bg-accent border-border pr-20"
                     />
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="absolute right-1 top-1 h-8 text-xs text-blue-600 hover:text-blue-800"
+                      className="absolute right-1 top-1 h-8 text-xs text-primary hover:text-primary"
                     >
                       Send
                     </Button>
@@ -831,77 +831,77 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
               <TabsContent value="details" className="p-6 m-0 space-y-8 pb-20">
 
                 <div className="space-y-4">
-                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Image Details</h3>
+                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Image Details</h3>
                   <div className="grid grid-cols-2 gap-y-5 text-sm">
                     <div className="flex flex-col gap-1">
-                      <span className="text-xs text-neutral-500">Image ID</span>
-                      <span className="font-medium text-neutral-900">{image.id}</span>
+                      <span className="text-xs text-muted-foreground">Image ID</span>
+                      <span className="font-medium text-foreground">{image.id}</span>
                     </div>
                     <div className="flex flex-col gap-1">
-                      <span className="text-xs text-neutral-500">Crawling Date</span>
-                      <span className="font-medium text-neutral-900">{image.crawlingDate}</span>
+                      <span className="text-xs text-muted-foreground">Crawling Date</span>
+                      <span className="font-medium text-foreground">{image.crawlingDate}</span>
                     </div>
                     <div className="flex flex-col gap-1">
-                      <span className="text-xs text-neutral-500">Objective</span>
-                      <span className={`font-medium ${image.objective === "N/A" ? "text-neutral-400" : "text-neutral-900"}`}>
+                      <span className="text-xs text-muted-foreground">Objective</span>
+                      <span className={`font-medium ${image.objective === "N/A" ? "text-muted-foreground" : "text-foreground"}`}>
                         {image.objective}
                       </span>
                     </div>
                     <div className="flex flex-col gap-1">
-                      <span className="text-xs text-neutral-500">Product Category</span>
-                      <span className={`font-medium ${image.productCategory === "N/A" ? "text-neutral-400" : "text-neutral-900"}`}>
+                      <span className="text-xs text-muted-foreground">Product Category</span>
+                      <span className={`font-medium ${image.productCategory === "N/A" ? "text-muted-foreground" : "text-foreground"}`}>
                         {image.productCategory}
                       </span>
                     </div>
                     <div className="flex flex-col gap-1">
-                      <span className="text-xs text-neutral-500">Platform</span>
+                      <span className="text-xs text-muted-foreground">Platform</span>
                       <a
                         href={`https://${image.platform}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="font-medium text-blue-600 hover:underline cursor-pointer"
+                        className="font-medium text-primary hover:underline cursor-pointer"
                       >
                         {image.platform}
                       </a>
                     </div>
                     <div className="flex flex-col gap-1">
-                      <span className="text-xs text-neutral-500">Similarity</span>
-                      <span className={fieldRisks["Similarity"] ? RISK_VALUE_STYLES[fieldRisks["Similarity"]] : "font-medium text-neutral-900"}>{image.similarity}%</span>
+                      <span className="text-xs text-muted-foreground">Similarity</span>
+                      <span className={fieldRisks["Similarity"] ? RISK_VALUE_STYLES[fieldRisks["Similarity"]] : "font-medium text-foreground"}>{image.similarity}%</span>
                     </div>
                     <div className="flex flex-col gap-1">
-                      <span className="text-xs text-neutral-500">Validated By</span>
-                      <span className={`font-medium ${image.validatedBy === "\u2014" ? "text-neutral-400" : "text-neutral-900"}`}>
+                      <span className="text-xs text-muted-foreground">Validated By</span>
+                      <span className={`font-medium ${image.validatedBy === "\u2014" ? "text-muted-foreground" : "text-foreground"}`}>
                         {image.validatedBy}
                       </span>
                     </div>
                     <div className="flex flex-col gap-1">
-                      <span className="text-xs text-neutral-500">Official Photo</span>
-                      <span className="font-medium text-neutral-900">{image.isOfficialPhoto ? "Yes" : "No"}</span>
+                      <span className="text-xs text-muted-foreground">Official Photo</span>
+                      <span className="font-medium text-foreground">{image.isOfficialPhoto ? "Yes" : "No"}</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-neutral-500">Source</h3>
+                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Source</h3>
                   <div className="grid grid-cols-1 gap-y-5 text-sm">
                     <div className="flex flex-col gap-1">
-                      <span className="text-xs text-neutral-500">Source Original URL</span>
+                      <span className="text-xs text-muted-foreground">Source Original URL</span>
                       {image.sourceOriginalUrl ? (
                         <a
                           href={image.sourceOriginalUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="font-medium text-blue-600 hover:underline cursor-pointer text-xs break-all"
+                          className="font-medium text-primary hover:underline cursor-pointer text-xs break-all"
                         >
                           {image.sourceOriginalUrl}
                         </a>
                       ) : (
-                        <span className="font-medium text-neutral-400">N/A</span>
+                        <span className="font-medium text-muted-foreground">N/A</span>
                       )}
                     </div>
                     <div className="flex flex-col gap-1">
-                      <span className="text-xs text-neutral-500">Parent Post</span>
-                      <span className="font-medium text-blue-600 hover:underline cursor-pointer">
+                      <span className="text-xs text-muted-foreground">Parent Post</span>
+                      <span className="font-medium text-primary hover:underline cursor-pointer">
                         {image.parentPostId} &mdash; {image.parentPostTitle}
                       </span>
                     </div>
@@ -912,10 +912,10 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
 
               {/* ── Activity Tab ── */}
               <TabsContent value="activity" className="p-6 pb-20 m-0">
-                <h3 className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 mb-4">Activity Timeline</h3>
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-4">Activity Timeline</h3>
                 <div className="space-y-4">
                   {[
-                    { action: "Image crawled", time: image.crawlingDate, icon: RiGlobalLine, color: "text-blue-500" },
+                    { action: "Image crawled", time: image.crawlingDate, icon: RiGlobalLine, color: "text-primary" },
                     ...(image.validatedBy !== "\u2014"
                       ? [{ action: `Validated by ${image.validatedBy}`, time: "14 Mar 2025, 10:30", icon: RiShieldCheckLine, color: "text-emerald-500" }]
                       : []),
@@ -925,12 +925,12 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
                       : []),
                   ].map((event, i) => (
                     <div key={i} className="flex gap-3">
-                      <div className="size-7 rounded-full bg-neutral-100 flex items-center justify-center shrink-0">
+                      <div className="size-7 rounded-full bg-muted flex items-center justify-center shrink-0">
                         <event.icon className={`size-3.5 ${event.color}`} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-[13px] font-medium text-neutral-900">{event.action}</div>
-                        <div className="text-[11px] text-neutral-500">{event.time}</div>
+                        <div className="text-[13px] font-medium text-foreground">{event.action}</div>
+                        <div className="text-[11px] text-muted-foreground">{event.time}</div>
                       </div>
                     </div>
                   ))}

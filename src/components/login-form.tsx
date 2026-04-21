@@ -143,7 +143,7 @@ export function LoginForm({
         </CardContent>
       </Card>
 
-      <FieldDescription className="px-6 text-center text-white/70 [&_a:hover]:text-white [&_a]:text-white/90 [&_a]:underline [&_a]:underline-offset-4">
+      <FieldDescription className="px-6 text-center text-primary-foreground/70 [&_a:hover]:text-primary-foreground [&_a]:text-primary-foreground/90 [&_a]:underline [&_a]:underline-offset-4">
         By clicking continue, you agree to our{" "}
         <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
       </FieldDescription>
@@ -191,19 +191,19 @@ function BrandPanel() {
       />
 
       {/* Content */}
-      <div className="relative z-10 flex h-full min-h-[560px] flex-col justify-between p-10 text-white">
+      <div className="relative z-10 flex h-full min-h-[560px] flex-col justify-between p-10 text-primary-foreground">
         <div className="flex items-center gap-2">
-          <div className="inline-flex size-8 items-center justify-center rounded-lg bg-white/15 backdrop-blur-sm ring-1 ring-white/20">
+          <div className="inline-flex size-8 items-center justify-center rounded-lg bg-background backdrop-blur-sm ring-1 ring-white/20">
             <RiShieldKeyholeLine className="size-4" />
           </div>
           <span className="text-sm font-semibold tracking-tight">Sentinel</span>
-          <span className="ml-2 rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white/90">
+          <span className="ml-2 rounded-full border border-white/20 bg-background px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-primary-foreground/90">
             New
           </span>
         </div>
 
         <div className="space-y-7">
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-sm">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-background px-3 py-1 text-xs font-medium backdrop-blur-sm">
             <RiSparkling2Line className="size-3.5" />
             AI Moderation Copilot — out now
           </div>
@@ -214,7 +214,7 @@ function BrandPanel() {
               <br />
               at the speed of the internet.
             </h2>
-            <p className="mt-3 max-w-sm text-sm text-white/80">
+            <p className="mt-3 max-w-sm text-sm text-primary-foreground/80">
               Sentinel finds, reviews and takes down counterfeits and IP
               violations across the web — powered by agentic AI.
             </p>
@@ -223,12 +223,12 @@ function BrandPanel() {
           <ul className="space-y-3.5">
             {features.map(({ icon: Icon, title, copy }) => (
               <li key={title} className="flex items-start gap-3">
-                <div className="mt-0.5 inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/12 ring-1 ring-inset ring-white/15 backdrop-blur-sm">
+                <div className="mt-0.5 inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-background ring-1 ring-inset ring-white/15 backdrop-blur-sm">
                   <Icon className="size-4" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold leading-tight">{title}</p>
-                  <p className="mt-0.5 text-xs leading-relaxed text-white/70">
+                  <p className="mt-0.5 text-xs leading-relaxed text-primary-foreground/70">
                     {copy}
                   </p>
                 </div>
@@ -237,7 +237,7 @@ function BrandPanel() {
           </ul>
         </div>
 
-        <div className="flex items-center justify-between text-xs text-white/70">
+        <div className="flex items-center justify-between text-xs text-primary-foreground/70">
           <div className="flex items-center gap-2">
             <RiEyeLine className="size-3.5" />
             <span>1.2M infringements removed last quarter</span>

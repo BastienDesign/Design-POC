@@ -36,13 +36,13 @@ export function ExploreGrid({
     return (
       <div className="flex-1 min-h-0 w-full">
         <div className="flex flex-col items-center justify-center w-full h-[450px] mx-auto">
-          <div className="flex items-center justify-center w-12 h-12 bg-neutral-100 rounded-full mb-4 ring-4 ring-neutral-50/50">
-            <RiSearchLine className="w-6 h-6 text-neutral-400" />
+          <div className="flex items-center justify-center w-12 h-12 bg-muted rounded-full mb-4 ring-4 ring-muted/50">
+            <RiSearchLine className="w-6 h-6 text-muted-foreground" />
           </div>
-          <h3 className="text-sm font-semibold text-neutral-900 mb-1">
+          <h3 className="text-sm font-semibold text-foreground mb-1">
             No results found
           </h3>
-          <p className="text-sm text-neutral-500 mb-5 max-w-[350px] text-center">
+          <p className="text-sm text-muted-foreground mb-5 max-w-[350px] text-center">
             We couldn&apos;t find any data matching your current search and
             filter combination. Try adjusting your parameters.
           </p>
@@ -50,7 +50,7 @@ export function ExploreGrid({
             variant="outline"
             size="sm"
             onClick={onResetFilters}
-            className="h-8 border-neutral-200 text-neutral-700 bg-white shadow-sm hover:bg-neutral-50 font-medium"
+            className="h-8 border-border text-foreground bg-card shadow-sm hover:bg-accent font-medium"
           >
             Clear all filters
           </Button>
@@ -67,7 +67,7 @@ export function ExploreGrid({
           checked={allSelected ? true : someSelected ? "indeterminate" : false}
           onCheckedChange={(checked) => onSelectAll(checked === true)}
         />
-        <span className="text-[11px] font-medium text-neutral-400">
+        <span className="text-[11px] font-medium text-muted-foreground">
           {selectedRows.length > 0
             ? `${selectedRows.length} of ${data.length} selected`
             : `${data.length} items`}

@@ -171,22 +171,22 @@ function buildExploreNetwork(item: ExplorePost): {
 }
 
 const LABEL_COLORS: Record<string, string> = {
-  counterfeit: "bg-red-500",
+  counterfeit: "bg-destructive/100",
   suspicious: "bg-amber-500",
   legitimate: "bg-emerald-500",
   trademark_infringement: "bg-orange-400",
   "trademark infringement": "bg-orange-400",
   copyright_violation: "bg-purple-400",
-  unlabeled: "bg-neutral-400",
+  unlabeled: "bg-muted-foreground",
 };
 
 const MEDIA_LABEL_DOT: Record<string, string> = {
-  counterfeit: "bg-red-500",
+  counterfeit: "bg-destructive/100",
   suspicious: "bg-amber-500",
   legitimate: "bg-emerald-500",
   trademark_infringement: "bg-orange-400",
   copyright_violation: "bg-purple-500",
-  unlabeled: "bg-neutral-300",
+  unlabeled: "bg-muted-foreground/60",
 };
 
 type RiskLevel = "high" | "medium" | "low";
@@ -294,21 +294,21 @@ function riskOrder(level: RiskLevel): number {
 }
 
 const RISK_TILE_STYLES: Record<RiskLevel, { bg: string; border: string; icon: string; label: string; desc: string }> = {
-  high: { bg: "bg-red-50", border: "border-red-100", icon: "text-red-600", label: "text-red-800", desc: "text-red-900" },
+  high: { bg: "bg-destructive/10", border: "border-red-100", icon: "text-destructive", label: "text-red-800", desc: "text-red-900" },
   medium: { bg: "bg-amber-50", border: "border-amber-100", icon: "text-amber-600", label: "text-amber-800", desc: "text-amber-900" },
   low: { bg: "bg-emerald-50", border: "border-emerald-100", icon: "text-emerald-600", label: "text-emerald-800", desc: "text-emerald-900" },
 };
 
 const RISK_ROW_STYLES: Record<RiskLevel, { bg: string; border: string; label: string; value: string }> = {
-  high: { bg: "bg-red-50/50", border: "border-red-100", label: "text-red-600", value: "text-red-900" },
+  high: { bg: "bg-destructive/10/50", border: "border-red-100", label: "text-destructive", value: "text-red-900" },
   medium: { bg: "bg-amber-50/50", border: "border-amber-100", label: "text-amber-600", value: "text-amber-900" },
   low: { bg: "bg-emerald-50/30", border: "border-emerald-100", label: "text-emerald-600", value: "text-emerald-900" },
 };
 
 const RISK_VALUE_STYLES: Record<RiskLevel, string> = {
-  high: "font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded w-fit border border-red-100",
+  high: "font-bold text-destructive bg-destructive/10 px-1.5 py-0.5 rounded w-fit border border-red-100",
   medium: "font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded w-fit border border-orange-100",
-  low: "font-medium text-neutral-900",
+  low: "font-medium text-foreground",
 };
 
 /* ─── Reusable Sub-Components (matching website view pattern) ─── */
@@ -322,8 +322,8 @@ function SectionHeader({
 }) {
   return (
     <div className="flex items-center gap-2 mb-4">
-      <Icon className="size-3.5 text-neutral-400" />
-      <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-800">
+      <Icon className="size-3.5 text-muted-foreground" />
+      <span className="text-[10px] font-bold uppercase tracking-wider text-foreground">
         {label}
       </span>
     </div>
@@ -343,17 +343,17 @@ function DataPoint({
 }) {
   const valueClass = risk
     ? `text-[12px] ${RISK_VALUE_STYLES[risk]}`
-    : "text-[12px] font-medium text-neutral-900";
+    : "text-[12px] font-medium text-foreground";
 
   return (
     <div>
-      <div className="text-[10px] text-neutral-500 mb-1">{label}</div>
+      <div className="text-[10px] text-muted-foreground mb-1">{label}</div>
       {isLink ? (
         <a
           href={value}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[12px] font-medium text-blue-600 hover:underline break-all"
+          className="text-[12px] font-medium text-primary hover:underline break-all"
         >
           {value}
         </a>
@@ -379,20 +379,20 @@ function TimelineItem({
 }) {
   return (
     <div className="flex gap-3 mb-4 relative">
-      <div className="size-6 rounded-full bg-white border border-neutral-200 flex items-center justify-center z-10 shrink-0">
+      <div className="size-6 rounded-full bg-card border border-border flex items-center justify-center z-10 shrink-0">
         <Icon className={`size-3 ${iconColor}`} />
       </div>
       <div className="flex-1 min-w-0 pt-0.5">
         <div className="flex items-baseline justify-between gap-2">
-          <span className="text-[12px] font-medium text-neutral-900">
+          <span className="text-[12px] font-medium text-foreground">
             {action}
           </span>
-          <span className="text-[10px] text-neutral-500 whitespace-nowrap">
+          <span className="text-[10px] text-muted-foreground whitespace-nowrap">
             {time}
           </span>
         </div>
         {detail && (
-          <span className="text-[11px] text-neutral-500">{detail}</span>
+          <span className="text-[11px] text-muted-foreground">{detail}</span>
         )}
       </div>
     </div>
@@ -414,11 +414,11 @@ function TimelineGroup({
 }) {
   return (
     <>
-      <div className="text-xs font-bold text-neutral-900 mt-6 first:mt-0 mb-4">
+      <div className="text-xs font-bold text-foreground mt-6 first:mt-0 mb-4">
         {date}
       </div>
       <div className="relative pl-0">
-        <div className="absolute left-[11px] top-3 bottom-0 border-l border-neutral-200" />
+        <div className="absolute left-[11px] top-3 bottom-0 border-l border-border" />
         {items.map((item, i) => (
           <TimelineItem key={i} {...item} />
         ))}
@@ -486,8 +486,8 @@ export function ModerationWorkspace({
   // Guard: if post not found in standalone mode
   if (!currentItem) {
     return (
-      <div className="flex flex-col h-full items-center justify-center bg-white absolute inset-0 z-50">
-        <p className="text-sm text-neutral-500">Post not found</p>
+      <div className="flex flex-col h-full items-center justify-center bg-card absolute inset-0 z-50">
+        <p className="text-sm text-muted-foreground">Post not found</p>
         <Button variant="outline" className="mt-4" onClick={() => router.push("/explore")}>
           Back to Explore
         </Button>
@@ -495,7 +495,7 @@ export function ModerationWorkspace({
     );
   }
   const progress = ((currentIndex + 1) / queue.length) * 100;
-  const dotColor = LABEL_COLORS[currentItem.label] ?? "bg-neutral-400";
+  const dotColor = LABEL_COLORS[currentItem.label] ?? "bg-muted-foreground";
 
   // Media player state
   const [activeMediaIndex, setActiveMediaIndex] = useState(0);
@@ -524,7 +524,7 @@ export function ModerationWorkspace({
   // Resolve label from overrides, falling back to original
   const resolveLabel = (media: PostMedia): MediaLabel => labelOverrides[media.id] ?? media.label;
   const currentLabel = resolveLabel(displayMedia);
-  const mediaLabelDot = MEDIA_LABEL_DOT[currentLabel] ?? "bg-neutral-300";
+  const mediaLabelDot = MEDIA_LABEL_DOT[currentLabel] ?? "bg-muted-foreground/60";
   const mediaLabelText = currentLabel.charAt(0).toUpperCase() + currentLabel.slice(1);
 
   function handleMediaLabelChange(newLabel: MediaLabel) {
@@ -592,37 +592,37 @@ export function ModerationWorkspace({
   }
 
   return (
-    <div className={`flex flex-col h-full bg-white overflow-hidden ${isStandalone ? "" : "absolute inset-0 z-50 animate-in slide-in-from-bottom-2 duration-200"}`}>
+    <div className={`flex flex-col h-full bg-card overflow-hidden ${isStandalone ? "" : "absolute inset-0 z-50 animate-in slide-in-from-bottom-2 duration-200"}`}>
       {/* ── GLOBAL TOP NAVIGATION BAR (overlay mode only — standalone uses AppShell Topbar) ── */}
       {!isStandalone && (
-        <header className="flex h-12 items-center justify-between border-b border-neutral-100 px-4 shrink-0 bg-white">
+        <header className="flex h-12 items-center justify-between border-b border-border px-4 shrink-0 bg-card">
           {/* Left: Sidebar Toggle & Breadcrumb */}
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-neutral-400 hover:text-neutral-900 transition-colors"
+              className="h-8 w-8 text-muted-foreground hover:text-foreground transition-colors"
               onClick={onExit}
             >
               <RiSidebarFoldLine className="size-4" />
             </Button>
-            <div className="w-px h-4 bg-neutral-200" />
+            <div className="w-px h-4 bg-border" />
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/explore" className="text-[14px] text-neutral-500 hover:text-neutral-900 transition-colors">
+                  <BreadcrumbLink href="/explore" className="text-[14px] text-muted-foreground hover:text-foreground transition-colors">
                     Explore
                   </BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator className="text-neutral-400" />
+                <BreadcrumbSeparator className="text-muted-foreground" />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/explore?tab=Posts" className="text-[14px] text-neutral-500 hover:text-neutral-900 transition-colors">
+                  <BreadcrumbLink href="/explore?tab=Posts" className="text-[14px] text-muted-foreground hover:text-foreground transition-colors">
                     Posts
                   </BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator className="text-neutral-400" />
+                <BreadcrumbSeparator className="text-muted-foreground" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage className="text-[14px] font-medium text-neutral-900 tracking-tight">
+                  <BreadcrumbPage className="text-[14px] font-medium text-foreground tracking-tight">
                     PO#{currentItem.postId}
                   </BreadcrumbPage>
                 </BreadcrumbItem>
@@ -636,11 +636,11 @@ export function ModerationWorkspace({
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="h-8 gap-2 border-neutral-200 px-3 text-[13px] font-medium text-neutral-700 shadow-sm"
+                  className="h-8 gap-2 border-border px-3 text-[13px] font-medium text-foreground shadow-sm"
                 >
-                  <RiBuildingLine size={14} className="text-neutral-400" />
+                  <RiBuildingLine size={14} className="text-muted-foreground" />
                   {SUB_ORGANIZATIONS[0].name}
-                  <RiArrowDownSLine size={14} className="text-neutral-400" />
+                  <RiArrowDownSLine size={14} className="text-muted-foreground" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[220px]">
@@ -651,7 +651,7 @@ export function ModerationWorkspace({
                   >
                     <span>{org.name}</span>
                     {org.count !== null && (
-                      <span className="tabular-nums text-neutral-400">
+                      <span className="tabular-nums text-muted-foreground">
                         {org.count.toLocaleString("en-US")}
                       </span>
                     )}
@@ -664,17 +664,17 @@ export function ModerationWorkspace({
       )}
 
       {/* ── ENTITY HEADER (matches Website view) ── */}
-      <header className="h-14 bg-white border-b border-neutral-200 flex items-center justify-between px-4 shrink-0 gap-2">
+      <header className="h-14 bg-card border-b border-border flex items-center justify-between px-4 shrink-0 gap-2">
         {/* Left: Status, ID, Date + Batch nav */}
         <div className="flex items-center gap-3 min-w-0 shrink">
           <div className="flex items-center gap-1.5 shrink-0">
             <span className="size-2 bg-green-500 rounded-full" />
-            <span className="text-[11px] text-neutral-500">Online</span>
+            <span className="text-[11px] text-muted-foreground">Online</span>
           </div>
-          <span className="text-lg font-bold text-neutral-900 truncate">
+          <span className="text-lg font-bold text-foreground truncate">
             PO#{currentItem.postId}
           </span>
-          <span className="text-[11px] text-neutral-400">
+          <span className="text-[11px] text-muted-foreground">
             {currentItem.crawlingDate}
           </span>
           {/* Batch navigation */}
@@ -682,19 +682,19 @@ export function ModerationWorkspace({
             <>
               <Separator orientation="vertical" className="h-5 mx-1" />
               <div className="flex items-center gap-1.5">
-                <span className="text-[11px] text-neutral-400">
+                <span className="text-[11px] text-muted-foreground">
                   {currentIndex + 1}/{queue.length}
                 </span>
-                <div className="w-20 h-1.5 rounded-full bg-neutral-100 overflow-hidden">
+                <div className="w-20 h-1.5 rounded-full bg-muted overflow-hidden">
                   <div
-                    className="h-full bg-neutral-900 rounded-full transition-all duration-300"
+                    className="h-full bg-foreground rounded-full transition-all duration-300"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-6 w-6 border-neutral-200"
+                  className="h-6 w-6 border-border"
                   onClick={onPrev}
                   disabled={isFirst}
                 >
@@ -703,7 +703,7 @@ export function ModerationWorkspace({
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-6 w-6 border-neutral-200"
+                  className="h-6 w-6 border-border"
                   onClick={onNext}
                   disabled={isLast}
                 >
@@ -716,9 +716,9 @@ export function ModerationWorkspace({
 
         {/* Right: Actions Group */}
         <div className="flex items-center gap-1.5 shrink-0">
-          <div className="flex items-center gap-1.5 text-xs text-neutral-500 cursor-help hover:text-neutral-800 transition-colors group mr-1">
-            <div className="flex items-center gap-1 underline decoration-dashed decoration-neutral-300 underline-offset-4 group-hover:decoration-neutral-400 transition-colors">
-              <RiInformationLine className="size-3 text-neutral-400 group-hover:text-neutral-600 transition-colors" />
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-help hover:text-foreground transition-colors group mr-1">
+            <div className="flex items-center gap-1 underline decoration-dashed decoration-border underline-offset-4 group-hover:decoration-muted-foreground transition-colors">
+              <RiInformationLine className="size-3 text-muted-foreground group-hover:text-foreground transition-colors" />
               <span className="hidden xl:inline">Validated by moderator</span>
             </div>
             <div className="flex">
@@ -736,7 +736,7 @@ export function ModerationWorkspace({
             <span className="hidden xl:inline">Comments</span>
             <Badge
               variant="secondary"
-              className="text-[9px] px-1 py-0 bg-neutral-200"
+              className="text-[9px] px-1 py-0 bg-secondary"
             >
               3
             </Badge>
@@ -745,7 +745,7 @@ export function ModerationWorkspace({
           <Button
             variant="outline"
             size="sm"
-            className="gap-1.5 h-8 text-xs text-neutral-600"
+            className="gap-1.5 h-8 text-xs text-foreground"
           >
             <RiNodeTree className="size-3.5" />
             <span className="hidden xl:inline">Rules</span>
@@ -760,54 +760,54 @@ export function ModerationWorkspace({
                 <Badge variant="secondary" className="px-1.5 py-0 text-[9px] bg-orange-100 text-orange-700">0</Badge>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[400px] sm:w-[450px] flex flex-col p-0 bg-white">
-              <SheetHeader className="px-6 py-4 border-b border-neutral-100 shrink-0">
+            <SheetContent side="right" className="w-[400px] sm:w-[450px] flex flex-col p-0 bg-card">
+              <SheetHeader className="px-6 py-4 border-b border-border shrink-0">
                 <SheetTitle className="text-base">Assessment Reasons</SheetTitle>
               </SheetHeader>
               <div className="flex-1 flex flex-col min-h-0">
                 <Tabs defaultValue="all" className="flex-1 flex flex-col w-full">
-                  <div className="flex items-center justify-between px-6 py-3 border-b border-neutral-100 bg-neutral-50/50 shrink-0">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-800">Flag Reasons</h3>
-                    <TabsList className="h-7 bg-neutral-200/80 p-0.5">
+                  <div className="flex items-center justify-between px-6 py-3 border-b border-border bg-background shrink-0">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">Flag Reasons</h3>
+                    <TabsList className="h-7 bg-secondary/80 p-0.5">
                       <TabsTrigger value="selected" className="text-[10px] px-2.5 h-6">Selected (0)</TabsTrigger>
                       <TabsTrigger value="all" className="text-[10px] px-2.5 h-6">All</TabsTrigger>
                     </TabsList>
                   </div>
                   <TabsContent value="all" className="flex-1 flex flex-col p-0 m-0 min-h-0">
-                    <div className="p-4 border-b border-neutral-100 shrink-0">
+                    <div className="p-4 border-b border-border shrink-0">
                       <div className="relative">
-                        <RiSearchLine className="absolute left-3 top-2.5 size-4 text-neutral-400" />
-                        <Input placeholder="Search reasons..." className="h-9 pl-9 text-xs bg-neutral-50 border-neutral-200" />
+                        <RiSearchLine className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+                        <Input placeholder="Search reasons..." className="h-9 pl-9 text-xs bg-accent border-border" />
                       </div>
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-6">
                       <div className="space-y-1">
-                        <div className="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-lg transition-colors">
-                          <Label htmlFor="r-1" className="text-sm font-medium text-neutral-700 cursor-pointer">Post has obfuscated brand name</Label>
+                        <div className="flex items-center justify-between p-2.5 hover:bg-accent rounded-lg transition-colors">
+                          <Label htmlFor="r-1" className="text-sm font-medium text-foreground cursor-pointer">Post has obfuscated brand name</Label>
                           <Switch id="r-1" />
                         </div>
-                        <div className="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-lg transition-colors">
-                          <Label htmlFor="r-2" className="text-sm font-medium text-neutral-700 cursor-pointer">Is products for sale?</Label>
+                        <div className="flex items-center justify-between p-2.5 hover:bg-accent rounded-lg transition-colors">
+                          <Label htmlFor="r-2" className="text-sm font-medium text-foreground cursor-pointer">Is products for sale?</Label>
                           <Switch id="r-2" />
                         </div>
-                        <div className="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-lg transition-colors">
-                          <Label htmlFor="r-3" className="text-sm font-medium text-neutral-700 cursor-pointer">Is product new?</Label>
+                        <div className="flex items-center justify-between p-2.5 hover:bg-accent rounded-lg transition-colors">
+                          <Label htmlFor="r-3" className="text-sm font-medium text-foreground cursor-pointer">Is product new?</Label>
                           <Switch id="r-3" />
                         </div>
                       </div>
                       <div className="space-y-1">
-                        <h4 className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 px-2.5 py-1 mt-2">Brand Specific</h4>
-                        <div className="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-lg transition-colors">
+                        <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground px-2.5 py-1 mt-2">Brand Specific</h4>
+                        <div className="flex items-center justify-between p-2.5 hover:bg-accent rounded-lg transition-colors">
                           <div className="flex flex-col gap-1 pr-4">
-                            <Label htmlFor="r-4" className="text-sm font-medium text-neutral-700 cursor-pointer">No suspicious/counterfeit elements</Label>
-                            <span className="text-[10px] text-neutral-400 font-mono leading-none">Product_Information &gt; all &gt; all &gt; Bio</span>
+                            <Label htmlFor="r-4" className="text-sm font-medium text-foreground cursor-pointer">No suspicious/counterfeit elements</Label>
+                            <span className="text-[10px] text-muted-foreground font-mono leading-none">Product_Information &gt; all &gt; all &gt; Bio</span>
                           </div>
                           <Switch id="r-4" />
                         </div>
-                        <div className="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-lg transition-colors">
+                        <div className="flex items-center justify-between p-2.5 hover:bg-accent rounded-lg transition-colors">
                           <div className="flex flex-col gap-1 pr-4">
-                            <Label htmlFor="r-5" className="text-sm font-medium text-neutral-700 cursor-pointer">Obvious Counterfeit Keyword</Label>
-                            <span className="text-[10px] text-neutral-400 font-mono leading-none">Product_Information &gt; all &gt; all &gt; Bio</span>
+                            <Label htmlFor="r-5" className="text-sm font-medium text-foreground cursor-pointer">Obvious Counterfeit Keyword</Label>
+                            <span className="text-[10px] text-muted-foreground font-mono leading-none">Product_Information &gt; all &gt; all &gt; Bio</span>
                           </div>
                           <Switch id="r-5" />
                         </div>
@@ -815,7 +815,7 @@ export function ModerationWorkspace({
                     </div>
                   </TabsContent>
                   <TabsContent value="selected" className="flex-1 overflow-y-auto p-4 m-0">
-                    <div className="flex flex-col items-center justify-center py-12 text-neutral-400">
+                    <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
                       <RiCheckDoubleLine className="size-8 mb-2 opacity-40" />
                       <span className="text-xs">No reasons selected yet</span>
                     </div>
@@ -849,7 +849,7 @@ export function ModerationWorkspace({
                   >
                     <div className={`w-2 h-2 rounded-full shrink-0 ${opt.color}`} />
                     {opt.name}
-                    {isActive && <RiCheckLine className="h-3.5 w-3.5 text-blue-600 ml-auto" />}
+                    {isActive && <RiCheckLine className="h-3.5 w-3.5 text-primary ml-auto" />}
                   </DropdownMenuItem>
                 );
               })}
@@ -857,21 +857,21 @@ export function ModerationWorkspace({
           </DropdownMenu>
 
           <Button
-            className="bg-neutral-900 hover:bg-neutral-800 text-white h-8 text-xs px-4 rounded-md"
+            className="bg-foreground hover:bg-foreground/90 text-primary-foreground h-8 text-xs px-4 rounded-md"
             onClick={handleValidate}
           >
             {isLast ? "Enforce & Close" : "Enforce"}
           </Button>
 
           <Button variant="ghost" size="icon" className="size-8 p-0" onClick={onExit}>
-            <RiMoreLine className="size-4 text-neutral-500" />
+            <RiMoreLine className="size-4 text-muted-foreground" />
           </Button>
         </div>
       </header>
 
       {/* ── QUICK CONTEXT RISK BAR ── */}
       {insights.tiles.length > 0 && (
-        <div className="flex items-center gap-3 px-6 py-2.5 border-b border-neutral-200 bg-neutral-50 shrink-0 overflow-x-auto custom-scrollbar">
+        <div className="flex items-center gap-3 px-6 py-2.5 border-b border-border bg-background shrink-0 overflow-x-auto custom-scrollbar">
           {insights.tiles.map((tile, i) => {
             const s = RISK_TILE_STYLES[tile.level];
             return (
@@ -894,7 +894,7 @@ export function ModerationWorkspace({
             <DialogTrigger asChild>
               <Button
                 variant="ghost"
-                className="shrink-0 h-full min-h-[48px] border border-dashed border-neutral-300 bg-neutral-50/50 hover:bg-neutral-100 text-neutral-500 hover:text-neutral-900 rounded-md px-3 flex flex-col gap-0.5 items-center justify-center transition-colors"
+                className="shrink-0 h-full min-h-[48px] border border-dashed border-border bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground rounded-md px-3 flex flex-col gap-0.5 items-center justify-center transition-colors"
               >
                 <RiSettings3Line className="w-3.5 h-3.5" />
                 <span className="text-[9px] font-bold uppercase">Prioritize</span>
@@ -902,8 +902,8 @@ export function ModerationWorkspace({
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle className="text-lg font-bold text-neutral-900">Prioritize AI Insights</DialogTitle>
-                <DialogDescription className="text-sm text-neutral-500">
+                <DialogTitle className="text-lg font-bold text-foreground">Prioritize AI Insights</DialogTitle>
+                <DialogDescription className="text-sm text-muted-foreground">
                   Select which risk signals are most critical for your current moderation queue.
                 </DialogDescription>
               </DialogHeader>
@@ -911,15 +911,15 @@ export function ModerationWorkspace({
                 {INSIGHT_SIGNALS.map((signal) => (
                   <div key={signal.id} className="flex items-center justify-between">
                     <div className="flex flex-col gap-0.5 pr-4">
-                      <span className="text-sm font-semibold text-neutral-900">{signal.label}</span>
-                      <span className="text-xs text-neutral-500">{signal.desc}</span>
+                      <span className="text-sm font-semibold text-foreground">{signal.label}</span>
+                      <span className="text-xs text-muted-foreground">{signal.desc}</span>
                     </div>
                     <Switch
                       checked={insightPrefs[signal.id]}
                       onCheckedChange={(checked) =>
                         setInsightPrefs((prev) => ({ ...prev, [signal.id]: checked }))
                       }
-                      className="data-[state=checked]:bg-neutral-900"
+                      className="data-[state=checked]:bg-foreground"
                     />
                   </div>
                 ))}
@@ -932,11 +932,11 @@ export function ModerationWorkspace({
       {/* ── MAIN CONTENT GRID ── */}
       <div className="flex-1 flex overflow-hidden">
         {/* LEFT PANEL: Media Investigation Viewer */}
-        <div className="flex-1 p-4 flex flex-col gap-4 border-r border-neutral-200 bg-neutral-100 min-w-0 min-h-0 overflow-hidden h-full">
+        <div className="flex-1 p-4 flex flex-col gap-4 border-r border-border bg-background min-w-0 min-h-0 overflow-hidden h-full">
           {/* Layer 1: Primary Display — hard-locked investigation canvas */}
           <Dialog>
             <DialogTrigger asChild>
-              <div className="relative w-full flex-1 min-h-0 bg-neutral-950 rounded-xl cursor-zoom-in group/img">
+              <div className="relative w-full flex-1 min-h-0 bg-foreground rounded-xl cursor-zoom-in group/img">
                 {/* Media content (clipped to rounded corners) */}
                 <div className="absolute inset-0 overflow-hidden rounded-xl">
                   {displayMedia.type === "video" && !activeFrame ? (
@@ -945,7 +945,7 @@ export function ModerationWorkspace({
                       key={displayMedia.id}
                       src={displayMedia.url}
                       controls
-                      className="w-full h-full object-contain bg-neutral-900"
+                      className="w-full h-full object-contain bg-foreground"
                       onPause={() => setIsVideoPaused(true)}
                       onPlay={() => setIsVideoPaused(false)}
                       onClick={(e) => e.preventDefault()}
@@ -969,18 +969,18 @@ export function ModerationWorkspace({
                       fallbackClassName="w-full h-full"
                     />
                   ) : (
-                    <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-neutral-500">
-                      <div className="w-16 h-16 rounded-full bg-neutral-800 flex items-center justify-center">
-                        <RiShieldCheckLine className="w-8 h-8 text-neutral-600" />
+                    <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-muted-foreground">
+                      <div className="w-16 h-16 rounded-full bg-foreground/90 flex items-center justify-center">
+                        <RiShieldCheckLine className="w-8 h-8 text-foreground" />
                       </div>
-                      <span className="text-sm text-neutral-500">No media available</span>
+                      <span className="text-sm text-muted-foreground">No media available</span>
                     </div>
                   )}
                 </div>
 
                 {/* Zoom Hint Overlay */}
-                <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/10 transition-colors flex items-center justify-center rounded-xl z-10 pointer-events-none">
-                  <div className="bg-white/90 text-black px-3 py-1.5 rounded-full flex items-center gap-2 opacity-0 group-hover/img:opacity-100 transition-opacity shadow-lg backdrop-blur-sm text-sm font-medium">
+                <div className="absolute inset-0 bg-foreground/0 group-hover/img:bg-foreground/10 transition-colors flex items-center justify-center rounded-xl z-10 pointer-events-none">
+                  <div className="bg-background text-foreground px-3 py-1.5 rounded-full flex items-center gap-2 opacity-0 group-hover/img:opacity-100 transition-opacity shadow-lg backdrop-blur-sm text-sm font-medium">
                     <RiZoomInLine className="size-4" /> Expand & Annotate
                   </div>
                 </div>
@@ -990,22 +990,22 @@ export function ModerationWorkspace({
                   {activeFrame && (
                     <button
                       onClick={() => setActiveFrameIndex(null)}
-                      className="flex items-center gap-1.5 px-2.5 py-1 bg-white/90 backdrop-blur-md rounded-full shadow-sm border border-neutral-100 transition-colors hover:bg-white cursor-pointer"
+                      className="flex items-center gap-1.5 px-2.5 py-1 bg-background backdrop-blur-md rounded-full shadow-sm border border-border transition-colors hover:bg-card cursor-pointer"
                     >
-                      <RiArrowLeftSLine className="h-3.5 w-3.5 text-neutral-600" />
-                      <span className="text-[10px] font-bold text-neutral-700">
+                      <RiArrowLeftSLine className="h-3.5 w-3.5 text-foreground" />
+                      <span className="text-[10px] font-bold text-foreground">
                         Back to Video
                       </span>
                     </button>
                   )}
                   <DropdownMenu>
                     <DropdownMenuTrigger className="outline-none">
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/90 backdrop-blur-md rounded-full shadow-sm border border-neutral-100 cursor-pointer hover:bg-white transition-colors">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 bg-background backdrop-blur-md rounded-full shadow-sm border border-border cursor-pointer hover:bg-card transition-colors">
                         <div className={`w-2 h-2 rounded-full ${mediaLabelDot}`} />
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-700">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-foreground">
                           {mediaLabelText}
                         </span>
-                        <RiArrowDownSLine className="h-3 w-3 text-neutral-400" />
+                        <RiArrowDownSLine className="h-3 w-3 text-muted-foreground" />
                       </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className="w-44">
@@ -1013,12 +1013,12 @@ export function ModerationWorkspace({
                         <DropdownMenuItem
                           key={label}
                           onClick={() => handleMediaLabelChange(label)}
-                          className={`text-xs font-medium ${currentLabel === label ? "bg-neutral-100" : ""}`}
+                          className={`text-xs font-medium ${currentLabel === label ? "bg-muted" : ""}`}
                         >
-                          <div className={`size-2 rounded-full ${MEDIA_LABEL_DOT[label] ?? "bg-neutral-300"}`} />
+                          <div className={`size-2 rounded-full ${MEDIA_LABEL_DOT[label] ?? "bg-muted-foreground/60"}`} />
                           {label.charAt(0).toUpperCase() + label.slice(1)}
                           {currentLabel === label && (
-                            <RiCheckLine className="ml-auto h-3.5 w-3.5 text-neutral-500" />
+                            <RiCheckLine className="ml-auto h-3.5 w-3.5 text-muted-foreground" />
                           )}
                         </DropdownMenuItem>
                       ))}
@@ -1029,8 +1029,8 @@ export function ModerationWorkspace({
                       onClick={(e) => { e.stopPropagation(); setShowSubtitles((v) => !v); }}
                       className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full shadow-sm border backdrop-blur-md transition-colors cursor-pointer ${
                         showSubtitles
-                          ? "bg-white/90 border-neutral-100 text-neutral-900"
-                          : "bg-black/50 border-white/10 text-white/80 hover:bg-black/60"
+                          ? "bg-background border-border text-foreground"
+                          : "bg-foreground/50 border-primary-foreground/10 text-primary-foreground/80 hover:bg-foreground/60"
                       }`}
                     >
                       <RiClosedCaptioningLine className="h-3.5 w-3.5" />
@@ -1044,9 +1044,9 @@ export function ModerationWorkspace({
                 {/* Frame indicator (top-right) */}
                 {activeFrame && (
                   <div className="absolute top-3 right-3 z-20">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-neutral-900/80 backdrop-blur-sm rounded-full">
-                      <RiFilmLine className="h-3 w-3 text-neutral-300" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-200">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-foreground/80 backdrop-blur-sm rounded-full">
+                      <RiFilmLine className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-primary-foreground/90">
                         Frame {activeFrameIndex! + 1}
                       </span>
                     </div>
@@ -1056,9 +1056,9 @@ export function ModerationWorkspace({
             </DialogTrigger>
 
             {/* ── IMAGE ANNOTATION WORKSPACE ── */}
-            <DialogContent showCloseButton={false} className="!max-w-[95vw] !w-[95vw] h-[95vh] !p-0 flex flex-row overflow-hidden bg-neutral-900 border-none !rounded-xl !gap-0 ring-0">
+            <DialogContent showCloseButton={false} className="!max-w-[95vw] !w-[95vw] h-[95vh] !p-0 flex flex-row overflow-hidden bg-foreground border-none !rounded-xl !gap-0 ring-0">
               {/* Canvas Area (Left ~75%) */}
-              <div className="flex-1 relative flex items-center justify-center bg-black cursor-crosshair overflow-hidden">
+              <div className="flex-1 relative flex items-center justify-center bg-foreground cursor-crosshair overflow-hidden">
                 {displayMedia.url ? (
                   <ImageWithFallback
                     src={displayMedia.url}
@@ -1067,26 +1067,26 @@ export function ModerationWorkspace({
                     fallbackClassName="w-full h-full"
                   />
                 ) : (
-                  <div className="flex flex-col items-center justify-center gap-2 text-neutral-500">
-                    <RiShieldCheckLine className="w-12 h-12 text-neutral-600" />
+                  <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                    <RiShieldCheckLine className="w-12 h-12 text-foreground" />
                     <span className="text-sm">No media available</span>
                   </div>
                 )}
 
                 {/* Mock Bounding Box Annotation */}
-                <div className="absolute border-2 border-red-500 bg-red-500/10 w-48 h-32 top-1/3 left-1/4 rounded shadow-sm">
-                  <span className="absolute -top-6 left-[-2px] bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-t flex items-center gap-1">
+                <div className="absolute border-2 border-red-500 bg-destructive/100/10 w-48 h-32 top-1/3 left-1/4 rounded shadow-sm">
+                  <span className="absolute -top-6 left-[-2px] bg-destructive/100 text-primary-foreground text-[10px] font-bold px-2 py-1 rounded-t flex items-center gap-1">
                     <RiFocus3Line className="size-3" /> Target Selected
                   </span>
                 </div>
               </div>
 
               {/* Tools Area (Right ~25%) */}
-              <aside className="w-[400px] shrink-0 bg-white flex flex-col h-full z-10 shadow-2xl">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 shrink-0">
-                  <h2 className="text-base font-bold text-neutral-900">Image Assessment</h2>
+              <aside className="w-[400px] shrink-0 bg-card flex flex-col h-full z-10 shadow-2xl">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
+                  <h2 className="text-base font-bold text-foreground">Image Assessment</h2>
                   <DialogClose asChild>
-                    <Button variant="ghost" size="icon" className="text-neutral-500 hover:text-neutral-900">
+                    <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                       <RiCloseLine className="size-5" />
                     </Button>
                   </DialogClose>
@@ -1095,7 +1095,7 @@ export function ModerationWorkspace({
                 <div className="flex-1 overflow-y-auto p-6 space-y-6">
                   {/* Region Tagging */}
                   <div className="space-y-3">
-                    <Label className="text-xs font-bold uppercase tracking-wider text-neutral-500">Selected Region</Label>
+                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Selected Region</Label>
                     <Select defaultValue="logo">
                       <SelectTrigger><SelectValue placeholder="Identify region..." /></SelectTrigger>
                       <SelectContent>
@@ -1106,41 +1106,41 @@ export function ModerationWorkspace({
                     </Select>
                   </div>
 
-                  <div className="h-px w-full bg-neutral-100" />
+                  <div className="h-px w-full bg-border" />
 
                   {/* Visual Evidence Reasons */}
                   <div className="space-y-4">
-                    <Label className="text-xs font-bold uppercase tracking-wider text-neutral-500">Visual Evidence</Label>
-                    <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-2 space-y-1">
-                      <div className="flex items-center justify-between p-2 hover:bg-white rounded-md transition-colors">
-                        <Label htmlFor="img-r1" className="text-sm text-neutral-700 cursor-pointer">Image is digitally altered</Label>
+                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Visual Evidence</Label>
+                    <div className="bg-accent border border-border rounded-lg p-2 space-y-1">
+                      <div className="flex items-center justify-between p-2 hover:bg-card rounded-md transition-colors">
+                        <Label htmlFor="img-r1" className="text-sm text-foreground cursor-pointer">Image is digitally altered</Label>
                         <Switch id="img-r1" />
                       </div>
-                      <div className="flex items-center justify-between p-2 hover:bg-white rounded-md transition-colors">
-                        <Label htmlFor="img-r2" className="text-sm text-neutral-700 cursor-pointer">Blurry or low quality</Label>
+                      <div className="flex items-center justify-between p-2 hover:bg-card rounded-md transition-colors">
+                        <Label htmlFor="img-r2" className="text-sm text-foreground cursor-pointer">Blurry or low quality</Label>
                         <Switch id="img-r2" />
                       </div>
-                      <div className="flex items-center justify-between p-2 hover:bg-white rounded-md transition-colors">
-                        <Label htmlFor="img-r3" className="text-sm text-neutral-700 cursor-pointer">Cloned from other listing</Label>
+                      <div className="flex items-center justify-between p-2 hover:bg-card rounded-md transition-colors">
+                        <Label htmlFor="img-r3" className="text-sm text-foreground cursor-pointer">Cloned from other listing</Label>
                         <Switch id="img-r3" defaultChecked={true} />
                       </div>
                     </div>
                   </div>
 
-                  <div className="h-px w-full bg-neutral-100" />
+                  <div className="h-px w-full bg-border" />
 
                   {/* Notes */}
                   <div className="space-y-3">
-                    <Label className="text-xs font-bold uppercase tracking-wider text-neutral-500">Notes</Label>
+                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Notes</Label>
                     <textarea
                       placeholder="Add annotation notes..."
-                      className="w-full h-24 text-sm p-3 rounded-lg border border-neutral-200 bg-neutral-50 resize-none focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
+                      className="w-full h-24 text-sm p-3 rounded-lg border border-border bg-accent resize-none focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                     />
                   </div>
                 </div>
 
-                <div className="p-4 border-t border-neutral-100 bg-neutral-50 shrink-0">
-                  <Button className="w-full bg-neutral-900 text-white hover:bg-neutral-800">
+                <div className="p-4 border-t border-border bg-accent shrink-0">
+                  <Button className="w-full bg-foreground text-primary-foreground hover:bg-foreground/90">
                     Save Image Flags
                   </Button>
                 </div>
@@ -1150,27 +1150,27 @@ export function ModerationWorkspace({
 
           {/* Layer 2: Extracted Frames Strip (video paused only) */}
           {showFrameStrip && (
-            <div className="flex flex-col gap-1.5 rounded-lg bg-neutral-900 p-2 shrink-0">
+            <div className="flex flex-col gap-1.5 rounded-lg bg-foreground p-2 shrink-0">
               <div className="flex items-center gap-1.5 px-1">
-                <RiFilmLine className="h-3 w-3 text-neutral-400" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                <RiFilmLine className="h-3 w-3 text-muted-foreground" />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   Auto-Extracted Video Frames
                 </span>
-                <span className="text-[10px] tabular-nums text-neutral-500">
+                <span className="text-[10px] tabular-nums text-muted-foreground">
                   {activeMedia.frames!.length}
                 </span>
               </div>
               <div className="flex gap-1.5 overflow-x-auto pb-0.5">
                 {activeMedia.frames!.map((frame, fi) => {
-                  const fdot = MEDIA_LABEL_DOT[resolveLabel(frame)] ?? "bg-neutral-300";
+                  const fdot = MEDIA_LABEL_DOT[resolveLabel(frame)] ?? "bg-muted-foreground/60";
                   return (
                     <div
                       key={frame.id}
                       onClick={() => setActiveFrameIndex(fi)}
-                      className={`relative size-16 shrink-0 cursor-pointer overflow-hidden rounded-md bg-neutral-800 transition-all duration-150 hover:scale-105 ${
+                      className={`relative size-16 shrink-0 cursor-pointer overflow-hidden rounded-md bg-foreground/90 transition-all duration-150 hover:scale-105 ${
                         activeFrameIndex === fi
-                          ? "border-2 border-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.4)]"
-                          : "border border-neutral-700 hover:border-neutral-500"
+                          ? "border-2 border-primary shadow-[0_0_8px_rgba(59,130,246,0.4)]"
+                          : "border border-foreground/20 hover:border-muted-foreground"
                       }`}
                     >
                       <ImageWithFallback
@@ -1179,7 +1179,7 @@ export function ModerationWorkspace({
                         className="h-full w-full object-cover"
                         fallbackClassName="h-full w-full"
                       />
-                      <div className={`absolute bottom-0.5 right-0.5 h-2 w-2 rounded-full ring-1 ring-neutral-900 ${fdot}`} />
+                      <div className={`absolute bottom-0.5 right-0.5 h-2 w-2 rounded-full ring-1 ring-foreground ${fdot}`} />
                     </div>
                   );
                 })}
@@ -1191,20 +1191,20 @@ export function ModerationWorkspace({
           <div className="flex gap-1.5 overflow-x-auto pb-0.5 shrink-0">
             {currentItem.media.map((m, i) => {
               const isActive = i === activeMediaIndex;
-              const mdot = MEDIA_LABEL_DOT[resolveLabel(m)] ?? "bg-neutral-300";
+              const mdot = MEDIA_LABEL_DOT[resolveLabel(m)] ?? "bg-muted-foreground/60";
               return (
                 <div
                   key={m.id}
                   onClick={() => handleSelectMedia(i)}
-                  className={`relative size-16 shrink-0 cursor-pointer overflow-hidden rounded-md bg-white transition-all duration-150 ${
+                  className={`relative size-16 shrink-0 cursor-pointer overflow-hidden rounded-md bg-card transition-all duration-150 ${
                     isActive
-                      ? "border-2 border-blue-600 shadow-md"
-                      : "border border-neutral-200 hover:border-neutral-400"
+                      ? "border-2 border-primary shadow-md"
+                      : "border border-border hover:border-border"
                   }`}
                 >
                   {m.type === "video" ? (
-                    <div className="flex h-full w-full items-center justify-center bg-neutral-800">
-                      <RiPlayFill className="h-5 w-5 text-white" />
+                    <div className="flex h-full w-full items-center justify-center bg-foreground/90">
+                      <RiPlayFill className="h-5 w-5 text-primary-foreground" />
                     </div>
                   ) : (
                     <ImageWithFallback
@@ -1214,7 +1214,7 @@ export function ModerationWorkspace({
                       fallbackClassName="h-full w-full"
                     />
                   )}
-                  <div className={`absolute bottom-1 right-1 h-2 w-2 rounded-full ring-1 ring-white ${mdot}`} />
+                  <div className={`absolute bottom-1 right-1 h-2 w-2 rounded-full ring-1 ring-background ${mdot}`} />
                 </div>
               );
             })}
@@ -1222,14 +1222,14 @@ export function ModerationWorkspace({
 
           {/* Suspicious Reasons */}
           {currentItem.suspiciousCount > 0 && (
-            <div className="p-3 bg-white rounded-lg border border-neutral-200 shrink-0">
+            <div className="p-3 bg-card rounded-lg border border-border shrink-0">
               <div className="flex items-center gap-2 mb-1.5">
-                <RiAlertLine className="w-4 h-4 text-red-500" />
-                <span className="text-[10px] font-bold uppercase text-neutral-400">
+                <RiAlertLine className="w-4 h-4 text-destructive" />
+                <span className="text-[10px] font-bold uppercase text-muted-foreground">
                   Suspicious Reasons ({currentItem.suspiciousCount})
                 </span>
               </div>
-              <p className="text-sm text-neutral-700 leading-relaxed">
+              <p className="text-sm text-foreground leading-relaxed">
                 {currentItem.suspiciousReasons}
               </p>
             </div>
@@ -1237,38 +1237,38 @@ export function ModerationWorkspace({
         </div>
 
         {/* RIGHT PANEL: Sidebar */}
-        <aside className="w-[380px] xl:w-[450px] shrink-0 bg-white flex flex-col">
+        <aside className="w-[380px] xl:w-[450px] shrink-0 bg-card flex flex-col">
           <Tabs defaultValue="overview" className="flex flex-col flex-1 min-h-0">
             {/* Tabs Header */}
-            <div className="flex items-center border-b border-neutral-200 bg-white h-12 px-4 shrink-0">
+            <div className="flex items-center border-b border-border bg-card h-12 px-4 shrink-0">
               <TabsList
                 variant="line"
                 className="flex gap-4 xl:gap-6 bg-transparent rounded-none h-full w-auto p-0"
               >
                 <TabsTrigger
                   value="overview"
-                  className="text-xs font-medium text-neutral-500 data-[state=active]:text-neutral-900 data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
+                  className="text-xs font-medium text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
                 >
                   <RiGlobalLine className="size-3.5" />
                   Overview
                 </TabsTrigger>
                 <TabsTrigger
                   value="details"
-                  className="text-xs font-medium text-neutral-500 data-[state=active]:text-neutral-900 data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
+                  className="text-xs font-medium text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
                 >
                   <RiFileTextLine className="size-3.5" />
                   Details
                 </TabsTrigger>
                 <TabsTrigger
                   value="activity"
-                  className="text-xs font-medium text-neutral-500 data-[state=active]:text-neutral-900 data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
+                  className="text-xs font-medium text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
                 >
                   <RiPulseLine className="size-3.5" />
                   Activity
                 </TabsTrigger>
                 <TabsTrigger
                   value="network"
-                  className="text-xs font-medium text-neutral-500 data-[state=active]:text-neutral-900 data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
+                  className="text-xs font-medium text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
                 >
                   <RiNodeTree className="size-3.5" />
                   Network
@@ -1284,7 +1284,7 @@ export function ModerationWorkspace({
                 <section>
                   <SectionHeader icon={RiShieldCheckLine} label="Post Intelligence" />
                   <div className="mb-4">
-                    <h2 className="text-base font-bold text-neutral-900 leading-tight">
+                    <h2 className="text-base font-bold text-foreground leading-tight">
                       {currentItem.title}
                     </h2>
                     <div className="flex items-center gap-3 mt-2">
@@ -1293,9 +1293,9 @@ export function ModerationWorkspace({
                           {currentItem.price}
                         </span>
                       ) : (
-                        <span className="text-lg font-bold text-neutral-900">{currentItem.price}</span>
+                        <span className="text-lg font-bold text-foreground">{currentItem.price}</span>
                       )}
-                      <span className="text-sm font-semibold text-blue-500">{currentItem.pricePct}</span>
+                      <span className="text-sm font-semibold text-primary">{currentItem.pricePct}</span>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-y-5 gap-x-4">
@@ -1326,10 +1326,10 @@ export function ModerationWorkspace({
                   </div>
                   {currentItem.shipsTo.length > 0 && (
                     <div className="mt-4">
-                      <div className="text-[10px] text-neutral-500 mb-1.5">Ships To</div>
+                      <div className="text-[10px] text-muted-foreground mb-1.5">Ships To</div>
                       <div className="flex flex-wrap gap-1">
                         {currentItem.shipsTo.map((c) => (
-                          <Badge key={c} variant="outline" className="text-[10px] font-normal bg-neutral-50 text-neutral-600">
+                          <Badge key={c} variant="outline" className="text-[10px] font-normal bg-accent text-foreground">
                             {c}
                           </Badge>
                         ))}
@@ -1356,7 +1356,7 @@ export function ModerationWorkspace({
                         <Badge
                           key={tag}
                           variant="secondary"
-                          className="h-6 px-2 py-0 text-[11px] font-medium bg-neutral-100 border border-neutral-200 text-neutral-600 rounded-sm shadow-none"
+                          className="h-6 px-2 py-0 text-[11px] font-medium bg-muted border border-border text-foreground rounded-sm shadow-none"
                         >
                           {tag}
                         </Badge>
@@ -1451,14 +1451,14 @@ export function ModerationWorkspace({
                     },
                     {
                       icon: RiShieldLine,
-                      iconColor: "text-red-500",
+                      iconColor: "text-destructive",
                       action: `Label set to ${currentItem.labelText}`,
                       detail: "Automatic classification",
                       time: "08:42",
                     },
                     {
                       icon: RiTimeLine,
-                      iconColor: "text-neutral-500",
+                      iconColor: "text-muted-foreground",
                       action: "Post crawled successfully",
                       detail: "200 OK — 1.2s response time",
                       time: "08:41",
@@ -1478,14 +1478,14 @@ export function ModerationWorkspace({
                     },
                     {
                       icon: RiTimeLine,
-                      iconColor: "text-neutral-500",
+                      iconColor: "text-muted-foreground",
                       action: "Initial crawl completed",
                       detail: "200 OK — 0.8s response time",
                       time: "14:22",
                     },
                     {
                       icon: RiGlobalLine,
-                      iconColor: "text-blue-500",
+                      iconColor: "text-primary",
                       action: "Post first detected",
                       detail: "Added to monitoring queue",
                       time: "14:20",

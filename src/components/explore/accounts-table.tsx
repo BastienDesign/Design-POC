@@ -111,11 +111,11 @@ const MOCK_ACCOUNTS: AccountRow[] = [
 
 /* ─── Styles ─── */
 
-const STICKY = "sticky top-0 z-10 bg-white shadow-[0_1px_0_0_#e5e5e5]";
-const HEAD_TEXT = "text-[10px] uppercase font-bold text-neutral-700 tracking-wider";
+const STICKY = "sticky top-0 z-10 bg-card shadow-[0_1px_0_0_#e5e5e5]";
+const HEAD_TEXT = "text-[10px] uppercase font-bold text-foreground tracking-wider";
 
 const LABEL_STYLES: Record<string, string> = {
-  Counterfeit: "bg-red-50 text-red-700 border-red-200",
+  Counterfeit: "bg-destructive/10 text-destructive border-destructive/30",
   Suspicious: "bg-orange-50 text-orange-700 border-orange-200",
 };
 
@@ -176,7 +176,7 @@ export function AccountsTable() {
                 <div className="flex flex-col gap-1 min-w-0">
                   <Link
                     href={`/account/${account.id}`}
-                    className="text-[13px] font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors truncate cursor-pointer"
+                    className="text-[13px] font-medium text-link hover:underline underline-offset-4 transition-colors truncate cursor-pointer"
                   >
                     {account.name}
                   </Link>
@@ -185,14 +185,14 @@ export function AccountsTable() {
                       className={`size-1.5 rounded-full ${
                         account.status === "Active"
                           ? "bg-emerald-500"
-                          : "bg-red-500"
+                          : "bg-destructive/100"
                       }`}
                     />
                     <span
                       className={`font-medium ${
                         account.status === "Active"
                           ? "text-emerald-700"
-                          : "text-red-600"
+                          : "text-destructive"
                       }`}
                     >
                       {account.status}
@@ -203,7 +203,7 @@ export function AccountsTable() {
 
               {/* Platform */}
               <TableCell className="px-3">
-                <div className="flex items-center gap-1.5 text-[13px] text-blue-600 hover:text-blue-800 transition-colors cursor-pointer">
+                <div className="flex items-center gap-1.5 text-[13px] font-medium text-link hover:underline underline-offset-4 transition-colors cursor-pointer">
                   <span className="truncate">{account.platform}</span>
                   <RiExternalLinkLine className="size-3.5 shrink-0" />
                 </div>
@@ -212,10 +212,10 @@ export function AccountsTable() {
               {/* Stacked: Total Posts + Mod % */}
               <TableCell className="px-3">
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[13px] font-medium text-neutral-900 tabular-nums">
+                  <span className="text-[13px] font-medium text-foreground tabular-nums">
                     {account.stats.totalPosts.toLocaleString("en-US")}
                   </span>
-                  <span className="text-[11px] text-blue-500 font-medium">
+                  <span className="text-[11px] text-primary font-medium">
                     {account.stats.postsModPct}% moderated
                   </span>
                 </div>
@@ -224,10 +224,10 @@ export function AccountsTable() {
               {/* Stacked: Infringing Posts + Mod % */}
               <TableCell className="px-3">
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[13px] font-medium text-neutral-900 tabular-nums">
+                  <span className="text-[13px] font-medium text-foreground tabular-nums">
                     {account.stats.infringingPosts.toLocaleString("en-US")}
                   </span>
-                  <span className="text-[11px] text-blue-500 font-medium">
+                  <span className="text-[11px] text-primary font-medium">
                     {account.stats.infringingModPct}% moderated
                   </span>
                 </div>
@@ -243,7 +243,7 @@ export function AccountsTable() {
                 {account.label ? (
                   <Badge
                     variant="outline"
-                    className={`text-[11px] font-medium ${LABEL_STYLES[account.label] ?? "bg-neutral-50 text-neutral-700 border-neutral-200"}`}
+                    className={`text-[11px] font-medium ${LABEL_STYLES[account.label] ?? "bg-accent text-foreground border-border"}`}
                   >
                     {account.label}
                   </Badge>
@@ -254,7 +254,7 @@ export function AccountsTable() {
 
               {/* Arrow */}
               <TableCell className="pr-3">
-                <div className="flex items-center justify-center text-neutral-400 group-hover:text-neutral-900">
+                <div className="flex items-center justify-center text-muted-foreground group-hover:text-foreground">
                   <RiArrowRightSLine className="h-5 w-5" />
                 </div>
               </TableCell>

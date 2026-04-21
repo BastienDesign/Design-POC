@@ -113,7 +113,7 @@ function GridView({
           checked={allSelected ? true : someSelected ? "indeterminate" : false}
           onCheckedChange={(checked) => onSelectAll(checked === true)}
         />
-        <span className="text-[11px] font-medium text-neutral-400">
+        <span className="text-[11px] font-medium text-muted-foreground">
           {selectedIds.length > 0
             ? `${selectedIds.length} of ${images.length} selected`
             : `${images.length} items`}
@@ -137,8 +137,8 @@ function GridView({
   );
 }
 
-const STICKY = "sticky top-0 z-10 bg-white shadow-[0_1px_0_0_#e5e5e5]";
-const HEAD_TEXT = "text-[10px] uppercase font-bold text-neutral-700 tracking-wider";
+const STICKY = "sticky top-0 z-10 bg-card shadow-[0_1px_0_0_#e5e5e5]";
+const HEAD_TEXT = "text-[10px] uppercase font-bold text-foreground tracking-wider";
 
 /* ─── List View ──────────────────────────────────────────── */
 function ListView({
@@ -211,7 +211,7 @@ function ListView({
                 </TableCell>
                 {visibleProperties.imageId && (
                   <TableCell className="px-3">
-                    <span className="text-[13px] font-medium text-blue-600 hover:underline cursor-pointer">
+                    <span className="text-[13px] font-medium text-primary hover:underline cursor-pointer">
                       {img.imageId}
                     </span>
                   </TableCell>
@@ -235,10 +235,10 @@ function ListView({
                   <TableCell className="px-3">
                     <div className="flex items-center gap-1.5">
                       <span className={`h-2.5 w-2.5 shrink-0 rounded-sm ${
-                        img.label === "counterfeit" ? "bg-red-500" :
+                        img.label === "counterfeit" ? "bg-destructive/100" :
                         img.label === "suspicious" ? "bg-amber-500" :
                         img.label === "legitimate" ? "bg-emerald-500" :
-                        "bg-neutral-300"
+                        "bg-muted-foreground/60"
                       }`} />
                       <span className="text-[13px] text-foreground capitalize">
                         {img.label}
@@ -252,7 +252,7 @@ function ListView({
                   </TableCell>
                 )}
                 <TableCell className="pr-3">
-                  <div className="flex items-center justify-center text-neutral-400 group-hover:text-neutral-900">
+                  <div className="flex items-center justify-center text-muted-foreground group-hover:text-foreground">
                     <RiArrowRightSLine className="h-5 w-5" />
                   </div>
                 </TableCell>

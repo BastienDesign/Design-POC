@@ -21,7 +21,7 @@ export function ImageThumbnail({ src, alt, id }: ImageThumbnailProps) {
   return (
     <HoverCard openDelay={200} closeDelay={100}>
       <HoverCardTrigger asChild>
-        <div className="w-10 h-10 mx-auto rounded-md bg-neutral-100 border border-neutral-200 overflow-hidden shrink-0 cursor-crosshair hover:border-neutral-900 transition-colors flex items-center justify-center">
+        <div className="w-10 h-10 mx-auto rounded-md bg-muted border border-border overflow-hidden shrink-0 cursor-crosshair hover:border-foreground transition-colors flex items-center justify-center">
           <ImageWithFallback
             src={hasImage ? src : undefined}
             alt={alt}
@@ -36,10 +36,10 @@ export function ImageThumbnail({ src, alt, id }: ImageThumbnailProps) {
         align="center"
         sideOffset={16}
         avoidCollisions
-        className="z-[100] w-auto max-w-[400px] p-0 overflow-hidden shadow-2xl border-neutral-200 bg-white"
+        className="z-[100] w-auto max-w-[400px] p-0 overflow-hidden shadow-2xl border-border bg-card"
       >
         <div className="flex flex-col">
-          <div className="w-full max-h-[50vh] flex items-center justify-center bg-neutral-50 p-2">
+          <div className="w-full max-h-[50vh] flex items-center justify-center bg-accent p-2">
             <ImageWithFallback
               src={hasImage ? src : undefined}
               alt={alt}
@@ -48,13 +48,13 @@ export function ImageThumbnail({ src, alt, id }: ImageThumbnailProps) {
             />
           </div>
 
-          <div className="flex items-center justify-between gap-3 px-3 py-2 border-t border-neutral-100 shrink-0">
-            <div className="flex items-center gap-2 text-neutral-500">
+          <div className="flex items-center justify-between gap-3 px-3 py-2 border-t border-border shrink-0">
+            <div className="flex items-center gap-2 text-muted-foreground">
               <RiInformationLine className="w-4 h-4" />
               <span className="text-xs font-medium">HD Detail Viewer</span>
             </div>
             {id && (
-              <span className="text-xs font-bold text-neutral-400">ID: {id}</span>
+              <span className="text-xs font-bold text-muted-foreground">ID: {id}</span>
             )}
           </div>
         </div>

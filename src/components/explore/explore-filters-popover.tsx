@@ -149,8 +149,8 @@ function FilterSubMenuSelect({
 }) {
   return (
     <DropdownMenuSub key={item.id}>
-      <DropdownMenuSubTrigger className="flex items-center gap-2 px-3 py-2 text-[13px] text-neutral-700 cursor-pointer data-[state=open]:bg-neutral-50">
-        <item.icon size={15} className="text-neutral-400" />
+      <DropdownMenuSubTrigger className="flex items-center gap-2 px-3 py-2 text-[13px] text-foreground cursor-pointer data-[state=open]:bg-accent">
+        <item.icon size={15} className="text-muted-foreground" />
         {item.label}
       </DropdownMenuSubTrigger>
       <DropdownMenuPortal>
@@ -172,7 +172,7 @@ function FilterSubMenuSelect({
                 }}
                 onPointerDown={(e) => e.stopPropagation()}
                 onPointerUp={(e) => e.stopPropagation()}
-                className="hidden shrink-0 group-hover:flex items-center px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-red-500 bg-red-50 rounded transition-colors hover:bg-red-100 hover:text-red-700 cursor-pointer"
+                className="hidden shrink-0 group-hover:flex items-center px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-destructive bg-destructive/10 rounded transition-colors hover:bg-destructive/15 hover:text-destructive cursor-pointer"
                 title={`Exclude ${option}`}
               >
                 Exclude
@@ -198,11 +198,11 @@ function FilterSubMenuInput({
 
   return (
     <DropdownMenuSub key={item.id}>
-      <DropdownMenuSubTrigger className="flex items-center gap-2 px-3 py-2 text-[13px] text-neutral-700 cursor-pointer data-[state=open]:bg-neutral-50">
-        <item.icon size={15} className="text-neutral-400" />
+      <DropdownMenuSubTrigger className="flex items-center gap-2 px-3 py-2 text-[13px] text-foreground cursor-pointer data-[state=open]:bg-accent">
+        <item.icon size={15} className="text-muted-foreground" />
         {item.label}
         {item.inputType === "range" && (
-          <span className="ml-auto text-[10px] font-medium text-neutral-400">#</span>
+          <span className="ml-auto text-[10px] font-medium text-muted-foreground">#</span>
         )}
       </DropdownMenuSubTrigger>
       <DropdownMenuPortal>
@@ -211,7 +211,7 @@ function FilterSubMenuInput({
             <input
               autoFocus
               placeholder={placeholder}
-              className="h-7 w-full rounded-md border border-neutral-200 bg-white px-2 text-xs text-neutral-700 outline-none placeholder:text-neutral-400 focus:border-neutral-400 focus:ring-1 focus:ring-neutral-400"
+              className="h-7 w-full rounded-md border border-border bg-card px-2 text-xs text-foreground outline-none placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring"
               type={item.inputType === "range" ? "number" : "text"}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -226,8 +226,8 @@ function FilterSubMenuInput({
               onPointerDown={(e) => e.stopPropagation()}
             />
           </div>
-          <div className="border-t border-neutral-100 px-2 py-1.5">
-            <p className="text-[10px] text-neutral-400">Press Enter to apply filter</p>
+          <div className="border-t border-border px-2 py-1.5">
+            <p className="text-[10px] text-muted-foreground">Press Enter to apply filter</p>
           </div>
         </DropdownMenuSubContent>
       </DropdownMenuPortal>
@@ -248,15 +248,15 @@ function FilterSubMenuNested({
 
   return (
     <DropdownMenuSub key={item.id}>
-      <DropdownMenuSubTrigger className="flex items-center gap-2 px-3 py-2 text-[13px] text-neutral-700 cursor-pointer data-[state=open]:bg-neutral-50">
-        <item.icon size={15} className="text-neutral-400" />
+      <DropdownMenuSubTrigger className="flex items-center gap-2 px-3 py-2 text-[13px] text-foreground cursor-pointer data-[state=open]:bg-accent">
+        <item.icon size={15} className="text-muted-foreground" />
         {item.label}
       </DropdownMenuSubTrigger>
       <DropdownMenuPortal>
         <DropdownMenuSubContent className="w-[160px] rounded-lg p-1 shadow-md">
           {item.subItems.map((sub) => (
             <DropdownMenuSub key={sub.id}>
-              <DropdownMenuSubTrigger className="flex items-center gap-2 px-2 py-1.5 text-[13px] text-neutral-700 cursor-pointer data-[state=open]:bg-neutral-50">
+              <DropdownMenuSubTrigger className="flex items-center gap-2 px-2 py-1.5 text-[13px] text-foreground cursor-pointer data-[state=open]:bg-accent">
                 {sub.shortLabel}
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
@@ -278,7 +278,7 @@ function FilterSubMenuNested({
                         }}
                         onPointerDown={(e) => e.stopPropagation()}
                         onPointerUp={(e) => e.stopPropagation()}
-                        className="hidden shrink-0 group-hover:flex items-center px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-red-500 bg-red-50 rounded transition-colors hover:bg-red-100 hover:text-red-700 cursor-pointer"
+                        className="hidden shrink-0 group-hover:flex items-center px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-destructive bg-destructive/10 rounded transition-colors hover:bg-destructive/15 hover:text-destructive cursor-pointer"
                         title={`Exclude ${option}`}
                       >
                         Exclude
@@ -358,16 +358,16 @@ export function ExploreFiltersMenu({
     return (
       <Popover open={filterOpen} onOpenChange={onFilterOpenChange}>
         <PopoverTrigger asChild>
-          <Button className="group relative h-8 w-8 shrink-0 rounded-md bg-neutral-900 p-0 text-white shadow-sm hover:bg-black">
+          <Button className="group relative h-8 w-8 shrink-0 rounded-md bg-foreground p-0 text-primary-foreground shadow-sm hover:bg-foreground">
             <RiFilter3Line size={16} />
-            <span className="absolute -right-1.5 -top-1.5 rounded border border-neutral-200 bg-neutral-100 px-1 text-[8px] font-bold text-neutral-500 opacity-0 transition-opacity group-hover:opacity-100">
+            <span className="absolute -right-1.5 -top-1.5 rounded border border-border bg-muted px-1 text-[8px] font-bold text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">
               F
             </span>
           </Button>
         </PopoverTrigger>
         <PopoverContent
           align="start"
-          className="w-[420px] rounded-xl border-neutral-200 p-0 shadow-lg mt-1"
+          className="w-[420px] rounded-xl border-border p-0 shadow-lg mt-1"
         >
           <AdvancedFilterBuilder
             query={advancedQuery}
@@ -392,34 +392,34 @@ export function ExploreFiltersMenu({
       onOpenChange={onFilterOpenChange}
     >
       <DropdownMenuTrigger asChild>
-        <Button className="group relative h-8 w-8 shrink-0 rounded-md bg-neutral-900 p-0 text-white shadow-sm hover:bg-black">
+        <Button className="group relative h-8 w-8 shrink-0 rounded-md bg-foreground p-0 text-primary-foreground shadow-sm hover:bg-foreground">
           <RiFilter3Line size={16} />
-          <span className="absolute -right-1.5 -top-1.5 rounded border border-neutral-200 bg-neutral-100 px-1 text-[8px] font-bold text-neutral-500 opacity-0 transition-opacity group-hover:opacity-100">
+          <span className="absolute -right-1.5 -top-1.5 rounded border border-border bg-muted px-1 text-[8px] font-bold text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100">
             F
           </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="start"
-        className="w-[280px] rounded-xl border-neutral-200 p-0 shadow-lg mt-1"
+        className="w-[280px] rounded-xl border-border p-0 shadow-lg mt-1"
         onCloseAutoFocus={() => setMenuSearch("")}
       >
         {/* Sticky Search Bar */}
-        <div className="sticky top-0 z-10 flex items-center border-b border-neutral-100 bg-neutral-50/80 px-2.5 py-1.5 backdrop-blur-sm">
-          <RiSearchLine size={14} className="mr-2 shrink-0 text-neutral-400" />
+        <div className="sticky top-0 z-10 flex items-center border-b border-border bg-accent/80 px-2.5 py-1.5 backdrop-blur-sm">
+          <RiSearchLine size={14} className="mr-2 shrink-0 text-muted-foreground" />
           <input
             autoFocus
             value={menuSearch}
             onChange={(e) => setMenuSearch(e.target.value)}
             onKeyDown={(e) => e.stopPropagation()}
             placeholder="Filter by name…"
-            className="flex-1 bg-transparent text-xs text-neutral-700 outline-none placeholder:text-neutral-400"
+            className="flex-1 bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground"
           />
           {menuSearch && (
             <button
               onClick={() => setMenuSearch("")}
               onPointerDown={(e) => e.stopPropagation()}
-              className="ml-1 text-neutral-400 hover:text-neutral-600 cursor-pointer"
+              className="ml-1 text-muted-foreground hover:text-foreground cursor-pointer"
             >
               <span className="text-xs">×</span>
             </button>
@@ -429,11 +429,11 @@ export function ExploreFiltersMenu({
         {/* Filter List with native hover sub-menus */}
         <div className="max-h-[350px] overflow-auto py-1">
           {filteredConfig.length === 0 ? (
-            <p className="py-6 text-center text-xs text-neutral-400">No filters found.</p>
+            <p className="py-6 text-center text-xs text-muted-foreground">No filters found.</p>
           ) : (
             filteredConfig.map((cat) => (
               <DropdownMenuGroup key={cat.category}>
-                <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+                <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   {cat.category}
                 </div>
                 {cat.items.map((item) => {
@@ -472,7 +472,7 @@ export function ExploreFiltersMenu({
         </div>
 
         {/* Switch to Advanced */}
-        <div className="border-t border-neutral-100 p-2">
+        <div className="border-t border-border p-2">
           <DropdownMenuItem
             onSelect={(e) => {
               e.preventDefault();
@@ -482,7 +482,7 @@ export function ExploreFiltersMenu({
                 onFilterOpenChange(true);
               });
             }}
-            className="flex items-center gap-2 rounded-md px-2.5 py-2 text-[12px] font-medium text-neutral-500 cursor-pointer"
+            className="flex items-center gap-2 rounded-md px-2.5 py-2 text-[12px] font-medium text-muted-foreground cursor-pointer"
           >
             <RiEqualizer2Line size={14} />
             Advanced Filter

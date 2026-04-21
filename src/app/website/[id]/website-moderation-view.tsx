@@ -111,7 +111,7 @@ interface WebsiteRiskTile {
 }
 
 const RISK_TILE_STYLES: Record<RiskLevel, { bg: string; border: string; icon: string; label: string; desc: string }> = {
-  high: { bg: "bg-red-50", border: "border-red-100", icon: "text-red-600", label: "text-red-800", desc: "text-red-900" },
+  high: { bg: "bg-destructive/10", border: "border-red-100", icon: "text-destructive", label: "text-red-800", desc: "text-red-900" },
   medium: { bg: "bg-amber-50", border: "border-amber-100", icon: "text-amber-600", label: "text-amber-800", desc: "text-amber-900" },
   low: { bg: "bg-emerald-50", border: "border-emerald-100", icon: "text-emerald-600", label: "text-emerald-800", desc: "text-emerald-900" },
 };
@@ -137,9 +137,9 @@ function buildFieldRisks(tiles: WebsiteRiskTile[]): Record<string, RiskLevel> {
 }
 
 const RISK_VALUE_STYLES: Record<RiskLevel, string> = {
-  high: "font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded w-fit border border-red-100",
+  high: "font-bold text-destructive bg-destructive/10 px-1.5 py-0.5 rounded w-fit border border-red-100",
   medium: "font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded w-fit border border-orange-100",
-  low: "font-medium text-neutral-900",
+  low: "font-medium text-foreground",
 };
 
 const INSIGHT_SIGNALS = [
@@ -508,8 +508,8 @@ function SectionHeader({
 }) {
   return (
     <div className="flex items-center gap-2 mb-4">
-      <Icon className="size-3.5 text-neutral-400" />
-      <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-800">
+      <Icon className="size-3.5 text-muted-foreground" />
+      <span className="text-[10px] font-bold uppercase tracking-wider text-foreground">
         {label}
       </span>
     </div>
@@ -529,17 +529,17 @@ function DataPoint({
 }) {
   const valueClass = risk
     ? `text-[12px] ${RISK_VALUE_STYLES[risk]}`
-    : "text-[12px] font-medium text-neutral-900";
+    : "text-[12px] font-medium text-foreground";
 
   return (
     <div>
-      <div className="text-[10px] text-neutral-500 mb-1">{label}</div>
+      <div className="text-[10px] text-muted-foreground mb-1">{label}</div>
       {isLink ? (
         <a
           href={value}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[12px] font-medium text-blue-600 hover:underline break-all"
+          className="text-[12px] font-medium text-primary hover:underline break-all"
         >
           {value}
         </a>
@@ -563,7 +563,7 @@ function EditableField({
 }) {
   return (
     <div>
-      <div className="text-[10px] text-neutral-500 mb-1">{label}</div>
+      <div className="text-[10px] text-muted-foreground mb-1">{label}</div>
       {type === "select" && options ? (
         <Select defaultValue={defaultValue}>
           <SelectTrigger className="h-8 text-xs w-full">
@@ -599,20 +599,20 @@ function TimelineItem({
 }) {
   return (
     <div className="flex gap-3 mb-4 relative">
-      <div className="size-6 rounded-full bg-white border border-neutral-200 flex items-center justify-center z-10 shrink-0">
+      <div className="size-6 rounded-full bg-card border border-border flex items-center justify-center z-10 shrink-0">
         <Icon className={`size-3 ${iconColor}`} />
       </div>
       <div className="flex-1 min-w-0 pt-0.5">
         <div className="flex items-baseline justify-between gap-2">
-          <span className="text-[12px] font-medium text-neutral-900">
+          <span className="text-[12px] font-medium text-foreground">
             {action}
           </span>
-          <span className="text-[10px] text-neutral-500 whitespace-nowrap">
+          <span className="text-[10px] text-muted-foreground whitespace-nowrap">
             {time}
           </span>
         </div>
         {detail && (
-          <span className="text-[11px] text-neutral-500">{detail}</span>
+          <span className="text-[11px] text-muted-foreground">{detail}</span>
         )}
       </div>
     </div>
@@ -634,11 +634,11 @@ function TimelineGroup({
 }) {
   return (
     <>
-      <div className="text-xs font-bold text-neutral-900 mt-6 first:mt-0 mb-4">
+      <div className="text-xs font-bold text-foreground mt-6 first:mt-0 mb-4">
         {date}
       </div>
       <div className="relative pl-0">
-        <div className="absolute left-[11px] top-3 bottom-0 border-l border-neutral-200" />
+        <div className="absolute left-[11px] top-3 bottom-0 border-l border-border" />
         {items.map((item, i) => (
           <TimelineItem key={i} {...item} />
         ))}
@@ -651,15 +651,15 @@ function TimelineGroup({
 
 const TargetPreview = memo(
   ({ url, displayUrl }: { url: string; displayUrl: string }) => (
-    <div className="flex flex-col h-full bg-white">
-      <div className="h-10 bg-neutral-100 border-b border-neutral-200 flex items-center px-3 gap-4 shrink-0">
+    <div className="flex flex-col h-full bg-card">
+      <div className="h-10 bg-muted border-b border-border flex items-center px-3 gap-4 shrink-0">
         <div className="flex items-center gap-1.5">
-          <span className="size-3 rounded-full bg-neutral-300" />
-          <span className="size-3 rounded-full bg-neutral-300" />
-          <span className="size-3 rounded-full bg-neutral-300" />
+          <span className="size-3 rounded-full bg-muted-foreground/60" />
+          <span className="size-3 rounded-full bg-muted-foreground/60" />
+          <span className="size-3 rounded-full bg-muted-foreground/60" />
         </div>
-        <div className="flex-1 max-w-md h-6 bg-white rounded flex items-center px-2 text-[11px] text-neutral-500 border border-neutral-200 gap-1.5">
-          <RiLockLine className="size-3 text-neutral-400 shrink-0" />
+        <div className="flex-1 max-w-md h-6 bg-card rounded flex items-center px-2 text-[11px] text-muted-foreground border border-border gap-1.5">
+          <RiLockLine className="size-3 text-muted-foreground shrink-0" />
           <span className="truncate">{displayUrl}</span>
         </div>
       </div>
@@ -687,7 +687,7 @@ function EntityDeepDive({ entityId }: { entityId: string }) {
 
   const riskBadgeClass =
     entity.risk >= 80
-      ? "text-red-600 border-red-200 bg-red-50"
+      ? "text-destructive border-destructive/30 bg-destructive/10"
       : entity.risk >= 50
         ? "text-orange-600 border-orange-200 bg-orange-50"
         : "text-emerald-600 border-emerald-200 bg-emerald-50";
@@ -700,12 +700,12 @@ function EntityDeepDive({ entityId }: { entityId: string }) {
         : "Post Preview";
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-card">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 shrink-0">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
         <div className="flex items-center gap-3 min-w-0">
-          <RiExternalLinkLine className="size-4 text-neutral-500 shrink-0" />
-          <h2 className="text-sm font-bold text-neutral-900 truncate">
+          <RiExternalLinkLine className="size-4 text-muted-foreground shrink-0" />
+          <h2 className="text-sm font-bold text-foreground truncate">
             {entity.id}
           </h2>
           <Badge
@@ -733,26 +733,26 @@ function EntityDeepDive({ entityId }: { entityId: string }) {
             <SectionHeader icon={RiGlobalLine} label="Entity Identity" />
             <div className="grid grid-cols-2 gap-y-4 gap-x-6">
               <div className="space-y-1">
-                <span className="text-[11px] text-neutral-500">Name</span>
-                <p className="text-sm font-medium text-neutral-900">
+                <span className="text-[11px] text-muted-foreground">Name</span>
+                <p className="text-sm font-medium text-foreground">
                   {entity.name}
                 </p>
               </div>
               <div className="space-y-1">
-                <span className="text-[11px] text-neutral-500">Type</span>
-                <p className="text-sm font-medium text-neutral-900 uppercase">
+                <span className="text-[11px] text-muted-foreground">Type</span>
+                <p className="text-sm font-medium text-foreground uppercase">
                   {entity.type}
                 </p>
               </div>
               <div className="space-y-1">
-                <span className="text-[11px] text-neutral-500">Geo</span>
-                <p className="text-sm font-medium text-neutral-900">
+                <span className="text-[11px] text-muted-foreground">Geo</span>
+                <p className="text-sm font-medium text-foreground">
                   {entity.geo}
                 </p>
               </div>
               <div className="space-y-1">
-                <span className="text-[11px] text-neutral-500">Risk Score</span>
-                <p className="text-sm font-medium text-neutral-900">
+                <span className="text-[11px] text-muted-foreground">Risk Score</span>
+                <p className="text-sm font-medium text-foreground">
                   {entity.risk}/100
                 </p>
               </div>
@@ -769,7 +769,7 @@ function EntityDeepDive({ entityId }: { entityId: string }) {
                   className="flex items-start gap-2"
                 >
                   <RiCheckLine className="size-4 text-emerald-500 shrink-0 mt-0.5" />
-                  <span className="text-sm text-neutral-700">{signal}</span>
+                  <span className="text-sm text-foreground">{signal}</span>
                 </div>
               ))}
             </div>
@@ -778,7 +778,7 @@ function EntityDeepDive({ entityId }: { entityId: string }) {
           {/* Preview */}
           <section className="space-y-4">
             <SectionHeader icon={RiExternalLinkLine} label={previewLabel} />
-            <div className="border border-neutral-200 rounded-md bg-neutral-50 h-48 flex items-center justify-center text-xs text-neutral-400">
+            <div className="border border-border rounded-md bg-accent h-48 flex items-center justify-center text-xs text-muted-foreground">
               [{entity.type.toUpperCase()}: {entity.name}]
             </div>
           </section>
@@ -810,7 +810,7 @@ function MainStage() {
           displayUrl="https://www.tinkerlust.com/products/luxury-handbags"
         />
       </ResizablePanel>
-      <ResizableHandle withHandle className="bg-neutral-200" />
+      <ResizableHandle withHandle className="bg-secondary" />
       <ResizablePanel defaultSize={50} minSize={30}>
         <EntityDeepDive entityId={selectedPreview} />
       </ResizablePanel>
@@ -837,14 +837,14 @@ function ActionCard({
 
   const riskColor =
     entity.risk >= 80
-      ? "text-red-600"
+      ? "text-destructive"
       : entity.risk >= 60
         ? "text-orange-500"
         : "text-yellow-600";
 
   const typeColor =
     entity.type === "website"
-      ? "bg-blue-100 text-blue-700"
+      ? "bg-primary/15 text-primary"
       : entity.type === "image"
         ? "bg-purple-100 text-purple-700"
         : "bg-amber-100 text-amber-700";
@@ -852,10 +852,10 @@ function ActionCard({
   return (
     <div
       onClick={() => setSelectedPreview(entity.id)}
-      className={`flex items-center gap-3 px-3 py-2.5 border-b border-neutral-100 cursor-pointer transition-colors group ${
+      className={`flex items-center gap-3 px-3 py-2.5 border-b border-border cursor-pointer transition-colors group ${
         isSelected
-          ? "bg-blue-50/60 border-l-2 border-l-blue-500"
-          : "hover:bg-neutral-50 border-l-2 border-l-transparent"
+          ? "bg-primary/60 border-l-2 border-l-blue-500"
+          : "hover:bg-accent border-l-2 border-l-transparent"
       }`}
     >
       <div onClick={(e) => e.stopPropagation()} className="shrink-0">
@@ -866,13 +866,13 @@ function ActionCard({
         />
       </div>
 
-      <div className="size-8 rounded bg-neutral-200 flex items-center justify-center text-[9px] font-bold text-neutral-500 shrink-0">
+      <div className="size-8 rounded bg-secondary flex items-center justify-center text-[9px] font-bold text-muted-foreground shrink-0">
         {entity.thumbnail}
       </div>
 
       <div className="flex-1 min-w-0 flex flex-col gap-0.5">
         <div className="flex items-center gap-1.5">
-          <span className="text-[11px] font-medium text-neutral-900 truncate">
+          <span className="text-[11px] font-medium text-foreground truncate">
             {entity.name}
           </span>
         </div>
@@ -882,7 +882,7 @@ function ActionCard({
           >
             {entity.type}
           </span>
-          <span className="text-[10px] text-neutral-400">{entity.geo}</span>
+          <span className="text-[10px] text-muted-foreground">{entity.geo}</span>
         </div>
       </div>
 
@@ -890,7 +890,7 @@ function ActionCard({
         <span className={`text-[11px] font-bold tabular-nums ${riskColor}`}>
           {entity.risk}
         </span>
-        <div className="text-[9px] text-neutral-400">risk</div>
+        <div className="text-[9px] text-muted-foreground">risk</div>
       </div>
     </div>
   );
@@ -954,16 +954,16 @@ function NetworkCategory({
   return (
     <AccordionItem
       value={value}
-      className={isLast ? "border-neutral-100 border-b-0" : "border-neutral-100"}
+      className={isLast ? "border-border border-b-0" : "border-border"}
     >
-      <AccordionTrigger className="px-4 py-3 text-[11px] font-semibold text-neutral-700 hover:no-underline hover:bg-neutral-50">
+      <AccordionTrigger className="px-4 py-3 text-[11px] font-semibold text-foreground hover:no-underline hover:bg-accent">
         {label} ({filtered.length})
       </AccordionTrigger>
       <AccordionContent className="pt-0 pb-3">
         {entities.length > 10 && (
           <div className="flex items-center gap-2 px-3 pb-2">
             <div className="relative flex-1">
-              <RiSearchLine className="absolute left-2 top-1/2 -translate-y-1/2 size-3 text-neutral-400" />
+              <RiSearchLine className="absolute left-2 top-1/2 -translate-y-1/2 size-3 text-muted-foreground" />
               <Input
                 value={searchQuery}
                 onChange={(e) => {
@@ -971,7 +971,7 @@ function NetworkCategory({
                   setVisibleCount(LOAD_MORE_INCREMENT);
                 }}
                 placeholder={`Search ${entities.length} ${label.toLowerCase()}…`}
-                className="h-7 pl-7 text-[11px] bg-neutral-50 border-neutral-200"
+                className="h-7 pl-7 text-[11px] bg-accent border-border"
               />
             </div>
 
@@ -980,20 +980,20 @@ function NetworkCategory({
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-7 w-7 relative shrink-0 bg-neutral-50 border-neutral-200"
+                  className="h-7 w-7 relative shrink-0 bg-accent border-border"
                 >
-                  <RiFilter3Line className="size-3.5 text-neutral-600" />
+                  <RiFilter3Line className="size-3.5 text-foreground" />
                   {hasActiveFilters && (
                     <span className="absolute top-1 right-1 flex size-1.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
-                      <span className="relative inline-flex rounded-full size-1.5 bg-blue-500" />
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                      <span className="relative inline-flex rounded-full size-1.5 bg-primary/100" />
                     </span>
                   )}
                 </Button>
               </PopoverTrigger>
               <PopoverContent align="end" className="w-56 p-3 shadow-xl rounded-xl">
                 <div className="space-y-3">
-                  <h4 className="text-[10px] font-semibold text-neutral-900 uppercase tracking-wider">
+                  <h4 className="text-[10px] font-semibold text-foreground uppercase tracking-wider">
                     Filter by Risk
                   </h4>
                   <div className="space-y-2.5">
@@ -1008,9 +1008,9 @@ function NetworkCategory({
                       />
                       <Label
                         htmlFor={`${value}-high`}
-                        className="text-xs font-medium text-neutral-700 flex items-center gap-1.5"
+                        className="text-xs font-medium text-foreground flex items-center gap-1.5"
                       >
-                        <span className="size-2 rounded-full bg-red-500" />
+                        <span className="size-2 rounded-full bg-destructive/100" />
                         High Risk (80-100)
                       </Label>
                     </div>
@@ -1025,7 +1025,7 @@ function NetworkCategory({
                       />
                       <Label
                         htmlFor={`${value}-med`}
-                        className="text-xs font-medium text-neutral-700 flex items-center gap-1.5"
+                        className="text-xs font-medium text-foreground flex items-center gap-1.5"
                       >
                         <span className="size-2 rounded-full bg-orange-500" />
                         Medium Risk (50-79)
@@ -1042,7 +1042,7 @@ function NetworkCategory({
                       />
                       <Label
                         htmlFor={`${value}-low`}
-                        className="text-xs font-medium text-neutral-700 flex items-center gap-1.5"
+                        className="text-xs font-medium text-foreground flex items-center gap-1.5"
                       >
                         <span className="size-2 rounded-full bg-emerald-500" />
                         Low Risk (0-49)
@@ -1052,7 +1052,7 @@ function NetworkCategory({
                   {hasActiveFilters && (
                     <Button
                       variant="ghost"
-                      className="w-full h-7 text-[10px] text-neutral-500 mt-2"
+                      className="w-full h-7 text-[10px] text-muted-foreground mt-2"
                       onClick={() =>
                         setFilters({
                           riskHigh: false,
@@ -1079,14 +1079,14 @@ function NetworkCategory({
         {remaining > 0 && (
           <button
             onClick={() => setVisibleCount((c) => c + LOAD_MORE_INCREMENT)}
-            className="w-full py-2 text-[11px] font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50/50 transition-colors"
+            className="w-full py-2 text-[11px] font-medium text-primary hover:text-primary hover:bg-primary/50 transition-colors"
           >
             Show {Math.min(remaining, LOAD_MORE_INCREMENT)} more…
           </button>
         )}
 
         {(searchQuery || hasActiveFilters) && filtered.length === 0 && (
-          <div className="px-4 py-3 text-[10px] text-neutral-400 text-center">
+          <div className="px-4 py-3 text-[10px] text-muted-foreground text-center">
             No matches found
           </div>
         )}
@@ -1116,13 +1116,13 @@ function NetworkPanel() {
   return (
     <div className="flex flex-col justify-start">
       {/* Summary bar */}
-      <div className="px-4 py-3 border-b border-neutral-100">
+      <div className="px-4 py-3 border-b border-border">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
             {NETWORK_ENTITIES.length} linked entities
           </span>
           {checkedCount > 0 && (
-            <Badge className="text-[9px] bg-neutral-900 text-white hover:bg-neutral-800">
+            <Badge className="text-[9px] bg-foreground text-primary-foreground hover:bg-foreground/90">
               {checkedCount} selected
             </Badge>
           )}
@@ -1161,23 +1161,23 @@ function BatchTrayOverlay() {
   return (
     <>
       {/* Floating Bottom Tray */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 bg-neutral-900 text-white pl-4 pr-2 py-2 rounded-xl shadow-2xl border border-neutral-700 animate-in slide-in-from-bottom-8 duration-300">
-        <RiListCheck3 className="size-4 text-neutral-400" />
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 bg-foreground text-primary-foreground pl-4 pr-2 py-2 rounded-xl shadow-2xl border border-foreground/20 animate-in slide-in-from-bottom-8 duration-300">
+        <RiListCheck3 className="size-4 text-muted-foreground" />
         <span className="text-sm font-medium whitespace-nowrap">
           {count} selected
         </span>
-        <div className="w-px h-5 bg-neutral-700" />
+        <div className="w-px h-5 bg-foreground/80" />
         <Button
           size="sm"
           onClick={() => setSubBatchOpen(true)}
-          className="bg-white text-neutral-900 hover:bg-neutral-200 h-7 text-xs font-semibold"
+          className="bg-card text-foreground hover:bg-muted h-7 text-xs font-semibold"
         >
           Create Sub-Batch
         </Button>
         <Button
           variant="ghost"
           size="icon"
-          className="size-7 text-neutral-400 hover:text-white hover:bg-neutral-800"
+          className="size-7 text-muted-foreground hover:text-primary-foreground hover:bg-foreground/90"
           onClick={clearChecked}
         >
           <RiCloseLine className="size-3.5" />
@@ -1187,11 +1187,11 @@ function BatchTrayOverlay() {
       {/* Sub-Batch Sheet */}
       <Sheet open={isSubBatchSheetOpen} onOpenChange={setSubBatchOpen}>
         <SheetContent className="w-[600px] sm:max-w-[600px] flex flex-col p-0">
-          <SheetHeader className="px-6 py-5 border-b border-neutral-200 shrink-0">
+          <SheetHeader className="px-6 py-5 border-b border-border shrink-0">
             <SheetTitle className="text-base font-bold">
               Sub-Batch Workflow
             </SheetTitle>
-            <SheetDescription className="text-xs text-neutral-500">
+            <SheetDescription className="text-xs text-muted-foreground">
               Processing {count} entities from WEB#81 network
             </SheetDescription>
           </SheetHeader>
@@ -1205,24 +1205,24 @@ function BatchTrayOverlay() {
                   {checkedList.map((entity) => {
                     const riskColor =
                       entity.risk >= 80
-                        ? "text-red-600"
+                        ? "text-destructive"
                         : entity.risk >= 60
                           ? "text-orange-500"
                           : "text-yellow-600";
                     return (
                       <div
                         key={entity.id}
-                        className="flex items-center justify-between py-2 px-3 rounded-md bg-neutral-50 border border-neutral-100"
+                        className="flex items-center justify-between py-2 px-3 rounded-md bg-accent border border-border"
                       >
                         <div className="flex items-center gap-2.5">
-                          <div className="size-6 rounded bg-neutral-200 flex items-center justify-center text-[8px] font-bold text-neutral-500">
+                          <div className="size-6 rounded bg-secondary flex items-center justify-center text-[8px] font-bold text-muted-foreground">
                             {entity.thumbnail}
                           </div>
                           <div>
-                            <div className="text-[11px] font-medium text-neutral-900">
+                            <div className="text-[11px] font-medium text-foreground">
                               {entity.name}
                             </div>
-                            <div className="text-[10px] text-neutral-400">
+                            <div className="text-[10px] text-muted-foreground">
                               {entity.id}
                             </div>
                           </div>
@@ -1267,14 +1267,14 @@ function BatchTrayOverlay() {
                 <SectionHeader icon={RiFileTextLine} label="Notes" />
                 <textarea
                   placeholder="Add context for this batch action..."
-                  className="w-full h-24 text-[11px] leading-relaxed text-neutral-700 border border-neutral-200 rounded-md p-3 bg-white resize-none focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-ring"
+                  className="w-full h-24 text-[11px] leading-relaxed text-foreground border border-border rounded-md p-3 bg-card resize-none focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-ring"
                 />
               </section>
             </div>
           </ScrollArea>
 
           {/* Footer */}
-          <div className="px-6 py-4 border-t border-neutral-200 shrink-0 flex items-center justify-between">
+          <div className="px-6 py-4 border-t border-border shrink-0 flex items-center justify-between">
             <Button
               variant="outline"
               size="sm"
@@ -1285,7 +1285,7 @@ function BatchTrayOverlay() {
             </Button>
             <Button
               size="sm"
-              className="bg-neutral-900 hover:bg-neutral-800 text-white text-xs px-6"
+              className="bg-foreground hover:bg-foreground/90 text-primary-foreground text-xs px-6"
             >
               Execute Batch
             </Button>
@@ -1317,15 +1317,15 @@ export function WebsiteModerationView() {
   return (
     <div className="h-full flex flex-col overflow-hidden relative">
       {/* ── Top Header ── */}
-      <header className="h-14 bg-white border-b border-neutral-200 flex items-center justify-between px-4 shrink-0 gap-2">
+      <header className="h-14 bg-card border-b border-border flex items-center justify-between px-4 shrink-0 gap-2">
         {/* Left */}
         <div className="flex items-center gap-3 min-w-0 shrink">
           <div className="flex items-center gap-1.5 shrink-0">
             <span className="size-2 bg-green-500 rounded-full" />
-            <span className="text-[11px] text-neutral-500">Online</span>
+            <span className="text-[11px] text-muted-foreground">Online</span>
           </div>
-          <span className="text-lg font-bold text-neutral-900 truncate">WEB#81</span>
-          <span className="text-[11px] text-neutral-400 shrink-0">
+          <span className="text-lg font-bold text-foreground truncate">WEB#81</span>
+          <span className="text-[11px] text-muted-foreground shrink-0">
             16 Apr 2021, 19:16
           </span>
         </div>
@@ -1334,9 +1334,9 @@ export function WebsiteModerationView() {
         <div className="flex items-center gap-1.5 shrink-0">
           <HoverCard openDelay={200}>
             <HoverCardTrigger asChild>
-              <div className="flex items-center gap-1.5 text-xs text-neutral-500 cursor-help hover:text-neutral-800 transition-colors group mr-1">
-                <div className="flex items-center gap-1 underline decoration-dashed decoration-neutral-300 underline-offset-4 group-hover:decoration-neutral-400 transition-colors">
-                  <RiInformationLine className="size-3 text-neutral-400 group-hover:text-neutral-600 transition-colors" />
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-help hover:text-foreground transition-colors group mr-1">
+                <div className="flex items-center gap-1 underline decoration-dashed decoration-border underline-offset-4 group-hover:decoration-muted-foreground transition-colors">
+                  <RiInformationLine className="size-3 text-muted-foreground group-hover:text-foreground transition-colors" />
                   <span className="hidden xl:inline">Validated by uyuusaf!</span>
                 </div>
                 <div className="flex">
@@ -1347,8 +1347,8 @@ export function WebsiteModerationView() {
             </HoverCardTrigger>
             <HoverCardContent align="end" className="w-80 p-0 shadow-lg">
               <div className="flex flex-col">
-                <div className="px-4 py-2 border-b border-neutral-100 bg-neutral-50 rounded-t-md">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">
+                <div className="px-4 py-2 border-b border-border bg-accent rounded-t-md">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     Validation History
                   </span>
                 </div>
@@ -1356,20 +1356,20 @@ export function WebsiteModerationView() {
                   {VALIDATION_HISTORY.map((item) => (
                     <div
                       key={item.id}
-                      className="flex items-start justify-between p-2 hover:bg-neutral-50 rounded-md transition-colors"
+                      className="flex items-start justify-between p-2 hover:bg-accent rounded-md transition-colors"
                     >
                       <div className="flex flex-col gap-0.5">
-                        <span className="text-xs font-semibold text-neutral-900 flex items-center gap-1.5">
+                        <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                           {item.type === "auto" && (
-                            <RiRobot2Line className="size-3.5 text-blue-500" />
+                            <RiRobot2Line className="size-3.5 text-primary" />
                           )}
                           {item.action} by {item.actor}
                         </span>
-                        <span className="text-[10px] text-neutral-500">
+                        <span className="text-[10px] text-muted-foreground">
                           {item.timestamp}
                         </span>
                         {item.type === "auto" && item.ruleName && (
-                          <span className="text-[10px] font-medium text-blue-600 mt-0.5 bg-blue-50 w-fit px-1.5 py-0.5 rounded">
+                          <span className="text-[10px] font-medium text-primary mt-0.5 bg-primary/10 w-fit px-1.5 py-0.5 rounded">
                             {item.ruleName}
                           </span>
                         )}
@@ -1400,7 +1400,7 @@ export function WebsiteModerationView() {
             <span className="hidden xl:inline">Comments</span>
             <Badge
               variant="secondary"
-              className="text-[9px] px-1 py-0 bg-neutral-200"
+              className="text-[9px] px-1 py-0 bg-secondary"
             >
               {MOCK_COMMENTS.length}
             </Badge>
@@ -1410,7 +1410,7 @@ export function WebsiteModerationView() {
           <Button
             variant="outline"
             size="sm"
-            className="gap-1.5 h-8 text-xs text-neutral-600"
+            className="gap-1.5 h-8 text-xs text-foreground"
             onClick={() => setRulesOpen(true)}
           >
             <RiNodeTree className="size-3.5" />
@@ -1426,54 +1426,54 @@ export function WebsiteModerationView() {
                 <Badge variant="secondary" className="px-1.5 py-0 text-[9px] bg-orange-100 text-orange-700">0</Badge>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[400px] sm:w-[450px] flex flex-col p-0 bg-white">
-              <SheetHeader className="px-6 py-4 border-b border-neutral-100 shrink-0">
+            <SheetContent side="right" className="w-[400px] sm:w-[450px] flex flex-col p-0 bg-card">
+              <SheetHeader className="px-6 py-4 border-b border-border shrink-0">
                 <SheetTitle className="text-base">Assessment Reasons</SheetTitle>
               </SheetHeader>
               <div className="flex-1 flex flex-col min-h-0">
                 <Tabs defaultValue="all" className="flex-1 flex flex-col w-full">
-                  <div className="flex items-center justify-between px-6 py-3 border-b border-neutral-100 bg-neutral-50/50 shrink-0">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-800">Flag Reasons</h3>
-                    <TabsList className="h-7 bg-neutral-200/80 p-0.5">
+                  <div className="flex items-center justify-between px-6 py-3 border-b border-border bg-muted/50 shrink-0">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">Flag Reasons</h3>
+                    <TabsList className="h-7 bg-secondary/80 p-0.5">
                       <TabsTrigger value="selected" className="text-[10px] px-2.5 h-6">Selected (0)</TabsTrigger>
                       <TabsTrigger value="all" className="text-[10px] px-2.5 h-6">All</TabsTrigger>
                     </TabsList>
                   </div>
                   <TabsContent value="all" className="flex-1 flex flex-col p-0 m-0 min-h-0">
-                    <div className="p-4 border-b border-neutral-100 shrink-0">
+                    <div className="p-4 border-b border-border shrink-0">
                       <div className="relative">
-                        <RiSearchLine className="absolute left-3 top-2.5 size-4 text-neutral-400" />
-                        <Input placeholder="Search reasons..." className="h-9 pl-9 text-xs bg-neutral-50 border-neutral-200" />
+                        <RiSearchLine className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+                        <Input placeholder="Search reasons..." className="h-9 pl-9 text-xs bg-accent border-border" />
                       </div>
                     </div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-6">
                       <div className="space-y-1">
-                        <div className="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-lg transition-colors">
-                          <Label htmlFor="w-r-1" className="text-sm font-medium text-neutral-700 cursor-pointer">Post has obfuscated brand name</Label>
+                        <div className="flex items-center justify-between p-2.5 hover:bg-accent rounded-lg transition-colors">
+                          <Label htmlFor="w-r-1" className="text-sm font-medium text-foreground cursor-pointer">Post has obfuscated brand name</Label>
                           <Switch id="w-r-1" />
                         </div>
-                        <div className="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-lg transition-colors">
-                          <Label htmlFor="w-r-2" className="text-sm font-medium text-neutral-700 cursor-pointer">Is products for sale?</Label>
+                        <div className="flex items-center justify-between p-2.5 hover:bg-accent rounded-lg transition-colors">
+                          <Label htmlFor="w-r-2" className="text-sm font-medium text-foreground cursor-pointer">Is products for sale?</Label>
                           <Switch id="w-r-2" />
                         </div>
-                        <div className="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-lg transition-colors">
-                          <Label htmlFor="w-r-3" className="text-sm font-medium text-neutral-700 cursor-pointer">Is product new?</Label>
+                        <div className="flex items-center justify-between p-2.5 hover:bg-accent rounded-lg transition-colors">
+                          <Label htmlFor="w-r-3" className="text-sm font-medium text-foreground cursor-pointer">Is product new?</Label>
                           <Switch id="w-r-3" />
                         </div>
                       </div>
                       <div className="space-y-1">
-                        <h4 className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 px-2.5 py-1 mt-2">Brand Specific</h4>
-                        <div className="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-lg transition-colors">
+                        <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground px-2.5 py-1 mt-2">Brand Specific</h4>
+                        <div className="flex items-center justify-between p-2.5 hover:bg-accent rounded-lg transition-colors">
                           <div className="flex flex-col gap-1 pr-4">
-                            <Label htmlFor="w-r-4" className="text-sm font-medium text-neutral-700 cursor-pointer">No suspicious/counterfeit elements</Label>
-                            <span className="text-[10px] text-neutral-400 font-mono leading-none">Product_Information &gt; all &gt; all &gt; Bio</span>
+                            <Label htmlFor="w-r-4" className="text-sm font-medium text-foreground cursor-pointer">No suspicious/counterfeit elements</Label>
+                            <span className="text-[10px] text-muted-foreground font-mono leading-none">Product_Information &gt; all &gt; all &gt; Bio</span>
                           </div>
                           <Switch id="w-r-4" />
                         </div>
-                        <div className="flex items-center justify-between p-2.5 hover:bg-neutral-50 rounded-lg transition-colors">
+                        <div className="flex items-center justify-between p-2.5 hover:bg-accent rounded-lg transition-colors">
                           <div className="flex flex-col gap-1 pr-4">
-                            <Label htmlFor="w-r-5" className="text-sm font-medium text-neutral-700 cursor-pointer">Obvious Counterfeit Keyword</Label>
-                            <span className="text-[10px] text-neutral-400 font-mono leading-none">Product_Information &gt; all &gt; all &gt; Bio</span>
+                            <Label htmlFor="w-r-5" className="text-sm font-medium text-foreground cursor-pointer">Obvious Counterfeit Keyword</Label>
+                            <span className="text-[10px] text-muted-foreground font-mono leading-none">Product_Information &gt; all &gt; all &gt; Bio</span>
                           </div>
                           <Switch id="w-r-5" />
                         </div>
@@ -1481,7 +1481,7 @@ export function WebsiteModerationView() {
                     </div>
                   </TabsContent>
                   <TabsContent value="selected" className="flex-1 overflow-y-auto p-4 m-0">
-                    <div className="flex flex-col items-center justify-center py-12 text-neutral-400">
+                    <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
                       <RiCheckDoubleLine className="size-8 mb-2 opacity-40" />
                       <span className="text-xs">No reasons selected yet</span>
                     </div>
@@ -1495,7 +1495,7 @@ export function WebsiteModerationView() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="bg-red-600 hover:bg-red-700 text-white h-8 text-xs px-3 rounded-md gap-1">
+              <Button className="bg-destructive hover:bg-destructive text-primary-foreground h-8 text-xs px-3 rounded-md gap-1">
                 Counterfeit
                 <RiArrowDownSLine className="size-3.5" />
               </Button>
@@ -1513,19 +1513,19 @@ export function WebsiteModerationView() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button className="bg-neutral-900 hover:bg-neutral-800 text-white h-8 text-xs px-4 rounded-md">
+          <Button className="bg-foreground hover:bg-foreground/90 text-primary-foreground h-8 text-xs px-4 rounded-md">
             Enforce
           </Button>
 
           <Button variant="ghost" size="icon" className="size-8 p-0">
-            <RiMoreLine className="size-4 text-neutral-500" />
+            <RiMoreLine className="size-4 text-muted-foreground" />
           </Button>
         </div>
       </header>
 
       {/* ── QUICK CONTEXT RISK BAR ── */}
       {activeTiles.length > 0 && (
-        <div className="flex items-center gap-3 px-6 py-2.5 border-b border-neutral-200 bg-neutral-50 shrink-0 overflow-x-auto custom-scrollbar">
+        <div className="flex items-center gap-3 px-6 py-2.5 border-b border-border bg-background shrink-0 overflow-x-auto custom-scrollbar">
           {activeTiles.map((tile, i) => {
             const s = RISK_TILE_STYLES[tile.level];
             return (
@@ -1548,7 +1548,7 @@ export function WebsiteModerationView() {
             <DialogTrigger asChild>
               <Button
                 variant="ghost"
-                className="shrink-0 h-full min-h-[48px] border border-dashed border-neutral-300 bg-neutral-50/50 hover:bg-neutral-100 text-neutral-500 hover:text-neutral-900 rounded-md px-3 flex flex-col gap-0.5 items-center justify-center transition-colors"
+                className="shrink-0 h-full min-h-[48px] border border-dashed border-border bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground rounded-md px-3 flex flex-col gap-0.5 items-center justify-center transition-colors"
               >
                 <RiSettings3Line className="w-3.5 h-3.5" />
                 <span className="text-[9px] font-bold uppercase">Prioritize</span>
@@ -1556,8 +1556,8 @@ export function WebsiteModerationView() {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle className="text-lg font-bold text-neutral-900">Prioritize Risk Signals</DialogTitle>
-                <DialogDescription className="text-sm text-neutral-500">
+                <DialogTitle className="text-lg font-bold text-foreground">Prioritize Risk Signals</DialogTitle>
+                <DialogDescription className="text-sm text-muted-foreground">
                   Select which risk signals are most critical for your current review.
                 </DialogDescription>
               </DialogHeader>
@@ -1565,15 +1565,15 @@ export function WebsiteModerationView() {
                 {INSIGHT_SIGNALS.map((signal) => (
                   <div key={signal.id} className="flex items-center justify-between">
                     <div className="flex flex-col gap-0.5 pr-4">
-                      <span className="text-sm font-semibold text-neutral-900">{signal.label}</span>
-                      <span className="text-xs text-neutral-500">{signal.desc}</span>
+                      <span className="text-sm font-semibold text-foreground">{signal.label}</span>
+                      <span className="text-xs text-muted-foreground">{signal.desc}</span>
                     </div>
                     <Switch
                       checked={insightPrefs[signal.id]}
                       onCheckedChange={(checked) =>
                         setInsightPrefs((prev) => ({ ...prev, [signal.id]: checked }))
                       }
-                      className="data-[state=checked]:bg-neutral-900"
+                      className="data-[state=checked]:bg-foreground"
                     />
                   </div>
                 ))}
@@ -1586,9 +1586,9 @@ export function WebsiteModerationView() {
       {/* ── Comments Sheet ── */}
       <Sheet open={commentsOpen} onOpenChange={setCommentsOpen}>
         <SheetContent className="w-[440px] sm:w-[540px] flex flex-col p-0">
-          <SheetHeader className="px-6 py-4 border-b border-neutral-200 shrink-0">
+          <SheetHeader className="px-6 py-4 border-b border-border shrink-0">
             <SheetTitle className="text-sm font-semibold">Comments</SheetTitle>
-            <SheetDescription className="text-xs text-neutral-500">
+            <SheetDescription className="text-xs text-muted-foreground">
               Collaboration thread for WEB#81
             </SheetDescription>
           </SheetHeader>
@@ -1596,19 +1596,19 @@ export function WebsiteModerationView() {
             <div className="px-6 py-4 space-y-5">
               {MOCK_COMMENTS.map((comment) => (
                 <div key={comment.id} className="flex gap-3">
-                  <div className="size-7 rounded-full bg-neutral-200 flex items-center justify-center text-[10px] font-bold text-neutral-600 shrink-0">
+                  <div className="size-7 rounded-full bg-secondary flex items-center justify-center text-[10px] font-bold text-foreground shrink-0">
                     {comment.avatar}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-baseline gap-2">
-                      <span className="text-xs font-semibold text-neutral-900">
+                      <span className="text-xs font-semibold text-foreground">
                         {comment.author}
                       </span>
-                      <span className="text-[10px] text-neutral-400">
+                      <span className="text-[10px] text-muted-foreground">
                         {comment.time}
                       </span>
                     </div>
-                    <p className="text-[12px] leading-relaxed text-neutral-700 mt-1">
+                    <p className="text-[12px] leading-relaxed text-foreground mt-1">
                       {comment.text}
                     </p>
                   </div>
@@ -1616,7 +1616,7 @@ export function WebsiteModerationView() {
               ))}
             </div>
           </ScrollArea>
-          <div className="px-6 py-4 border-t border-neutral-200 shrink-0">
+          <div className="px-6 py-4 border-t border-border shrink-0">
             <div className="flex gap-2">
               <Input
                 placeholder="Add a comment..."
@@ -1635,13 +1635,13 @@ export function WebsiteModerationView() {
 
       {/* ── Rules Evaluation Sheet ── */}
       <Sheet open={rulesOpen} onOpenChange={setRulesOpen}>
-        <SheetContent side="right" className="w-[400px] sm:w-[540px] overflow-y-auto bg-white p-0">
-          <SheetHeader className="px-6 pt-4 pb-4 border-b border-neutral-100">
-            <SheetTitle className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
-              <RiNodeTree className="size-4 text-blue-500" />
+        <SheetContent side="right" className="w-[400px] sm:w-[540px] overflow-y-auto bg-card p-0">
+          <SheetHeader className="px-6 pt-4 pb-4 border-b border-border">
+            <SheetTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <RiNodeTree className="size-4 text-primary" />
               Rules Evaluation
             </SheetTitle>
-            <SheetDescription className="text-xs text-neutral-500">
+            <SheetDescription className="text-xs text-muted-foreground">
               Top rules that almost matched — or matched but failed to execute.
             </SheetDescription>
           </SheetHeader>
@@ -1658,18 +1658,18 @@ export function WebsiteModerationView() {
                   <AccordionItem
                     key={rule.id}
                     value={rule.id}
-                    className="border border-neutral-200 rounded-lg bg-white shadow-sm overflow-hidden px-4 not-last:border-b-0"
+                    className="border border-border rounded-lg bg-card shadow-sm overflow-hidden px-4 not-last:border-b-0"
                   >
                     <AccordionTrigger className="hover:no-underline py-3 gap-2 [&>svg]:mt-1">
                       <div className="flex flex-col gap-2 w-full min-w-0 pr-2">
                         <div className="flex justify-between items-start gap-4 w-full">
-                          <span className="text-sm font-semibold text-neutral-900 leading-tight text-left">
-                            <span className="text-neutral-400 mr-2">
+                          <span className="text-sm font-semibold text-foreground leading-tight text-left">
+                            <span className="text-muted-foreground mr-2">
                               #{index + 1}
                             </span>
                             {rule.name}
                           </span>
-                          <span className="text-lg font-bold text-neutral-900 shrink-0">
+                          <span className="text-lg font-bold text-foreground shrink-0">
                             {rule.matchPercentage}%
                           </span>
                         </div>
@@ -1679,7 +1679,7 @@ export function WebsiteModerationView() {
                           className={`h-1.5 ${
                             isSystemError
                               ? "bg-orange-100 [&>div]:bg-orange-500"
-                              : "bg-neutral-200"
+                              : "bg-secondary"
                           }`}
                         />
 
@@ -1689,9 +1689,9 @@ export function WebsiteModerationView() {
                             failed (100% match)
                           </span>
                         ) : firstFailedCondition ? (
-                          <span className="text-[11px] text-neutral-500 line-clamp-1 text-left">
+                          <span className="text-[11px] text-muted-foreground line-clamp-1 text-left">
                             Failed on:{" "}
-                            <span className="font-medium text-neutral-700">
+                            <span className="font-medium text-foreground">
                               {firstFailedCondition.name}
                             </span>
                           </span>
@@ -1707,20 +1707,20 @@ export function WebsiteModerationView() {
                             className={`flex items-start gap-3 p-2.5 rounded-md ${
                               condition.passed
                                 ? "bg-transparent"
-                                : "bg-red-50 border border-red-100"
+                                : "bg-destructive/10 border border-red-100"
                             }`}
                           >
                             {condition.passed ? (
                               <RiCheckLine className="size-4 text-emerald-500 shrink-0 mt-0.5" />
                             ) : (
-                              <div className="bg-red-100 rounded-full p-0.5 mt-0.5 shrink-0">
-                                <RiCloseLine className="size-3 text-red-600" />
+                              <div className="bg-destructive/15 rounded-full p-0.5 mt-0.5 shrink-0">
+                                <RiCloseLine className="size-3 text-destructive" />
                               </div>
                             )}
                             <span
                               className={`text-sm leading-tight ${
                                 condition.passed
-                                  ? "text-neutral-600"
+                                  ? "text-foreground"
                                   : "text-red-900 font-semibold"
                               }`}
                             >
@@ -1731,13 +1731,13 @@ export function WebsiteModerationView() {
                       </div>
 
                       {isSystemError && "targetLabel" in rule && (
-                        <div className="mt-4 pt-4 border-t border-neutral-100 flex items-center justify-between gap-4">
-                          <p className="text-xs text-neutral-500">
+                        <div className="mt-4 pt-4 border-t border-border flex items-center justify-between gap-4">
+                          <p className="text-xs text-muted-foreground">
                             This rule fully matched but failed to auto-execute.
                           </p>
                           <Button
                             size="sm"
-                            className="bg-neutral-900 text-white hover:bg-neutral-800 shrink-0"
+                            className="bg-foreground text-primary-foreground hover:bg-foreground/90 shrink-0"
                             onClick={() =>
                               toast.success(
                                 `Label '${rule.targetLabel}' applied. Linear ticket created for engineering.`
@@ -1757,7 +1757,7 @@ export function WebsiteModerationView() {
             {MOCK_TOP_RULES.length > visibleRulesCount && (
               <Button
                 variant="ghost"
-                className="w-full text-xs text-neutral-500"
+                className="w-full text-xs text-muted-foreground"
                 onClick={() =>
                   setVisibleRulesCount((prev) => prev + 5)
                 }
@@ -1770,55 +1770,55 @@ export function WebsiteModerationView() {
       </Sheet>
 
       {/* ── Body ── */}
-      <div className="flex-1 flex min-h-0 bg-white">
+      <div className="flex-1 flex min-h-0 bg-card">
         {/* ── Left Pane (Main Stage — full height, horizontal split when entity selected) ── */}
-        <div className="flex-1 bg-white flex flex-col min-w-0 border-r border-neutral-200">
+        <div className="flex-1 bg-card flex flex-col min-w-0 border-r border-border">
           <MainStage />
         </div>
 
         {/* ── Right Pane (Sidebar) ── */}
-        <aside className="w-[380px] xl:w-[450px] bg-white flex flex-col shrink-0 min-h-0">
+        <aside className="w-[380px] xl:w-[450px] bg-card flex flex-col shrink-0 min-h-0">
           <Tabs
             value={sidebarTab}
             onValueChange={setSidebarTab}
             className="flex-1 flex flex-col min-h-0"
           >
             {/* Tabs Header */}
-            <div className="flex items-center border-b border-neutral-200 bg-white h-12 px-4 shrink-0">
+            <div className="flex items-center border-b border-border bg-card h-12 px-4 shrink-0">
               <TabsList
                 variant="line"
                 className="flex gap-4 xl:gap-6 bg-transparent rounded-none h-full w-auto p-0"
               >
                 <TabsTrigger
                   value="overview"
-                  className="text-xs font-medium text-neutral-500 data-[state=active]:text-neutral-900 data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
+                  className="text-xs font-medium text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
                 >
                   <RiGlobalLine className="size-3.5" />
                   Overview
                 </TabsTrigger>
                 <TabsTrigger
                   value="details"
-                  className="text-xs font-medium text-neutral-500 data-[state=active]:text-neutral-900 data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
+                  className="text-xs font-medium text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
                 >
                   <RiFileTextLine className="size-3.5" />
                   Details
                 </TabsTrigger>
                 <TabsTrigger
                   value="activity"
-                  className="text-xs font-medium text-neutral-500 data-[state=active]:text-neutral-900 data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
+                  className="text-xs font-medium text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
                 >
                   <RiPulseLine className="size-3.5" />
                   Activity
                 </TabsTrigger>
                 <TabsTrigger
                   value="network"
-                  className="text-xs font-medium text-neutral-500 data-[state=active]:text-neutral-900 data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
+                  className="text-xs font-medium text-muted-foreground data-[state=active]:text-foreground data-[state=active]:shadow-none rounded-none px-0 py-3 bg-transparent gap-1.5"
                 >
                   <RiNodeTree className="size-3.5" />
                   Network
                   <Badge
                     variant="secondary"
-                    className="text-[9px] px-1 py-0 bg-neutral-200 ml-0.5"
+                    className="text-[9px] px-1 py-0 bg-secondary ml-0.5"
                   >
                     {NETWORK_ENTITIES.length}
                   </Badge>
@@ -1845,16 +1845,16 @@ export function WebsiteModerationView() {
                   </div>
                   <div className="mt-4 space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] text-neutral-500">
+                      <span className="text-[10px] text-muted-foreground">
                         Description
                       </span>
-                      <div className="flex items-center bg-neutral-100 p-0.5 rounded border border-neutral-200">
+                      <div className="flex items-center bg-muted p-0.5 rounded border border-border">
                         <button
                           onClick={() => setDescLang("en")}
                           className={`px-2 py-0.5 text-[9px] font-bold rounded-sm transition-all ${
                             descLang === "en"
-                              ? "bg-white shadow-sm text-neutral-900"
-                              : "text-neutral-500 hover:text-neutral-700"
+                              ? "bg-card shadow-sm text-foreground"
+                              : "text-muted-foreground hover:text-foreground"
                           }`}
                         >
                           EN
@@ -1863,8 +1863,8 @@ export function WebsiteModerationView() {
                           onClick={() => setDescLang("vo")}
                           className={`px-2 py-0.5 flex items-center justify-center rounded-sm transition-all ${
                             descLang === "vo"
-                              ? "bg-white shadow-sm text-neutral-900"
-                              : "text-neutral-500 hover:text-neutral-700"
+                              ? "bg-card shadow-sm text-foreground"
+                              : "text-muted-foreground hover:text-foreground"
                           }`}
                           title="Original Version"
                         >
@@ -1872,7 +1872,7 @@ export function WebsiteModerationView() {
                         </button>
                       </div>
                     </div>
-                    <div className="text-[11px] text-neutral-900 leading-relaxed bg-neutral-50 border border-neutral-100 p-3 rounded min-h-[60px]">
+                    <div className="text-[11px] text-foreground leading-relaxed bg-accent border border-border p-3 rounded min-h-[60px]">
                       {descLang === "en"
                         ? "Tinkerlust is an Indonesian online marketplace specializing in pre-owned luxury goods, including handbags, watches, jewelry, and accessories from premium brands. The platform connects buyers and sellers of authenticated second-hand luxury items."
                         : "Tinkerlust adalah pasar online Indonesia yang mengkhususkan diri pada barang mewah bekas, termasuk tas tangan, jam tangan, perhiasan, dan aksesori dari merek premium. Platform ini menghubungkan pembeli dan penjual barang mewah bekas yang telah diautentikasi."}
@@ -1943,7 +1943,7 @@ export function WebsiteModerationView() {
                         </Badge>
                       )
                     )}
-                    <button className="inline-flex items-center gap-1 h-5 px-2 text-[10px] font-normal text-neutral-500 border border-dashed border-neutral-300 rounded-full hover:border-neutral-400 hover:text-neutral-700 transition-colors">
+                    <button className="inline-flex items-center gap-1 h-5 px-2 text-[10px] font-normal text-muted-foreground border border-dashed border-border rounded-full hover:border-border hover:text-foreground transition-colors">
                       <RiAddLine className="size-3" />
                       New Tag
                     </button>
@@ -1958,7 +1958,7 @@ export function WebsiteModerationView() {
                   />
                   <div className="grid grid-cols-2 gap-y-4 gap-x-4">
                     <div>
-                      <div className="text-[10px] text-neutral-500 mb-1">
+                      <div className="text-[10px] text-muted-foreground mb-1">
                         IP Asset
                       </div>
                       <Select>
@@ -1976,7 +1976,7 @@ export function WebsiteModerationView() {
                       </Select>
                     </div>
                     <div>
-                      <div className="text-[10px] text-neutral-500 mb-1">
+                      <div className="text-[10px] text-muted-foreground mb-1">
                         Document
                       </div>
                       <Select>
@@ -2031,12 +2031,12 @@ export function WebsiteModerationView() {
                     />
                   </div>
                   <div className="mt-4">
-                    <div className="text-[10px] text-neutral-500 mb-1">
+                    <div className="text-[10px] text-muted-foreground mb-1">
                       Description
                     </div>
                     <textarea
                       defaultValue="Tinkerlust is an Indonesian online marketplace specializing in pre-owned luxury goods, including handbags, watches, jewelry, and accessories from premium brands."
-                      className="w-full h-20 text-[11px] leading-relaxed text-neutral-700 border border-neutral-200 rounded p-3 bg-neutral-50 resize-none focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-ring"
+                      className="w-full h-20 text-[11px] leading-relaxed text-foreground border border-border rounded p-3 bg-accent resize-none focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-ring"
                     />
                   </div>
                 </section>
@@ -2135,14 +2135,14 @@ export function WebsiteModerationView() {
                     },
                     {
                       icon: RiShieldLine,
-                      iconColor: "text-red-500",
+                      iconColor: "text-destructive",
                       action: "Label set to Counterfeit",
                       detail: "Automatic classification",
                       time: "08:42",
                     },
                     {
                       icon: RiTimeLine,
-                      iconColor: "text-neutral-500",
+                      iconColor: "text-muted-foreground",
                       action: "Page crawled successfully",
                       detail: "200 OK — 1.2s response time",
                       time: "08:41",
@@ -2162,7 +2162,7 @@ export function WebsiteModerationView() {
                     },
                     {
                       icon: RiTimeLine,
-                      iconColor: "text-neutral-500",
+                      iconColor: "text-muted-foreground",
                       action: "Page crawled successfully",
                       detail: "200 OK — 0.8s response time",
                       time: "14:22",
@@ -2175,14 +2175,14 @@ export function WebsiteModerationView() {
                   items={[
                     {
                       icon: RiGlobalLine,
-                      iconColor: "text-blue-500",
+                      iconColor: "text-primary",
                       action: "Domain first detected",
                       detail: "Added to monitoring queue",
                       time: "19:16",
                     },
                     {
                       icon: RiTimeLine,
-                      iconColor: "text-neutral-500",
+                      iconColor: "text-muted-foreground",
                       action: "Initial crawl completed",
                       detail: "200 OK — 2.1s response time",
                       time: "19:17",

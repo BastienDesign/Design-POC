@@ -45,17 +45,17 @@ interface PostSidePanelProps {
 }
 
 const LABEL_BUTTON_STYLES: Record<string, string> = {
-  counterfeit: "bg-red-600 hover:bg-red-700 text-white",
-  suspicious: "bg-amber-500 hover:bg-amber-600 text-white",
-  legitimate: "bg-emerald-600 hover:bg-emerald-700 text-white",
-  unlabeled: "bg-neutral-600 hover:bg-neutral-700 text-white",
+  counterfeit: "bg-destructive hover:bg-destructive text-primary-foreground",
+  suspicious: "bg-amber-500 hover:bg-amber-600 text-primary-foreground",
+  legitimate: "bg-emerald-600 hover:bg-emerald-700 text-primary-foreground",
+  unlabeled: "bg-muted-foreground hover:bg-foreground/80 text-primary-foreground",
 };
 
 const MEDIA_LABEL_DOT: Record<string, string> = {
-  counterfeit: "bg-red-500",
+  counterfeit: "bg-destructive/100",
   suspicious: "bg-amber-500",
   legitimate: "bg-emerald-500",
-  unlabeled: "bg-neutral-300",
+  unlabeled: "bg-muted-foreground/60",
 };
 
 const STOCK_STYLES: Record<string, string> = {
@@ -99,7 +99,7 @@ export function PostSidePanel({
   const displayMedia = activeFrame ?? activeMedia;
   const displayLabel = displayMedia.label;
   const labelStyle = LABEL_BUTTON_STYLES[displayLabel] ?? LABEL_BUTTON_STYLES.unlabeled;
-  const stockStyle = STOCK_STYLES[post.stock] ?? "border-neutral-200 bg-neutral-50 text-neutral-500";
+  const stockStyle = STOCK_STYLES[post.stock] ?? "border-border bg-accent text-muted-foreground";
 
   function handleSelectMedia(index: number) {
     setActiveMediaIndex(index);
@@ -123,7 +123,7 @@ export function PostSidePanel({
       <SheetContent
         side="right"
         showCloseButton={false}
-        className="flex w-full flex-col border-l border-neutral-200 p-0 shadow-2xl sm:max-w-[550px]"
+        className="flex w-full flex-col border-l border-border p-0 shadow-2xl sm:max-w-[550px]"
       >
         {/* Accessibility: visually hidden title for screen readers */}
         <SheetHeader className="sr-only">
@@ -131,39 +131,39 @@ export function PostSidePanel({
         </SheetHeader>
 
         {/* ─── Sticky Header ─── */}
-        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-neutral-200 bg-white px-4 py-3">
+        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-border bg-card px-4 py-3">
           <div className="flex min-w-0 flex-1 items-center gap-3">
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 shrink-0 text-neutral-500 hover:bg-neutral-100"
+              className="h-8 w-8 shrink-0 text-muted-foreground hover:bg-muted"
               onClick={onClose}
             >
               <RiCloseLine className="h-5 w-5" />
             </Button>
-            <Separator orientation="vertical" className="h-4 bg-neutral-200" />
-            <span className="whitespace-nowrap text-sm font-semibold text-neutral-900">
+            <Separator orientation="vertical" className="h-4 bg-secondary" />
+            <span className="whitespace-nowrap text-sm font-semibold text-foreground">
               PO#{post.postId}
             </span>
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            <div className="flex shrink-0 items-center rounded-md bg-neutral-100 p-0.5">
+            <div className="flex shrink-0 items-center rounded-md bg-muted p-0.5">
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7 shrink-0 rounded-sm bg-white text-neutral-500 shadow-sm hover:text-neutral-900"
+                className="h-7 w-7 shrink-0 rounded-sm bg-card text-muted-foreground shadow-sm hover:text-foreground"
                 onClick={onPrev}
                 disabled={currentIndex === 0}
               >
                 <RiArrowLeftSLine className="h-4 w-4" />
               </Button>
-              <span className="whitespace-nowrap px-2 text-xs font-medium tabular-nums text-neutral-500">
+              <span className="whitespace-nowrap px-2 text-xs font-medium tabular-nums text-muted-foreground">
                 {currentIndex + 1} / {totalCount}
               </span>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7 shrink-0 rounded-sm text-neutral-500 hover:text-neutral-900"
+                className="h-7 w-7 shrink-0 rounded-sm text-muted-foreground hover:text-foreground"
                 onClick={onNext}
                 disabled={currentIndex === totalCount - 1}
               >
@@ -179,12 +179,12 @@ export function PostSidePanel({
         </div>
 
         {/* ─── Scrollable Body ─── */}
-        <div className="flex flex-1 flex-col gap-6 overflow-y-auto bg-white p-4">
+        <div className="flex flex-1 flex-col gap-6 overflow-y-auto bg-card p-4">
           {/* MEDIA PLAYER */}
           <div className="flex shrink-0 flex-col gap-1.5">
             {/* Primary Display */}
             {displayMedia.type === "video" && !activeFrame ? (
-              <div className="relative h-[180px] w-full overflow-hidden rounded-md border border-neutral-200 bg-neutral-900">
+              <div className="relative h-[180px] w-full overflow-hidden rounded-md border border-border bg-foreground">
                 <video
                   ref={videoRef}
                   key={displayMedia.id}
@@ -210,8 +210,8 @@ export function PostSidePanel({
                     onClick={(e) => { e.stopPropagation(); setShowSubtitles((v) => !v); }}
                     className={`absolute top-2 right-2 z-50 pointer-events-auto flex items-center gap-1 px-2 py-0.5 rounded-full shadow-sm border transition-colors cursor-pointer ${
                       showSubtitles
-                        ? "bg-white border-neutral-200 text-neutral-900"
-                        : "bg-neutral-900/60 backdrop-blur-sm border-neutral-700 text-neutral-300 hover:bg-neutral-900/80"
+                        ? "bg-card border-border text-foreground"
+                        : "bg-foreground/60 backdrop-blur-sm border-foreground/20 text-muted-foreground hover:bg-foreground/80"
                     }`}
                   >
                     <RiClosedCaptioningLine className="h-3 w-3" />
@@ -222,7 +222,7 @@ export function PostSidePanel({
             ) : (
               <HoverCard openDelay={100} closeDelay={100}>
                 <HoverCardTrigger asChild>
-                  <div className="group relative h-[180px] w-full cursor-zoom-in overflow-hidden rounded-md border border-neutral-200 bg-neutral-100">
+                  <div className="group relative h-[180px] w-full cursor-zoom-in overflow-hidden rounded-md border border-border bg-muted">
                     <ImageWithFallback
                       src={displayMedia.url}
                       alt={post.title}
@@ -231,9 +231,9 @@ export function PostSidePanel({
                     />
                     {/* Frame indicator badge */}
                     {activeFrame && (
-                      <div className="absolute top-2 left-2 flex items-center gap-1.5 rounded-full bg-neutral-900/80 px-2.5 py-1 backdrop-blur-sm">
-                        <RiFilmLine className="h-3 w-3 text-neutral-300" />
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-200">
+                      <div className="absolute top-2 left-2 flex items-center gap-1.5 rounded-full bg-foreground/80 px-2.5 py-1 backdrop-blur-sm">
+                        <RiFilmLine className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-primary-foreground/90">
                           Extracted Frame
                         </span>
                       </div>
@@ -244,7 +244,7 @@ export function PostSidePanel({
                   side="left"
                   align="start"
                   sideOffset={24}
-                  className="z-[100] h-[450px] w-[450px] overflow-hidden rounded-xl border border-neutral-200 bg-white p-0 shadow-2xl"
+                  className="z-[100] h-[450px] w-[450px] overflow-hidden rounded-xl border border-border bg-card p-0 shadow-2xl"
                 >
                   <ImageWithFallback
                     src={displayMedia.url}
@@ -258,24 +258,24 @@ export function PostSidePanel({
 
             {/* Extracted Frames Strip (Video paused state) */}
             {showFrameStrip && (
-              <div className="flex flex-col gap-1.5 rounded-lg bg-neutral-900 p-2">
+              <div className="flex flex-col gap-1.5 rounded-lg bg-foreground p-2">
                 <div className="flex items-center gap-1.5 px-1">
-                  <RiFilmLine className="h-3 w-3 text-neutral-400" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                  <RiFilmLine className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     Extracted Frames
                   </span>
-                  <span className="text-[10px] tabular-nums text-neutral-500">
+                  <span className="text-[10px] tabular-nums text-muted-foreground">
                     {activeMedia.frames!.length}
                   </span>
                 </div>
                 <div className="flex gap-1.5 overflow-x-auto pb-0.5">
                   {activeMedia.frames!.map((frame) => {
-                    const dotColor = MEDIA_LABEL_DOT[frame.label] ?? "bg-neutral-300";
+                    const dotColor = MEDIA_LABEL_DOT[frame.label] ?? "bg-muted-foreground/60";
                     return (
                       <div
                         key={frame.id}
                         onClick={() => handleSelectFrame(frame)}
-                        className="group/frame relative h-11 w-11 shrink-0 cursor-pointer overflow-hidden rounded-md border border-neutral-700 bg-neutral-800 transition-all duration-150 hover:border-neutral-500"
+                        className="group/frame relative h-11 w-11 shrink-0 cursor-pointer overflow-hidden rounded-md border border-foreground/20 bg-foreground/90 transition-all duration-150 hover:border-muted-foreground"
                       >
                         <ImageWithFallback
                           src={frame.url}
@@ -283,7 +283,7 @@ export function PostSidePanel({
                           className="h-full w-full object-cover"
                           fallbackClassName="h-full w-full"
                         />
-                        <div className={`absolute bottom-0.5 right-0.5 h-2 w-2 rounded-full ring-1 ring-neutral-900 ${dotColor}`} />
+                        <div className={`absolute bottom-0.5 right-0.5 h-2 w-2 rounded-full ring-1 ring-foreground ${dotColor}`} />
                       </div>
                     );
                   })}
@@ -295,7 +295,7 @@ export function PostSidePanel({
             {activeFrame && activeMedia.type === "video" && (
               <button
                 onClick={() => setActiveFrame(null)}
-                className="flex items-center gap-1.5 self-start rounded-md bg-neutral-100 px-2.5 py-1.5 text-[11px] font-semibold text-neutral-600 transition-colors hover:bg-neutral-200"
+                className="flex items-center gap-1.5 self-start rounded-md bg-muted px-2.5 py-1.5 text-[11px] font-semibold text-foreground transition-colors hover:bg-muted"
               >
                 <RiArrowLeftSLine className="h-3.5 w-3.5" />
                 Back to video
@@ -306,20 +306,20 @@ export function PostSidePanel({
             <div className="flex gap-1.5 overflow-x-auto pb-0.5">
               {post.media.map((m, i) => {
                 const isActive = i === activeMediaIndex && !activeFrame;
-                const dotColor = MEDIA_LABEL_DOT[m.label] ?? "bg-neutral-300";
+                const dotColor = MEDIA_LABEL_DOT[m.label] ?? "bg-muted-foreground/60";
                 return (
                   <div
                     key={m.id}
                     onClick={() => handleSelectMedia(i)}
-                    className={`relative h-9 w-9 shrink-0 cursor-pointer overflow-hidden rounded-md bg-neutral-100 transition-all duration-150 ${
+                    className={`relative h-9 w-9 shrink-0 cursor-pointer overflow-hidden rounded-md bg-muted transition-all duration-150 ${
                       isActive
-                        ? "border-2 border-blue-600 shadow-md"
-                        : "border border-neutral-200 hover:border-neutral-400"
+                        ? "border-2 border-primary shadow-md"
+                        : "border border-border hover:border-border"
                     }`}
                   >
                     {m.type === "video" ? (
-                      <div className="flex h-full w-full items-center justify-center bg-neutral-800">
-                        <RiPlayFill className="h-3.5 w-3.5 text-white" />
+                      <div className="flex h-full w-full items-center justify-center bg-foreground/90">
+                        <RiPlayFill className="h-3.5 w-3.5 text-primary-foreground" />
                       </div>
                     ) : (
                       <ImageWithFallback
@@ -330,7 +330,7 @@ export function PostSidePanel({
                       />
                     )}
                     {/* Label dot indicator */}
-                    <div className={`absolute bottom-0.5 right-0.5 h-1.5 w-1.5 rounded-full ring-1 ring-white ${dotColor}`} />
+                    <div className={`absolute bottom-0.5 right-0.5 h-1.5 w-1.5 rounded-full ring-1 ring-background ${dotColor}`} />
                   </div>
                 );
               })}
@@ -342,7 +342,7 @@ export function PostSidePanel({
             <div className="flex items-center justify-between">
               <a
                 href="#"
-                className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:underline"
+                className="flex items-center gap-1 text-xs font-medium text-primary hover:underline"
               >
                 <RiExternalLinkLine className="h-3.5 w-3.5" />
                 {post.websiteDomain}
@@ -354,10 +354,10 @@ export function PostSidePanel({
                 {post.stock}
               </Badge>
             </div>
-            <h3 className="text-base font-semibold leading-snug text-neutral-900">
+            <h3 className="text-base font-semibold leading-snug text-foreground">
               {post.title}
             </h3>
-            <p className="text-xs leading-relaxed text-neutral-500">
+            <p className="text-xs leading-relaxed text-muted-foreground">
               Listed by {post.accountName} on {post.websiteDomain}. Ships from{" "}
               {post.shipsFrom} to {post.shipsTo.slice(0, 2).join(", ")}
               {post.shipsTo.length > 2 && ` +${post.shipsTo.length - 2}`}.
@@ -380,10 +380,10 @@ export function PostSidePanel({
 
           {/* INSIGHTS: Single Bordered List */}
           <div className="flex flex-col gap-2">
-            <span className="px-0.5 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+            <span className="px-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
               Insights
             </span>
-            <div className="divide-y divide-neutral-100 rounded-md border border-neutral-200 bg-white shadow-sm">
+            <div className="divide-y divide-border rounded-md border border-border bg-card shadow-sm">
               {/* Price */}
               <div className="flex items-start gap-3 p-3">
                 <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-yellow-50 text-yellow-500">
@@ -391,10 +391,10 @@ export function PostSidePanel({
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="mb-0.5 flex items-center justify-between">
-                    <span className="text-xs font-semibold text-neutral-900">Price Analysis</span>
-                    <span className="text-xs font-mono text-neutral-900">{post.price}</span>
+                    <span className="text-xs font-semibold text-foreground">Price Analysis</span>
+                    <span className="text-xs font-mono text-foreground">{post.price}</span>
                   </div>
-                  <p className="text-[10px] leading-tight text-neutral-500">
+                  <p className="text-[10px] leading-tight text-muted-foreground">
                     {post.pricePct} of market average. Volume sold: {post.volumeSold.toLocaleString("en-US")} units.
                   </p>
                 </div>
@@ -403,7 +403,7 @@ export function PostSidePanel({
               {/* Suspicious Signals */}
               <div className="flex items-start gap-3 p-3">
                 <div className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
-                  post.suspiciousCount > 0 ? "bg-red-50 text-red-500" : "bg-emerald-50 text-emerald-500"
+                  post.suspiciousCount > 0 ? "bg-destructive/10 text-destructive" : "bg-emerald-50 text-emerald-500"
                 }`}>
                   {post.suspiciousCount > 0 ? (
                     <RiErrorWarningLine className="h-3.5 w-3.5" />
@@ -413,10 +413,10 @@ export function PostSidePanel({
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="mb-0.5 flex items-center justify-between">
-                    <span className="text-xs font-semibold text-neutral-900">Suspicious Signals</span>
-                    <span className="text-xs font-mono text-neutral-900">{post.suspiciousCount}</span>
+                    <span className="text-xs font-semibold text-foreground">Suspicious Signals</span>
+                    <span className="text-xs font-mono text-foreground">{post.suspiciousCount}</span>
                   </div>
-                  <p className="truncate text-[10px] leading-tight text-neutral-500">
+                  <p className="truncate text-[10px] leading-tight text-muted-foreground">
                     {post.suspiciousReasons || "No suspicious signals detected."}
                   </p>
                 </div>
@@ -429,9 +429,9 @@ export function PostSidePanel({
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="mb-0.5 flex items-center justify-between">
-                    <span className="text-xs font-semibold text-neutral-900">IP Certificate</span>
+                    <span className="text-xs font-semibold text-foreground">IP Certificate</span>
                   </div>
-                  <p className="text-[10px] leading-tight text-neutral-500">{post.ipCertificate}</p>
+                  <p className="text-[10px] leading-tight text-muted-foreground">{post.ipCertificate}</p>
                 </div>
               </div>
 
@@ -448,9 +448,9 @@ export function PostSidePanel({
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="mb-0.5 flex items-center justify-between">
-                    <span className="text-xs font-semibold text-neutral-900">Validation</span>
+                    <span className="text-xs font-semibold text-foreground">Validation</span>
                   </div>
-                  <p className="text-[10px] leading-tight text-neutral-500">
+                  <p className="text-[10px] leading-tight text-muted-foreground">
                     {post.validationErrors === "None" ? "All validation checks passed." : post.validationErrors}
                   </p>
                 </div>
@@ -458,14 +458,14 @@ export function PostSidePanel({
 
               {/* Geography */}
               <div className="flex items-start gap-3 p-3">
-                <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-500">
+                <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                   <RiMapPinLine className="h-3.5 w-3.5" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="mb-0.5 flex items-center justify-between">
-                    <span className="text-xs font-semibold text-neutral-900">Geography</span>
+                    <span className="text-xs font-semibold text-foreground">Geography</span>
                   </div>
-                  <p className="text-[10px] leading-tight text-neutral-500">
+                  <p className="text-[10px] leading-tight text-muted-foreground">
                     Ships from {post.shipsFrom}. Account: {post.accountGeo}. Platform: {post.platformGeo}.
                   </p>
                 </div>
@@ -475,31 +475,31 @@ export function PostSidePanel({
 
           {/* TIMELINE: 1-Row Data Bar */}
           <div className="flex flex-col gap-2 pb-2">
-            <span className="px-0.5 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+            <span className="px-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
               Timeline
             </span>
-            <div className="flex items-center divide-x divide-neutral-200 rounded-md border border-neutral-200 bg-neutral-50 p-3">
+            <div className="flex items-center divide-x divide-border rounded-md border border-border bg-accent p-3">
               <div className="flex flex-1 flex-col px-2 first:pl-1">
-                <span className="mb-0.5 text-[9px] uppercase text-neutral-500">Crawled</span>
-                <span className="text-xs font-medium tabular-nums text-neutral-900">
+                <span className="mb-0.5 text-[9px] uppercase text-muted-foreground">Crawled</span>
+                <span className="text-xs font-medium tabular-nums text-foreground">
                   {formatShortDate(post.crawlingDate)}
                 </span>
               </div>
               <div className="flex flex-1 flex-col px-2">
-                <span className="mb-0.5 text-[9px] uppercase text-neutral-500">Created</span>
-                <span className="text-xs font-medium tabular-nums text-neutral-900">
+                <span className="mb-0.5 text-[9px] uppercase text-muted-foreground">Created</span>
+                <span className="text-xs font-medium tabular-nums text-foreground">
                   {formatShortDate(post.lastCreatedDate)}
                 </span>
               </div>
               <div className="flex flex-1 flex-col px-2">
-                <span className="mb-0.5 text-[9px] uppercase text-neutral-500">Since Mod</span>
-                <span className="text-xs font-medium tabular-nums text-neutral-900">
+                <span className="mb-0.5 text-[9px] uppercase text-muted-foreground">Since Mod</span>
+                <span className="text-xs font-medium tabular-nums text-foreground">
                   {post.daysSinceModeration}d
                 </span>
               </div>
               <div className="flex flex-1 flex-col px-2 pr-1">
-                <span className="mb-0.5 text-[9px] uppercase text-neutral-500">Takedown</span>
-                <span className="text-xs font-medium tabular-nums text-neutral-900">
+                <span className="mb-0.5 text-[9px] uppercase text-muted-foreground">Takedown</span>
+                <span className="text-xs font-medium tabular-nums text-foreground">
                   {post.daysSinceTakedown !== null ? `${post.daysSinceTakedown}d ago` : "—"}
                 </span>
               </div>
@@ -508,14 +508,14 @@ export function PostSidePanel({
         </div>
 
         {/* ─── Sticky Footer ─── */}
-        <div className="flex shrink-0 items-center justify-between border-t border-neutral-200 bg-white px-4 py-3">
-          <div className="flex items-center gap-3 text-xs text-neutral-500">
+        <div className="flex shrink-0 items-center justify-between border-t border-border bg-card px-4 py-3">
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span>
               Impact:{" "}
               <span
                 className={`font-semibold ${
                   post.impactScore >= 80
-                    ? "text-red-600"
+                    ? "text-destructive"
                     : post.impactScore >= 50
                       ? "text-amber-600"
                       : "text-emerald-600"
@@ -524,15 +524,15 @@ export function PostSidePanel({
                 {post.impactScore}/100
               </span>
             </span>
-            <Separator orientation="vertical" className="h-3 bg-neutral-200" />
+            <Separator orientation="vertical" className="h-3 bg-secondary" />
             <span>
-              Bundle: <span className="font-semibold text-neutral-900">{post.bundleItems} items</span>
+              Bundle: <span className="font-semibold text-foreground">{post.bundleItems} items</span>
             </span>
           </div>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
-              className="h-8 border-neutral-200 text-xs font-medium"
+              className="h-8 border-border text-xs font-medium"
             >
               Open full view
             </Button>

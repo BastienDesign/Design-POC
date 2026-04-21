@@ -105,7 +105,7 @@ export function ExploreViewOptions({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className="h-8 gap-2 border-neutral-200 px-3 text-[13px] font-medium text-neutral-700 shadow-sm"
+          className="h-8 gap-2 border-border px-3 text-[13px] font-medium text-foreground shadow-sm"
         >
           <RiLayoutColumnLine size={16} />
           View
@@ -113,20 +113,20 @@ export function ExploreViewOptions({
       </PopoverTrigger>
       <PopoverContent
         align="end"
-        className="w-[280px] rounded-xl border-neutral-200 p-0 shadow-lg"
+        className="w-[280px] rounded-xl border-border p-0 shadow-lg"
       >
         {/* Section 1: Layout */}
-        <div className="border-b border-neutral-100 p-3">
-          <h4 className="mb-2 px-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+        <div className="border-b border-border p-3">
+          <h4 className="mb-2 px-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
             Layout
           </h4>
-          <div className="flex items-center rounded-lg bg-neutral-100 p-1">
+          <div className="flex items-center rounded-lg bg-muted p-1">
             <button
               onClick={() => onLayoutChange("table")}
               className={`flex flex-1 items-center justify-center gap-2 rounded-md py-1.5 text-sm transition-all duration-200 ${
                 layout === "table"
-                  ? "bg-white font-medium text-neutral-900 shadow-sm"
-                  : "text-neutral-500 hover:text-neutral-700"
+                  ? "bg-card font-medium text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <RiTableLine className="h-4 w-4" />
@@ -136,8 +136,8 @@ export function ExploreViewOptions({
               onClick={() => onLayoutChange("grid")}
               className={`flex flex-1 items-center justify-center gap-2 rounded-md py-1.5 text-sm transition-all duration-200 ${
                 layout === "grid"
-                  ? "bg-white font-medium text-neutral-900 shadow-sm"
-                  : "text-neutral-500 hover:text-neutral-700"
+                  ? "bg-card font-medium text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <RiLayoutGridLine className="h-4 w-4" />
@@ -148,12 +148,12 @@ export function ExploreViewOptions({
 
         {/* Section 2: Grid Density (visible only in grid mode) */}
         {layout === "grid" && (
-          <div className="border-b border-neutral-100 p-3">
+          <div className="border-b border-border p-3">
             <div className="flex items-center justify-between mb-2 px-1">
-              <h4 className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+              <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                 Grid Density
               </h4>
-              <span className="text-[10px] font-mono font-bold bg-neutral-100 px-1.5 py-0.5 rounded text-neutral-600">
+              <span className="text-[10px] font-mono font-bold bg-muted px-1.5 py-0.5 rounded text-foreground">
                 {gridColumns} Columns
               </span>
             </div>
@@ -172,17 +172,17 @@ export function ExploreViewOptions({
 
         {/* Section 3: Properties */}
         <div className="p-3">
-          <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+          <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             Properties
           </div>
           <div className="relative mb-3 px-1">
-            <RiSearchLine className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-400" />
+            <RiSearchLine className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search properties..."
               value={propertyFilter}
               onChange={(e) => setPropertyFilter(e.target.value)}
-              className="w-full h-8 pl-8 pr-3 text-xs bg-neutral-50 border border-neutral-200 rounded-md outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900 transition-all placeholder:text-neutral-400"
+              className="w-full h-8 pl-8 pr-3 text-xs bg-accent border border-border rounded-md outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all placeholder:text-muted-foreground"
             />
           </div>
           <div className="flex max-h-[300px] flex-col gap-0.5 overflow-auto">
@@ -192,7 +192,7 @@ export function ExploreViewOptions({
               );
               if (filtered.length === 0) {
                 return (
-                  <div className="px-2 py-4 text-center text-[10px] text-neutral-400">
+                  <div className="px-2 py-4 text-center text-[10px] text-muted-foreground">
                     No properties found
                   </div>
                 );
@@ -208,11 +208,11 @@ export function ExploreViewOptions({
                     onDragOver={handleDragOver}
                     onDragEnter={(e) => handleDragEnter(e, globalIdx)}
                     onDrop={handleDrop}
-                    className="flex items-center justify-between rounded-md px-1 py-1 hover:bg-neutral-50 transition-colors"
+                    className="flex items-center justify-between rounded-md px-1 py-1 hover:bg-accent transition-colors"
                   >
                     <div className="flex items-center gap-2">
-                      <RiDraggable className="w-4 h-4 text-neutral-300 cursor-grab active:cursor-grabbing hover:text-neutral-600 transition-colors shrink-0" />
-                      <span className="text-sm text-neutral-700">{col.label}</span>
+                      <RiDraggable className="w-4 h-4 text-muted-foreground cursor-grab active:cursor-grabbing hover:text-foreground transition-colors shrink-0" />
+                      <span className="text-sm text-foreground">{col.label}</span>
                     </div>
                     <Switch
                       checked={visibleColumns.includes(col.id)}

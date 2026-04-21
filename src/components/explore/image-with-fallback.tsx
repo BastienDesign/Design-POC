@@ -21,7 +21,7 @@ export function ImageWithFallback({
   if (!src || error) {
     return (
       <div
-        className={`flex items-center justify-center bg-neutral-100 text-neutral-400 ${fallbackClassName || className || ""}`}
+        className={`flex items-center justify-center bg-muted text-muted-foreground ${fallbackClassName || className || ""}`}
       >
         <RiImageLine className="size-1/3 opacity-50" />
       </div>

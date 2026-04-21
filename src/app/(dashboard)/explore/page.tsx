@@ -566,7 +566,7 @@ function ExplorePageContent() {
 
   if (isModerating) {
     return (
-      <div className="h-[calc(100vh-72px)] w-full bg-white">
+      <div className="h-[calc(100vh-72px)] w-full bg-card">
         <ModerationWorkspace
           queue={moderationQueue}
           currentIndex={currentModIndex}
@@ -580,7 +580,7 @@ function ExplorePageContent() {
   }
 
   return (
-    <div className="flex flex-col w-full h-[calc(100vh-72px)] p-2 bg-neutral-50/50 overflow-hidden">
+    <div className="flex flex-col w-full h-[calc(100vh-72px)] p-2 bg-background overflow-hidden">
 
       {/* 1. TOP CONTROLS (Tabs & Buttons) — NO border-b, just margin */}
       <div className="shrink-0 mb-2">
@@ -621,7 +621,7 @@ function ExplorePageContent() {
       </div>
 
       {/* 2. NAKED CONTENT CANVAS */}
-      <div className={`flex-1 flex flex-col min-h-0 bg-white overflow-hidden mb-2 transition-opacity duration-150 ${isFiltering ? "opacity-50" : "opacity-100"}`}>
+      <div className={`flex-1 flex flex-col min-h-0 bg-card overflow-hidden mb-2 transition-opacity duration-150 ${isFiltering ? "opacity-50" : "opacity-100"}`}>
         <div className="flex-1 overflow-auto min-h-0 custom-scrollbar">
           {activeTab === "Posts" && postsLayout === "table" && (
             <ExploreTable

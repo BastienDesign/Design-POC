@@ -197,9 +197,9 @@ function FieldPicker({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="flex items-center gap-1 h-7 px-2 text-xs font-medium text-neutral-700 rounded-md hover:bg-neutral-100 transition-colors cursor-pointer whitespace-nowrap">
+        <button className="flex items-center gap-1 h-7 px-2 text-xs font-medium text-foreground rounded-md hover:bg-muted transition-colors cursor-pointer whitespace-nowrap">
           {def?.label ?? "Select field"}
-          <RiArrowDownSLine className="h-3 w-3 text-neutral-400" />
+          <RiArrowDownSLine className="h-3 w-3 text-muted-foreground" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0" align="start">
@@ -244,9 +244,9 @@ function OperatorPicker({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="flex items-center gap-1 h-7 px-2 text-xs text-neutral-500 rounded-md hover:bg-neutral-100 transition-colors cursor-pointer whitespace-nowrap">
+        <button className="flex items-center gap-1 h-7 px-2 text-xs text-muted-foreground rounded-md hover:bg-muted transition-colors cursor-pointer whitespace-nowrap">
           {value}
-          <RiArrowDownSLine className="h-3 w-3 text-neutral-400" />
+          <RiArrowDownSLine className="h-3 w-3 text-muted-foreground" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-[180px] p-1" align="start">
@@ -259,8 +259,8 @@ function OperatorPicker({
             }}
             className={`w-full text-left px-3 py-1.5 text-xs rounded-md transition-colors cursor-pointer ${
               op === value
-                ? "bg-neutral-100 font-medium text-neutral-900"
-                : "text-neutral-600 hover:bg-neutral-50"
+                ? "bg-muted font-medium text-foreground"
+                : "text-foreground hover:bg-accent"
             }`}
           >
             {op}
@@ -286,11 +286,11 @@ function ValueInput({
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <button className="flex items-center gap-1 h-7 px-2 text-xs rounded-md hover:bg-neutral-100 transition-colors cursor-pointer whitespace-nowrap max-w-[160px] truncate">
-            <span className={value ? "font-medium text-neutral-900" : "text-neutral-400"}>
+          <button className="flex items-center gap-1 h-7 px-2 text-xs rounded-md hover:bg-muted transition-colors cursor-pointer whitespace-nowrap max-w-[160px] truncate">
+            <span className={value ? "font-medium text-foreground" : "text-muted-foreground"}>
               {value || "Select..."}
             </span>
-            <RiArrowDownSLine className="h-3 w-3 text-neutral-400 shrink-0" />
+            <RiArrowDownSLine className="h-3 w-3 text-muted-foreground shrink-0" />
           </button>
         </PopoverTrigger>
         <PopoverContent className="w-[180px] p-0" align="start">
@@ -326,7 +326,7 @@ function ValueInput({
       onChange={(e) => onChange(e.target.value)}
       placeholder={fieldDef.type === "number" ? "0" : "Value..."}
       type={fieldDef.type === "number" ? "number" : "text"}
-      className="h-7 w-[120px] border-neutral-200 bg-transparent px-2 text-xs shadow-none focus-visible:ring-1 focus-visible:ring-neutral-300"
+      className="h-7 w-[120px] border-border bg-transparent px-2 text-xs shadow-none focus-visible:ring-1 focus-visible:ring-ring"
     />
   );
 }
@@ -373,25 +373,25 @@ function FilterGroupNode({
 
   const wrapperClass = isRoot
     ? "flex flex-col"
-    : "flex flex-col border-l-2 border-neutral-200 pl-3 ml-2 my-1 rounded-sm";
+    : "flex flex-col border-l-2 border-border pl-3 ml-2 my-1 rounded-sm";
 
   return (
     <div className={wrapperClass}>
       {/* Nested group header (non-root only) */}
       {!isRoot && (
         <div className="flex items-center justify-between py-1 pr-1">
-          <div className="flex items-center gap-1 text-[10px] text-neutral-500">
+          <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
             <span>Match</span>
             <button
               onClick={toggleOperator}
-              className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-bold text-neutral-700 hover:bg-neutral-200 transition-colors cursor-pointer"
+              className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold text-foreground hover:bg-muted transition-colors cursor-pointer"
             >
               {group.logicalOperator === "AND" ? "All" : "Any"}
             </button>
           </div>
           <button
             onClick={() => handleRemoveNode(group.id)}
-            className="h-4 w-4 shrink-0 flex items-center justify-center rounded text-neutral-300 hover:text-neutral-600 hover:bg-neutral-100 transition-all cursor-pointer"
+            className="h-4 w-4 shrink-0 flex items-center justify-center rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-all cursor-pointer"
           >
             <RiCloseLine className="h-3 w-3" />
           </button>
@@ -402,18 +402,18 @@ function FilterGroupNode({
       <div className="flex flex-col">
         {group.children.length === 0 && isRoot && (
           <div className="flex flex-col items-center justify-center py-8 text-center animate-in fade-in-50">
-            <div className="mb-3 rounded-full bg-neutral-100 p-3">
-              <RiFilter3Line className="h-5 w-5 text-neutral-500" />
+            <div className="mb-3 rounded-full bg-muted p-3">
+              <RiFilter3Line className="h-5 w-5 text-muted-foreground" />
             </div>
-            <p className="mb-1 text-sm font-medium text-neutral-900">No filters applied</p>
-            <p className="mb-4 max-w-[200px] text-xs text-neutral-500">
+            <p className="mb-1 text-sm font-medium text-foreground">No filters applied</p>
+            <p className="mb-4 max-w-[200px] text-xs text-muted-foreground">
               Get started by adding a rule to narrow down your results.
             </p>
             <Button
               variant="outline"
               size="sm"
               onClick={handleAddRule}
-              className="h-8 gap-1.5 bg-white text-xs"
+              className="h-8 gap-1.5 bg-card text-xs"
             >
               <RiAddLine className="h-3 w-3" />
               Add your first filter
@@ -421,7 +421,7 @@ function FilterGroupNode({
           </div>
         )}
         {group.children.length === 0 && !isRoot && (
-          <div className="px-2 py-2 text-[10px] text-neutral-400">
+          <div className="px-2 py-2 text-[10px] text-muted-foreground">
             Empty group — add a filter.
           </div>
         )}
@@ -429,7 +429,7 @@ function FilterGroupNode({
           if (child.type === "group") {
             return (
               <div key={child.id} className="flex items-start gap-0.5">
-                <span className="w-8 shrink-0 pt-2 text-right text-[10px] font-medium uppercase text-neutral-300 select-none">
+                <span className="w-8 shrink-0 pt-2 text-right text-[10px] font-medium uppercase text-muted-foreground select-none">
                   {idx === 0 ? "Where" : group.logicalOperator === "AND" ? "and" : "or"}
                 </span>
                 <div className="flex-1 min-w-0">
@@ -453,9 +453,9 @@ function FilterGroupNode({
           return (
             <div
               key={rule.id}
-              className="group flex items-center gap-0.5 rounded-md px-1 py-0.5 hover:bg-neutral-50 transition-colors"
+              className="group flex items-center gap-0.5 rounded-md px-1 py-0.5 hover:bg-accent transition-colors"
             >
-              <span className="w-8 shrink-0 text-right text-[10px] font-medium uppercase text-neutral-300 select-none">
+              <span className="w-8 shrink-0 text-right text-[10px] font-medium uppercase text-muted-foreground select-none">
                 {idx === 0 ? "Where" : group.logicalOperator === "AND" ? "and" : "or"}
               </span>
               <FieldPicker
@@ -486,7 +486,7 @@ function FilterGroupNode({
               )}
               <button
                 onClick={() => handleRemoveNode(rule.id)}
-                className="ml-auto h-5 w-5 shrink-0 flex items-center justify-center rounded text-neutral-300 opacity-0 group-hover:opacity-100 hover:text-neutral-600 hover:bg-neutral-100 transition-all cursor-pointer"
+                className="ml-auto h-5 w-5 shrink-0 flex items-center justify-center rounded text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-foreground hover:bg-muted transition-all cursor-pointer"
               >
                 <RiCloseLine className="h-3.5 w-3.5" />
               </button>
@@ -496,12 +496,12 @@ function FilterGroupNode({
       </div>
 
       {/* Footer: Add rule / Add group */}
-      <div className={`flex items-center gap-1 ${isRoot ? "border-t border-neutral-100 px-3 py-2" : "px-1 py-1"}`}>
+      <div className={`flex items-center gap-1 ${isRoot ? "border-t border-border px-3 py-2" : "px-1 py-1"}`}>
         <Button
           variant="ghost"
           size="sm"
           onClick={handleAddRule}
-          className="h-7 gap-1 px-2 text-[11px] font-medium text-neutral-500 hover:text-neutral-900"
+          className="h-7 gap-1 px-2 text-[11px] font-medium text-muted-foreground hover:text-foreground"
         >
           <RiAddLine className="h-3.5 w-3.5" />
           Add filter
@@ -510,7 +510,7 @@ function FilterGroupNode({
           variant="ghost"
           size="sm"
           onClick={handleAddGroup}
-          className="h-7 gap-1 px-2 text-[11px] font-medium text-neutral-500 hover:text-neutral-900"
+          className="h-7 gap-1 px-2 text-[11px] font-medium text-muted-foreground hover:text-foreground"
         >
           <RiParenthesesLine className="h-3.5 w-3.5" />
           Add group
@@ -532,15 +532,15 @@ export function AdvancedFilterBuilder({ query, onQueryChange, onSwitchToBasic }:
   return (
     <div className="flex flex-col">
       {/* Header: Back + Root Logical Operator */}
-      <div className="flex items-center justify-between border-b border-neutral-100 px-3 py-2">
+      <div className="flex items-center justify-between border-b border-border px-3 py-2">
         <button
           onClick={onSwitchToBasic}
-          className="flex items-center gap-0.5 text-[11px] font-medium text-neutral-500 hover:text-neutral-900 transition-colors cursor-pointer"
+          className="flex items-center gap-0.5 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
         >
           <RiArrowLeftSLine className="h-3.5 w-3.5" />
           Basic Filters
         </button>
-        <div className="flex items-center gap-1 text-[11px] text-neutral-500">
+        <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
           <span>Match</span>
           <button
             onClick={() =>
@@ -549,7 +549,7 @@ export function AdvancedFilterBuilder({ query, onQueryChange, onSwitchToBasic }:
                 logicalOperator: query.logicalOperator === "AND" ? "OR" : "AND",
               })
             }
-            className="rounded-md bg-neutral-100 px-1.5 py-0.5 text-[11px] font-bold text-neutral-700 hover:bg-neutral-200 transition-colors cursor-pointer"
+            className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-bold text-foreground hover:bg-muted transition-colors cursor-pointer"
           >
             {query.logicalOperator === "AND" ? "All" : "Any"}
           </button>

@@ -126,7 +126,7 @@ function GlobalHeader({
   onPeriodChange: (v: string) => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-neutral-200 bg-white p-3 shadow-sm">
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-3 shadow-sm">
       <div className="flex flex-wrap items-center gap-2">
         <Select value={period} onValueChange={onPeriodChange}>
           <SelectTrigger className="h-9 w-[160px] text-sm">
@@ -182,7 +182,7 @@ function ApproachToggle({
       size="sm"
       value={value}
       onValueChange={(v) => v && onChange(v as Approach)}
-      className="rounded-lg border border-neutral-200 bg-neutral-50 p-1"
+      className="rounded-lg border border-border bg-accent p-1"
     >
       <Tooltip>
         <TooltipTrigger asChild>
@@ -310,20 +310,20 @@ function KpiCard({
   return (
     <Link
       href={href}
-      className="group block rounded-xl border border-neutral-200 bg-white p-4 shadow-sm transition-all hover:border-neutral-300 hover:shadow-md"
+      className="group block rounded-xl border border-border bg-card p-4 shadow-sm transition-all hover:border-border hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-2">
-        <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
           {label}
         </p>
         <Tooltip>
           <TooltipTrigger asChild>
-            <span className="cursor-help text-neutral-300">?</span>
+            <span className="cursor-help text-muted-foreground">?</span>
           </TooltipTrigger>
           <TooltipContent side="top">{definition}</TooltipContent>
         </Tooltip>
       </div>
-      <p className="mt-2 text-2xl font-bold tracking-tight text-neutral-900">
+      <p className="mt-2 text-2xl font-bold tracking-tight text-foreground">
         {value}
       </p>
       <div className="mt-3 flex items-center justify-between">
@@ -386,8 +386,8 @@ function ComplianceGaugeCard({ value, trend }: { value: number; trend: number })
   };
 
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm">
-      <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">
+    <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
         Average Compliance
       </p>
       <div className="mt-1 flex items-center gap-3">
@@ -404,7 +404,7 @@ function ComplianceGaugeCard({ value, trend }: { value: number; trend: number })
           </RadialBarChart>
         </ChartContainer>
         <div>
-          <p className="text-2xl font-bold tracking-tight text-neutral-900">
+          <p className="text-2xl font-bold tracking-tight text-foreground">
             {value}%
           </p>
           <Badge
@@ -481,7 +481,7 @@ function Visibility() {
       title="Visibility"
       description="Kept as-is — uses the existing Visibility widgets."
     >
-      <div className="flex h-40 items-center justify-center rounded-xl border border-dashed border-neutral-200 bg-neutral-50/50 text-sm text-neutral-400">
+      <div className="flex h-40 items-center justify-center rounded-xl border border-dashed border-border bg-muted/50 text-sm text-muted-foreground">
         [ Visibility section — unchanged ]
       </div>
     </Section>
@@ -506,16 +506,16 @@ function LifecycleAndTiming() {
             {timeToAction.map((t) => (
               <div
                 key={t.key}
-                className="rounded-lg border border-neutral-200 bg-neutral-50/40 p-3"
+                className="rounded-lg border border-border bg-muted/40 p-3"
               >
-                <p className="text-xs font-medium text-neutral-500">{t.label}</p>
-                <p className="mt-1 text-2xl font-bold tracking-tight text-neutral-900">
+                <p className="text-xs font-medium text-muted-foreground">{t.label}</p>
+                <p className="mt-1 text-2xl font-bold tracking-tight text-foreground">
                   {t.value}
-                  <span className="ml-1 text-sm font-normal text-neutral-500">
+                  <span className="ml-1 text-sm font-normal text-muted-foreground">
                     {t.unit}
                   </span>
                 </p>
-                <p className="mt-1 text-xs leading-tight text-neutral-400">
+                <p className="mt-1 text-xs leading-tight text-muted-foreground">
                   {t.hint}
                 </p>
               </div>
@@ -555,26 +555,26 @@ function Funnel() {
           <li key={stage.key}>
             <Link
               href={stage.href}
-              className="group block rounded-lg border border-neutral-200 bg-white p-3 transition-colors hover:border-neutral-300 hover:bg-neutral-50/60"
+              className="group block rounded-lg border border-border bg-card p-3 transition-colors hover:border-border hover:bg-muted"
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary" className="size-5 rounded-full p-0">
                     {i + 1}
                   </Badge>
-                  <p className="text-sm font-medium text-neutral-900">
+                  <p className="text-sm font-medium text-foreground">
                     {stage.label}
                   </p>
                 </div>
-                <p className="font-mono text-sm font-semibold tabular-nums text-neutral-900">
+                <p className="font-mono text-sm font-semibold tabular-nums text-foreground">
                   {formatThinSpace(stage.value)}
                 </p>
               </div>
               <Progress value={width} className="mt-2 h-2" />
               {conversion !== null && (
-                <p className="mt-1.5 text-xs text-neutral-500">
+                <p className="mt-1.5 text-xs text-muted-foreground">
                   → {conversion.toFixed(1)}% continue to{" "}
-                  <span className="font-medium text-neutral-700">{next!.label}</span>
+                  <span className="font-medium text-foreground">{next!.label}</span>
                 </p>
               )}
             </Link>
@@ -625,7 +625,7 @@ function GeoHeatmap({
       <CardHeader className="pb-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <RiGlobalLine className="size-4 text-neutral-500" />
+            <RiGlobalLine className="size-4 text-muted-foreground" />
             <CardTitle className="text-base">Global Enforcement Map</CardTitle>
           </div>
           <ToggleGroup
@@ -633,7 +633,7 @@ function GeoHeatmap({
             size="sm"
             value={mapMode}
             onValueChange={(v) => v && onMapModeChange(v as "origin" | "target")}
-            className="rounded-lg border border-neutral-200 bg-neutral-50 p-1"
+            className="rounded-lg border border-border bg-accent p-1"
           >
             <ToggleGroupItem value="origin" className="h-7 px-2.5 text-xs">
               Seller origin
@@ -705,7 +705,7 @@ function TopMarketplacesTable() {
     <Card className="shadow-sm">
       <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
-          <RiStoreLine className="size-4 text-neutral-500" />
+          <RiStoreLine className="size-4 text-muted-foreground" />
           <CardTitle className="text-base">Top High-Risk Marketplaces</CardTitle>
         </div>
         <CardDescription>
@@ -715,7 +715,7 @@ function TopMarketplacesTable() {
       <CardContent className="p-0">
         <Table>
           <TableHeader>
-            <TableRow className="bg-neutral-50/60">
+            <TableRow className="bg-muted/60">
               <TableHead className="pl-6">Marketplace</TableHead>
               <TableHead className="text-right">Enforced</TableHead>
               <TableHead className="text-right">Share</TableHead>
@@ -725,11 +725,11 @@ function TopMarketplacesTable() {
           </TableHeader>
           <TableBody>
             {topMarketplaces.map((m) => (
-              <TableRow key={m.name} className="hover:bg-neutral-50/60">
+              <TableRow key={m.name} className="hover:bg-muted">
                 <TableCell className="pl-6 font-medium">
                   <div className="flex flex-col">
                     <span>{m.name}</span>
-                    <span className="flex items-center gap-1 text-xs text-neutral-500">
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
                       <RiMapPin2Line className="size-3" />
                       {m.country}
                     </span>
@@ -752,7 +752,7 @@ function TopMarketplacesTable() {
                     {m.share.toFixed(1)}%
                   </Badge>
                 </TableCell>
-                <TableCell className="text-sm text-neutral-700">
+                <TableCell className="text-sm text-foreground">
                   {m.topCategory}
                 </TableCell>
                 <TableCell className="pr-6">
@@ -778,7 +778,7 @@ function PlatformCompliance() {
     <Card className="shadow-sm">
       <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
-          <RiShieldCheckLine className="size-4 text-neutral-500" />
+          <RiShieldCheckLine className="size-4 text-muted-foreground" />
           <CardTitle className="text-base">Platform Compliance</CardTitle>
         </div>
         <CardDescription>
@@ -825,7 +825,7 @@ function DeepDive() {
           <CardContent className="p-0">
             <Table>
               <TableHeader>
-                <TableRow className="bg-neutral-50/60">
+                <TableRow className="bg-muted/60">
                   <TableHead className="pl-6">User</TableHead>
                   <TableHead>Platform</TableHead>
                   <TableHead>Country</TableHead>
@@ -835,7 +835,7 @@ function DeepDive() {
               </TableHeader>
               <TableBody>
                 {repeatOffenders.map((o) => (
-                  <TableRow key={o.id} className="hover:bg-neutral-50/60">
+                  <TableRow key={o.id} className="hover:bg-muted">
                     <TableCell className="pl-6">
                       <Link
                         href={`/account/${o.id}`}
@@ -845,7 +845,7 @@ function DeepDive() {
                       </Link>
                     </TableCell>
                     <TableCell>{o.platform}</TableCell>
-                    <TableCell className="text-sm text-neutral-600">
+                    <TableCell className="text-sm text-foreground">
                       {o.country}
                     </TableCell>
                     <TableCell className="text-right font-mono tabular-nums">
@@ -869,7 +869,7 @@ function DeepDive() {
           <CardContent className="p-0">
             <Table>
               <TableHeader>
-                <TableRow className="bg-neutral-50/60">
+                <TableRow className="bg-muted/60">
                   <TableHead className="pl-6">Category</TableHead>
                   <TableHead className="text-right">Enforced</TableHead>
                   <TableHead className="text-right">Removed</TableHead>
@@ -879,7 +879,7 @@ function DeepDive() {
               </TableHeader>
               <TableBody>
                 {infringingCategories.map((c) => (
-                  <TableRow key={c.name} className="hover:bg-neutral-50/60">
+                  <TableRow key={c.name} className="hover:bg-muted">
                     <TableCell className="pl-6 font-medium">{c.name}</TableCell>
                     <TableCell className="text-right font-mono tabular-nums">
                       {formatThinSpace(c.enforcements)}
@@ -893,7 +893,7 @@ function DeepDive() {
                     <TableCell className="pr-6">
                       <div className="flex items-center gap-2">
                         <Progress value={c.compliance} className="h-1.5 w-20" />
-                        <span className="text-xs font-medium tabular-nums text-neutral-700">
+                        <span className="text-xs font-medium tabular-nums text-foreground">
                           {c.compliance}%
                         </span>
                       </div>
@@ -924,7 +924,7 @@ function MostInfringedImages() {
               <Link
                 key={img.id}
                 href={`/image/${img.id}`}
-                className="group relative overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 shadow-sm transition-all hover:-translate-y-0.5 hover:border-neutral-300 hover:shadow-md"
+                className="group relative overflow-hidden rounded-lg border border-border bg-accent shadow-sm transition-all hover:-translate-y-0.5 hover:border-border hover:shadow-md"
               >
                 <div className="relative aspect-square">
                   <Image
@@ -939,13 +939,13 @@ function MostInfringedImages() {
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between gap-2 p-2.5 text-xs">
-                  <span className="inline-flex items-center gap-1 text-neutral-600">
+                  <span className="inline-flex items-center gap-1 text-foreground">
                     <RiImage2Line className="size-3.5" />
                     <span className="font-mono font-semibold tabular-nums">
                       {formatThinSpace(img.postCount)}
                     </span>
                   </span>
-                  <span className="inline-flex items-center gap-1 text-neutral-600">
+                  <span className="inline-flex items-center gap-1 text-foreground">
                     <RiStoreLine className="size-3.5" />
                     <span className="font-mono font-semibold tabular-nums">
                       {img.marketplaceCount}
@@ -955,12 +955,12 @@ function MostInfringedImages() {
               </Link>
             ))}
           </div>
-          <p className="mt-4 text-xs text-neutral-500">
+          <p className="mt-4 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-1">
               <RiEyeLine className="size-3.5" />
               Metric 1: posts containing the image
             </span>
-            <span className="mx-3 text-neutral-300">·</span>
+            <span className="mx-3 text-muted-foreground">·</span>
             <span className="inline-flex items-center gap-1">
               <RiStoreLine className="size-3.5" />
               Metric 2: distinct marketplaces using the image
@@ -987,15 +987,15 @@ function Section({
   return (
     <section className="space-y-4">
       <div className="flex items-baseline gap-3">
-        <span className="text-xs font-bold tracking-widest text-neutral-400">
+        <span className="text-xs font-bold tracking-widest text-muted-foreground">
           {number}
         </span>
         <div>
-          <h2 className="text-lg font-semibold tracking-tight text-neutral-900">
+          <h2 className="text-lg font-semibold tracking-tight text-foreground">
             {title}
           </h2>
           {description && (
-            <p className="text-sm text-neutral-500">{description}</p>
+            <p className="text-sm text-muted-foreground">{description}</p>
           )}
         </div>
       </div>

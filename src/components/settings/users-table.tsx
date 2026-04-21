@@ -39,15 +39,15 @@ export function UsersTable() {
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       {/* Top Header */}
-      <div className="flex items-center justify-between border-b border-neutral-100 px-8 py-4">
-        <p className="text-[13px] font-medium text-neutral-500">
+      <div className="flex items-center justify-between border-b px-8 py-4">
+        <p className="text-[13px] font-medium text-muted-foreground">
           Organizational Settings
         </p>
-        <div className="flex items-center gap-2 rounded-lg border border-neutral-200/50 bg-white px-3 py-1.5">
-          <div className="flex h-5 w-5 items-center justify-center rounded bg-primary text-[8px] font-bold text-white">
+        <div className="flex items-center gap-2 rounded-lg border bg-card px-3 py-1.5">
+          <div className="flex h-5 w-5 items-center justify-center rounded bg-primary text-[8px] font-bold text-primary-foreground">
             {ACTIVE_ORG.logo}
           </div>
-          <span className="text-xs font-medium text-neutral-700">
+          <span className="text-xs font-medium text-foreground">
             {ACTIVE_ORG.name}
           </span>
         </div>
@@ -56,7 +56,7 @@ export function UsersTable() {
       {/* Page Title + Actions */}
       <div className="flex items-center justify-between px-8 pt-6 pb-4">
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             Users
           </h1>
           <Badge
@@ -68,13 +68,13 @@ export function UsersTable() {
         </div>
 
         <div className="flex items-center gap-1">
-          <button className="flex h-8 w-8 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-neutral-50 hover:text-neutral-600">
+          <button className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
             <RiSearchLine className="h-[18px] w-[18px]" />
           </button>
-          <button className="flex h-8 w-8 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-neutral-50 hover:text-neutral-600">
+          <button className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
             <RiAddLine className="h-[18px] w-[18px]" />
           </button>
-          <button className="flex h-8 w-8 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-neutral-50 hover:text-neutral-600">
+          <button className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
             <RiMore2Line className="h-[18px] w-[18px]" />
           </button>
         </div>
@@ -82,47 +82,47 @@ export function UsersTable() {
 
       {/* Table */}
       <div className="flex-1 overflow-y-auto px-8 pb-8">
-        <div className="rounded-xl border border-neutral-200/50 bg-white">
+        <div className="rounded-xl border bg-card">
           <Table>
             <TableHeader>
-              <TableRow className="border-b border-neutral-100 hover:bg-transparent">
-                <TableHead className="w-[280px] pl-5 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+              <TableRow className="border-b hover:bg-transparent">
+                <TableHead className="w-[280px] pl-5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   Name
                 </TableHead>
-                <TableHead className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                <TableHead className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   Email
                 </TableHead>
-                <TableHead className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                <TableHead className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   Role
                 </TableHead>
-                <TableHead className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                <TableHead className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   Status
                 </TableHead>
-                <TableHead className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                <TableHead className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   Last Login
                 </TableHead>
-                <TableHead className="w-[50px] text-[10px] font-bold uppercase tracking-wider text-neutral-400" />
+                <TableHead className="w-[50px] text-[10px] font-bold uppercase tracking-wider text-muted-foreground" />
               </TableRow>
             </TableHeader>
             <TableBody>
               {TEAM_USERS.map((user) => (
                 <TableRow
                   key={user.id}
-                  className="border-b border-neutral-100 transition-colors hover:bg-neutral-50/50"
+                  className="border-b transition-colors hover:bg-muted/50"
                 >
                   {/* Avatar + Name */}
                   <TableCell className="py-4 pl-5">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-9 w-9">
-                        <AvatarFallback className="bg-neutral-100 text-xs font-semibold text-neutral-600">
+                        <AvatarFallback className="bg-muted text-xs font-semibold text-muted-foreground">
                           {user.initials}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="text-sm font-medium text-neutral-900">
+                        <p className="text-sm font-medium text-foreground">
                           {user.name}
                         </p>
-                        <p className="text-[12px] text-neutral-400">
+                        <p className="text-[12px] text-muted-foreground">
                           {user.subtitle}
                         </p>
                       </div>
@@ -130,12 +130,12 @@ export function UsersTable() {
                   </TableCell>
 
                   {/* Email */}
-                  <TableCell className="py-4 text-[13px] text-neutral-500">
+                  <TableCell className="py-4 text-[13px] text-muted-foreground">
                     {user.email}
                   </TableCell>
 
                   {/* Role */}
-                  <TableCell className="py-4 text-[13px] font-medium text-neutral-700">
+                  <TableCell className="py-4 text-[13px] font-medium text-foreground">
                     {user.roleLabel}
                   </TableCell>
 
@@ -145,13 +145,13 @@ export function UsersTable() {
                   </TableCell>
 
                   {/* Last Login */}
-                  <TableCell className="py-4 text-[13px] text-neutral-400">
+                  <TableCell className="py-4 text-[13px] text-muted-foreground">
                     {user.lastLogin}
                   </TableCell>
 
                   {/* Edit Action */}
                   <TableCell className="py-4 pr-5">
-                    <button className="flex h-7 w-7 items-center justify-center rounded-md text-neutral-300 transition-colors hover:bg-neutral-100 hover:text-neutral-500">
+                    <button className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
                       <RiPencilLine className="h-4 w-4" />
                     </button>
                   </TableCell>

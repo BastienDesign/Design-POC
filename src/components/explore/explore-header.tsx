@@ -152,10 +152,10 @@ function InlineSearchTokenEditor({
   };
 
   const triggerButton = (
-    <button className={`flex items-center gap-0.5 rounded px-1 -mx-1 font-medium outline-none transition-colors hover:bg-neutral-100 cursor-pointer ${isExclusion ? "text-red-600" : "text-blue-600"}`}>
+    <button className={`flex items-center gap-0.5 rounded px-1 -mx-1 font-medium outline-none transition-colors hover:bg-muted cursor-pointer ${isExclusion ? "text-destructive" : "text-primary"}`}>
       {displayValue}
       {extraCount > 0 && (
-        <span className={`ml-0.5 rounded-sm px-1 text-[10px] font-bold ${isExclusion ? "bg-red-100 text-red-700" : "bg-neutral-200 text-neutral-700"}`}>
+        <span className={`ml-0.5 rounded-sm px-1 text-[10px] font-bold ${isExclusion ? "bg-destructive/10 text-destructive" : "bg-secondary text-secondary-foreground"}`}>
           +{extraCount}
         </span>
       )}
@@ -184,17 +184,17 @@ function InlineSearchTokenEditor({
       )}
       <PopoverContent className="w-72 p-0" align="start">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-neutral-100 px-3 py-2">
-          <p className="text-xs font-medium text-neutral-500">
+        <div className="flex items-center justify-between border-b border-border px-3 py-2">
+          <p className="text-xs font-medium text-muted-foreground">
             {label}
-            <span className="ml-1.5 rounded-sm bg-neutral-100 px-1 py-0.5 text-[10px] font-bold text-neutral-400">
+            <span className="ml-1.5 rounded-sm bg-muted px-1 py-0.5 text-[10px] font-bold text-muted-foreground">
               {editValues.length}
             </span>
           </p>
           {editValues.length > 0 && (
             <button
               onClick={() => setEditValues([])}
-              className="text-[11px] font-medium text-red-500 hover:text-red-600 transition-colors cursor-pointer"
+              className="text-[11px] font-medium text-destructive hover:text-destructive/80 transition-colors cursor-pointer"
             >
               Clear all
             </button>
@@ -204,7 +204,7 @@ function InlineSearchTokenEditor({
         {/* Tag list */}
         <div className="max-h-48 overflow-y-auto px-3 py-2">
           {editValues.length === 0 ? (
-            <p className="py-3 text-center text-xs text-neutral-400">No values — add below or save to remove chip.</p>
+            <p className="py-3 text-center text-xs text-muted-foreground">No values — add below or save to remove chip.</p>
           ) : (
             <div className="flex flex-wrap gap-1.5">
               {editValues.map((v, idx) => (
@@ -216,7 +216,7 @@ function InlineSearchTokenEditor({
                   {v}
                   <button
                     onClick={() => handleRemoveTag(idx)}
-                    className="ml-0.5 rounded-full p-0.5 text-neutral-400 transition-colors hover:bg-neutral-200 hover:text-neutral-600 cursor-pointer"
+                    className="ml-0.5 rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground cursor-pointer"
                   >
                     <RiCloseLine size={12} />
                   </button>
@@ -227,7 +227,7 @@ function InlineSearchTokenEditor({
         </div>
 
         {/* Append input */}
-        <div className="border-t border-neutral-100 px-3 py-2">
+        <div className="border-t border-border px-3 py-2">
           <div className="flex gap-1.5">
             <Input
               autoFocus
@@ -255,7 +255,7 @@ function InlineSearchTokenEditor({
         </div>
 
         {/* Save */}
-        <div className="border-t border-neutral-100 px-3 py-2">
+        <div className="border-t border-border px-3 py-2">
           <Button
             size="sm"
             className="h-7 w-full text-xs"
@@ -329,8 +329,8 @@ export function ExploreHeader({
             filterOpen={filterOpen}
             onFilterOpenChange={onFilterOpenChange}
           />
-          <div className="relative flex h-9 w-[480px] items-center overflow-hidden rounded-md border border-neutral-200 bg-white shadow-sm transition-all focus-within:border-neutral-900 focus-within:ring-1 focus-within:ring-neutral-900">
-            <RiSearchLine size={15} className="absolute left-2.5 text-neutral-400 pointer-events-none" />
+          <div className="relative flex h-9 w-[480px] items-center overflow-hidden rounded-md border bg-background shadow-sm transition-all focus-within:border-ring focus-within:ring-1 focus-within:ring-ring">
+            <RiSearchLine size={15} className="absolute left-2.5 text-muted-foreground pointer-events-none" />
             <Input
               placeholder="Search or use '-' to exclude (e.g., -12345)..."
               value={searchValue}
@@ -341,12 +341,12 @@ export function ExploreHeader({
                   onTokenizeSearch();
                 }
               }}
-              className="h-full w-full rounded-none border-0 bg-transparent pl-8 pr-9 text-[13px] shadow-none placeholder:text-neutral-400 focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="h-full w-full rounded-none border-0 bg-transparent pl-8 pr-9 text-[13px] shadow-none placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
             />
             {searchValue && (
               <button
                 onClick={() => onSearchValueChange("")}
-                className="absolute right-2 flex h-5 w-5 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 cursor-pointer"
+                className="absolute right-2 flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground cursor-pointer"
               >
                 <RiCloseLine size={14} />
               </button>
@@ -356,13 +356,13 @@ export function ExploreHeader({
 
         {/* Right: Saved Filters + Reset */}
         <div className="flex shrink-0 items-center gap-4 text-sm">
-          <span className="flex cursor-pointer items-center gap-1 text-neutral-500 transition-colors hover:text-neutral-900">
+          <span className="flex cursor-pointer items-center gap-1 text-muted-foreground transition-colors hover:text-foreground">
             Saved Filters
             <RiArrowDownSLine size={14} />
           </span>
           <span
             onClick={onResetAll}
-            className="cursor-pointer text-neutral-400 transition-colors hover:text-neutral-900"
+            className="cursor-pointer text-muted-foreground transition-colors hover:text-foreground"
           >
             Reset
           </span>
@@ -381,14 +381,14 @@ export function ExploreHeader({
               const Icon = filter.type === "search" ? RiSearchLine : RiFilter3Line;
               const isFreeText = filter.type === "search";
               const isExclusion = ["is not", "does not contain"].includes(filter.operator);
-              const valueColor = isExclusion ? "text-red-600" : "text-blue-600";
+              const valueColor = isExclusion ? "text-destructive" : "text-primary";
 
               return (
                 <div
                   key={filter.id}
-                  className="flex items-center gap-1.5 rounded-md border border-neutral-200 bg-white px-2 py-1 text-[13px] shadow-sm"
+                  className="flex items-center gap-1.5 rounded-md border bg-card px-2 py-1 text-[13px] shadow-sm"
                 >
-                  <span className="flex items-center gap-1 text-neutral-500">
+                  <span className="flex items-center gap-1 text-muted-foreground">
                     <Icon size={14} />
                     {filter.label}
                   </span>
@@ -397,10 +397,10 @@ export function ExploreHeader({
                       e.stopPropagation();
                       onFilterOperatorChange(filter.id, filter.operator);
                     }}
-                    className={`rounded px-1 -mx-0.5 text-neutral-400 transition-colors font-medium cursor-pointer ${
+                    className={`rounded px-1 -mx-0.5 text-muted-foreground transition-colors font-medium cursor-pointer ${
                       isExclusion
-                        ? "hover:bg-red-50 hover:text-red-600"
-                        : "hover:bg-blue-50 hover:text-blue-600"
+                        ? "hover:bg-destructive/10 hover:text-destructive"
+                        : "hover:bg-primary/10 hover:text-primary"
                     }`}
                   >
                     {filter.operator}
@@ -440,7 +440,7 @@ export function ExploreHeader({
                               {filter.value[0]}
                             </span>
                             <span className={`ml-1 rounded-sm px-1 text-[10px] font-bold ${
-                              isExclusion ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"
+                              isExclusion ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
                             }`}>
                               +{filter.value.length - 1}
                             </span>
@@ -458,7 +458,7 @@ export function ExploreHeader({
                   )}
                   <button
                     onClick={() => onRemoveFilter(filter.id)}
-                    className="ml-1 text-neutral-400 transition-colors hover:text-neutral-900"
+                    className="ml-1 text-muted-foreground transition-colors hover:text-foreground"
                   >
                     <RiCloseLine size={14} />
                   </button>
@@ -472,7 +472,7 @@ export function ExploreHeader({
             <Button
               variant="ghost"
               onClick={() => setIsChipsExpanded(!isChipsExpanded)}
-              className="h-auto shrink-0 gap-1 px-1 pt-1 text-[13px] text-neutral-500 hover:text-neutral-900"
+              className="h-auto shrink-0 gap-1 px-1 pt-1 text-[13px]"
             >
               {isChipsExpanded ? (
                 <>
@@ -496,13 +496,13 @@ export function ExploreHeader({
               onFilterModeChange("advanced");
               onFilterOpenChange(true);
             }}
-            className="flex items-center gap-1.5 rounded-md border border-neutral-200 bg-white px-2 py-1 text-[13px] shadow-sm cursor-pointer transition-colors hover:bg-neutral-50"
+            className="flex items-center gap-1.5 rounded-md border bg-card px-2 py-1 text-[13px] shadow-sm cursor-pointer transition-colors hover:bg-accent"
           >
-            <span className="flex items-center gap-1 text-neutral-500">
+            <span className="flex items-center gap-1 text-muted-foreground">
               <RiEqualizer2Line size={14} />
               Advanced Filter
             </span>
-            <span className="font-medium text-blue-600">
+            <span className="font-medium text-primary">
               {countRules(advancedQuery)} {countRules(advancedQuery) === 1 ? "rule" : "rules"}
             </span>
             <button
@@ -510,7 +510,7 @@ export function ExploreHeader({
                 e.stopPropagation();
                 onAdvancedQueryChange(DEFAULT_QUERY);
               }}
-              className="ml-1 text-neutral-400 transition-colors hover:text-neutral-900 cursor-pointer"
+              className="ml-1 text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
             >
               <RiCloseLine size={14} />
             </button>
@@ -530,13 +530,13 @@ export function ExploreHeader({
                 onClick={() => onTabChange(tab)}
                 className={`flex items-center gap-1.5 border-b-2 pb-2.5 text-[14px] font-medium transition-colors ${
                   isActive
-                    ? "border-neutral-900 text-neutral-900"
-                    : "border-transparent text-neutral-500 hover:border-neutral-300 hover:text-neutral-900"
+                    ? "border-foreground text-foreground"
+                    : "border-transparent text-muted-foreground hover:border-border hover:text-foreground"
                 }`}
               >
                 {tab}
                 {isActive && tabCounts[tab] !== undefined && (
-                  <span className="rounded-full bg-neutral-100 px-1.5 py-0.5 text-[11px] font-semibold tabular-nums text-neutral-500">
+                  <span className="rounded-full bg-muted px-1.5 py-0.5 text-[11px] font-semibold tabular-nums text-muted-foreground">
                     {tabCounts[tab].toLocaleString("en-US")}
                   </span>
                 )}
@@ -547,7 +547,7 @@ export function ExploreHeader({
 
         {/* Right: Context-Aware Toolbar */}
         <div className="flex items-center gap-2 pb-2">
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-neutral-500 hover:text-neutral-900">
+          <Button variant="ghost" size="icon" className="h-8 w-8">
             <RiRefreshLine size={16} />
           </Button>
 
@@ -574,21 +574,21 @@ export function ExploreHeader({
             />
           )}
 
-          <Separator orientation="vertical" className="h-4 bg-neutral-200" />
+          <Separator orientation="vertical" className="h-4" />
 
-          <Button variant="outline" className="h-8 border-neutral-200 text-[12px] font-medium shadow-sm">
+          <Button variant="outline" className="h-8 text-[12px] font-medium shadow-sm">
             <RiUploadLine size={14} />
             Upload
           </Button>
 
-          <Button variant="outline" className="h-8 border-neutral-200 text-[12px] font-medium shadow-sm">
+          <Button variant="outline" className="h-8 text-[12px] font-medium shadow-sm">
             <RiDownloadLine size={14} />
             {EXPORT_LABELS[activeTab] ?? "Export"}
           </Button>
 
           <Button
             variant="default"
-            className="h-9 px-4 gap-2 bg-neutral-900 hover:bg-neutral-800 text-white rounded-md shadow-sm transition-all"
+            className="h-9 px-4 gap-2 shadow-sm"
             onClick={onPlayModeration}
             disabled={filteredCount === 0}
           >

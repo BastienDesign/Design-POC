@@ -62,23 +62,23 @@ const STATUS_CONFIG: Record<
 };
 
 const LABEL_COLORS: Record<string, string> = {
-  counterfeit: "bg-red-500",
+  counterfeit: "bg-destructive/100",
   legitimate: "bg-emerald-500",
   suspicious: "bg-amber-500",
   trademark_infringement: "bg-orange-400",
   "trademark infringement": "bg-orange-400",
   copyright_violation: "bg-purple-500",
-  unlabeled: "bg-neutral-300",
+  unlabeled: "bg-muted-foreground/60",
 };
 
 const ACCOUNT_TAG_STYLES: Record<string, string> = {
-  counterfeit: "border-red-200 bg-red-50 text-red-600",
+  counterfeit: "border-destructive/30 bg-destructive/10 text-destructive",
   suspicious: "border-amber-200 bg-amber-50 text-amber-600",
   legitimate: "border-emerald-200 bg-emerald-50 text-emerald-600",
-  unknown: "border-neutral-200 bg-neutral-50 text-neutral-500",
+  unknown: "border-border bg-accent text-muted-foreground",
 };
 
-const STICKY = "sticky top-0 z-10 bg-white shadow-[0_1px_0_0_#e5e5e5]";
+const STICKY = "sticky top-0 z-10 bg-card shadow-[0_1px_0_0_#e5e5e5]";
 
 interface SortConfig {
   key: string;
@@ -230,7 +230,7 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
               <Link
                 href={`/post/${post.postId}`}
                 onClick={(e) => e.stopPropagation()}
-                className="min-w-0 flex-1 cursor-pointer truncate text-[13px] font-medium text-blue-600 hover:text-blue-800 hover:underline focus:outline-none transition-colors text-left"
+                className="min-w-0 flex-1 cursor-pointer truncate text-[13px] font-medium text-link hover:underline underline-offset-4 focus:outline-none transition-colors text-left"
               >
                 {post.postId}
               </Link>
@@ -264,25 +264,25 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
         <div className="flex items-center gap-2 w-full">
           <HoverCard openDelay={250} closeDelay={100}>
             <HoverCardTrigger asChild>
-              <button className="min-w-0 flex-1 cursor-pointer truncate text-[13px] text-blue-600 hover:text-blue-800 hover:underline focus:outline-none text-left transition-colors">
+              <button className="min-w-0 flex-1 cursor-pointer truncate text-[13px] font-medium text-link hover:underline underline-offset-4 focus:outline-none text-left transition-colors">
                 {post.accountName}
               </button>
             </HoverCardTrigger>
             <HoverCardContent className="w-72 z-[60]" align="start" sideOffset={8}>
               <div className="flex gap-3">
                 <Avatar className="h-9 w-9 shrink-0">
-                  <AvatarFallback className="bg-neutral-100 text-xs font-semibold text-neutral-600">
+                  <AvatarFallback className="bg-muted text-xs font-semibold text-foreground">
                     {post.accountName.substring(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="space-y-1.5 min-w-0 flex-1">
                   <div>
-                    <h4 className="text-sm font-semibold text-neutral-900 truncate">{post.accountName}</h4>
-                    <p className="text-xs text-neutral-500">{post.websiteDomain}</p>
+                    <h4 className="text-sm font-semibold text-foreground truncate">{post.accountName}</h4>
+                    <p className="text-xs text-muted-foreground">{post.websiteDomain}</p>
                   </div>
-                  <div className="flex flex-col gap-1 text-xs text-neutral-500">
+                  <div className="flex flex-col gap-1 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1.5">
-                      <RiMapPinLine className="h-3 w-3 text-neutral-400" />
+                      <RiMapPinLine className="h-3 w-3 text-muted-foreground" />
                       {post.accountGeo}
                     </span>
                     <span className="flex items-center gap-1.5">
@@ -313,7 +313,7 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
       return (
         <div className="flex items-center gap-1.5">
           <span className="min-w-0 truncate text-[13px] font-medium text-foreground">{post.price}</span>
-          <span className="shrink-0 text-xs font-semibold text-blue-500">{post.pricePct}</span>
+          <span className="shrink-0 text-xs font-semibold text-primary">{post.pricePct}</span>
         </div>
       );
 
@@ -321,7 +321,7 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
       return post.suspiciousCount > 0 ? (
         <div className="flex items-center gap-2 w-full">
           <div className="flex items-center gap-1 shrink-0">
-            <RiAlertLine className="h-4 w-4 shrink-0 text-red-500" />
+            <RiAlertLine className="h-4 w-4 shrink-0 text-destructive" />
             <span className="text-[13px] font-medium text-foreground">{post.suspiciousCount}</span>
           </div>
           <HoverCard openDelay={250} closeDelay={100}>
@@ -332,13 +332,13 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
             </HoverCardTrigger>
             <HoverCardContent className="w-72 z-[60]" align="start" sideOffset={8}>
               <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-neutral-900 flex items-center gap-1.5">
-                  <RiAlertLine className="h-3.5 w-3.5 text-red-500" />
+                <h4 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                  <RiAlertLine className="h-3.5 w-3.5 text-destructive" />
                   {post.suspiciousCount} Suspicious Signal{post.suspiciousCount !== 1 ? "s" : ""}
                 </h4>
                 <ul className="space-y-1">
                   {post.suspiciousReasons.split(", ").map((reason, i) => (
-                    <li key={i} className="flex items-start gap-2 text-xs text-neutral-600">
+                    <li key={i} className="flex items-start gap-2 text-xs text-foreground">
                       <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-red-400" />
                       {reason}
                     </li>
@@ -357,11 +357,11 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
       const displayLabel = pendingLabel ?? post.labelText;
       const isStaged = !!pendingLabel;
       const dotKey = (pendingLabel?.toLowerCase() ?? post.label) as LabelType;
-      const dotColor = LABEL_COLORS[dotKey] ?? "bg-neutral-300";
+      const dotColor = LABEL_COLORS[dotKey] ?? "bg-muted-foreground/60";
       return (
         <div className={`flex items-center gap-1.5 ${isStaged ? "animate-pulse" : ""}`}>
           <span className={`h-2.5 w-2.5 shrink-0 rounded-sm ${dotColor}`} />
-          <span className={`min-w-0 truncate text-[13px] ${isStaged ? "text-blue-600 font-semibold" : "text-foreground"}`}>
+          <span className={`min-w-0 truncate text-[13px] ${isStaged ? "text-primary font-semibold" : "text-foreground"}`}>
             {displayLabel}
             {isStaged && <span className="ml-1 text-[10px] uppercase tracking-tighter opacity-70">(Pending)</span>}
           </span>
@@ -375,12 +375,12 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
       const displayTags = pendingTags ?? baseTags;
       const isTagsStaged = !!pendingTags;
       if (displayTags.length === 0) {
-        return <span className="text-neutral-300 text-xs">&mdash;</span>;
+        return <span className="text-muted-foreground text-xs">&mdash;</span>;
       }
 
       const tagBadgeClass = isTagsStaged
-        ? "bg-blue-50 border border-blue-300 text-blue-600"
-        : "bg-neutral-100 border border-neutral-200 text-neutral-600";
+        ? "bg-primary/10 border border-primary/40 text-primary"
+        : "bg-muted border border-border text-foreground";
 
       const inlineTags = (
         <div className={`flex flex-wrap gap-1 items-center ${isTagsStaged ? "animate-pulse" : ""}`}>
@@ -397,7 +397,7 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
             <Badge
               variant="outline"
               className={`h-5 px-1.5 py-0 text-[10px] font-medium rounded-sm shrink-0 ${
-                isTagsStaged ? "border-blue-300 text-blue-500" : "border-neutral-200 text-neutral-400"
+                isTagsStaged ? "border-primary/40 text-primary" : "border-border text-muted-foreground"
               }`}
             >
               +{displayTags.length - 2}
@@ -415,8 +415,8 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
           </HoverCardTrigger>
           <HoverCardContent className="w-64 z-[60]" align="start" sideOffset={8}>
             <div className="space-y-2">
-              <h4 className="text-sm font-semibold text-neutral-900 flex items-center gap-1.5">
-                <RiPriceTag3Line className="h-3.5 w-3.5 text-neutral-400" />
+              <h4 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                <RiPriceTag3Line className="h-3.5 w-3.5 text-muted-foreground" />
                 {displayTags.length} Tags
               </h4>
               <div className="flex flex-wrap gap-1">
@@ -439,10 +439,10 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
     case "impact":
       return (
         <div className="flex items-center gap-2">
-          <div className="h-1.5 w-16 rounded-full bg-neutral-100 overflow-hidden">
+          <div className="h-1.5 w-16 rounded-full bg-muted overflow-hidden">
             <div
               className={`h-full rounded-full ${
-                post.impactScore >= 80 ? "bg-red-500" : post.impactScore >= 50 ? "bg-amber-500" : "bg-emerald-500"
+                post.impactScore >= 80 ? "bg-destructive/100" : post.impactScore >= 50 ? "bg-amber-500" : "bg-emerald-500"
               }`}
               style={{ width: `${post.impactScore}%` }}
             />
@@ -499,7 +499,7 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
                   <Badge
                     key={country}
                     variant="outline"
-                    className="shrink-0 font-normal bg-neutral-50 text-neutral-600 truncate max-w-[80px] text-[10px]"
+                    className="shrink-0 font-normal bg-accent text-foreground truncate max-w-[80px] text-[10px]"
                   >
                     {country}
                   </Badge>
@@ -513,8 +513,8 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
             </HoverCardTrigger>
             <HoverCardContent className="w-64 z-[60]" align="start" sideOffset={8}>
               <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-neutral-900 flex items-center gap-1.5">
-                  <RiMapPinLine className="h-3.5 w-3.5 text-neutral-400" />
+                <h4 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                  <RiMapPinLine className="h-3.5 w-3.5 text-muted-foreground" />
                   Ships to {post.shipsTo.length} countries
                 </h4>
                 <div className="flex flex-wrap gap-1">
@@ -522,7 +522,7 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
                     <Badge
                       key={country}
                       variant="outline"
-                      className="font-normal bg-neutral-50 text-neutral-600 text-[10px]"
+                      className="font-normal bg-accent text-foreground text-[10px]"
                     >
                       {country}
                     </Badge>
@@ -563,7 +563,7 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
               ? "border-emerald-200 bg-emerald-50 text-emerald-600"
               : post.stock === "Low Stock"
                 ? "border-amber-200 bg-amber-50 text-amber-600"
-                : "border-neutral-200 bg-neutral-50 text-neutral-500"
+                : "border-border bg-accent text-muted-foreground"
           }`}
         >
           {post.stock}
@@ -575,7 +575,7 @@ function renderCell(col: ColumnDef, post: ExplorePost, isSelected: boolean, onSe
       const displayCat = pendingCat ?? post.productCategory;
       const isCatStaged = !!pendingCat;
       return (
-        <span className={`block w-full truncate text-[13px] ${isCatStaged ? "text-blue-600 font-semibold animate-pulse" : "text-foreground"}`}>
+        <span className={`block w-full truncate text-[13px] ${isCatStaged ? "text-primary font-semibold animate-pulse" : "text-foreground"}`}>
           {displayCat}
           {isCatStaged && <span className="ml-1 text-[10px] uppercase tracking-tighter opacity-70">(Pending)</span>}
         </span>
@@ -714,20 +714,20 @@ export function ExploreTable({
     return (
       <div className="flex-1 min-h-0 min-w-0 w-full">
         <div className="flex flex-col items-center justify-center w-full h-[450px] mx-auto">
-          <div className="flex items-center justify-center w-12 h-12 bg-neutral-100 rounded-full mb-4 ring-4 ring-neutral-50/50">
-            <RiSearchLine className="w-6 h-6 text-neutral-400" />
+          <div className="flex items-center justify-center w-12 h-12 bg-muted rounded-full mb-4 ring-4 ring-muted/50">
+            <RiSearchLine className="w-6 h-6 text-muted-foreground" />
           </div>
-          <h3 className="text-sm font-semibold text-neutral-900 mb-1">
+          <h3 className="text-sm font-semibold text-foreground mb-1">
             No results found
           </h3>
-          <p className="text-sm text-neutral-500 mb-5 max-w-[350px] text-center">
+          <p className="text-sm text-muted-foreground mb-5 max-w-[350px] text-center">
             We couldn&apos;t find any data matching your current search and filter combination. Try adjusting your parameters.
           </p>
           <Button
             variant="outline"
             size="sm"
             onClick={onResetFilters}
-            className="h-8 border-neutral-200 text-neutral-700 bg-white shadow-sm hover:bg-neutral-50 font-medium"
+            className="h-8 border-border text-foreground bg-card shadow-sm hover:bg-accent font-medium"
           >
             Clear all filters
           </Button>
@@ -753,7 +753,7 @@ export function ExploreTable({
                   return (
                     <TableHead
                       key={col.id}
-                      className="sticky top-0 left-0 z-30 w-12 pl-4 bg-white border-r border-neutral-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]"
+                      className="sticky top-0 left-0 z-30 w-[50px] min-w-[50px] pl-4 bg-card"
                       style={{ width: col.width, minWidth: col.width, maxWidth: col.width }}
                     >
                       <Checkbox
@@ -769,7 +769,7 @@ export function ExploreTable({
                   return (
                     <TableHead
                       key={col.id}
-                      className="sticky top-0 left-[50px] z-30 w-16 px-2 text-center text-[10px] uppercase font-bold text-neutral-700 tracking-wider bg-white border-r border-neutral-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]"
+                      className="sticky top-0 left-[50px] -ml-[1px] z-30 w-16 px-2 text-center text-[10px] uppercase font-bold text-foreground tracking-wider bg-card"
                       style={{ width: col.width, minWidth: col.width, maxWidth: col.width }}
                     >
                       Image
@@ -782,7 +782,7 @@ export function ExploreTable({
                   return (
                     <TableHead
                       key={col.id}
-                      className="sticky top-0 right-0 z-30 w-10 px-2 bg-white border-l border-neutral-100 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)]"
+                      className="sticky top-0 right-0 z-30 w-10 px-2 bg-card border-l border-border shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)]"
                       style={{ width: col.width, minWidth: col.width, maxWidth: col.width }}
                     />
                   );
@@ -808,18 +808,18 @@ export function ExploreTable({
                           className="flex items-center gap-1 cursor-pointer flex-1 min-w-0"
                           onClick={() => handleSort(col.id)}
                         >
-                          <span className="text-[10px] uppercase font-bold text-neutral-700 tracking-wider truncate">
+                          <span className="text-[10px] uppercase font-bold text-foreground tracking-wider truncate">
                             {col.label}
                           </span>
                           <div className={`transition-opacity shrink-0 ${isSorted ? "opacity-100" : "opacity-0 group-hover/head:opacity-100"}`}>
                             {isSorted ? (
                               sortConfig.direction === "asc" ? (
-                                <RiArrowUpSLine className="w-3.5 h-3.5 text-neutral-900" />
+                                <RiArrowUpSLine className="w-3.5 h-3.5 text-foreground" />
                               ) : (
-                                <RiArrowDownSLine className="w-3.5 h-3.5 text-neutral-900" />
+                                <RiArrowDownSLine className="w-3.5 h-3.5 text-foreground" />
                               )
                             ) : (
-                              <RiExpandUpDownLine className="w-3.5 h-3.5 text-neutral-400" />
+                              <RiExpandUpDownLine className="w-3.5 h-3.5 text-muted-foreground" />
                             )}
                           </div>
                         </div>
@@ -832,21 +832,21 @@ export function ExploreTable({
                               size="icon"
                               className={`h-6 w-6 shrink-0 transition-opacity ${
                                 hasFilter
-                                  ? "text-blue-600 opacity-100"
-                                  : "text-neutral-400 opacity-0 group-hover/head:opacity-100 data-[state=open]:opacity-100"
+                                  ? "text-primary opacity-100"
+                                  : "text-muted-foreground opacity-0 group-hover/head:opacity-100 data-[state=open]:opacity-100"
                               }`}
                               onClick={(e) => e.stopPropagation()}
                             >
                               <RiFilter3Line className="w-3 h-3" />
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-48 p-2 shadow-xl border-neutral-200" align="start">
+                          <PopoverContent className="w-48 p-2 shadow-xl border-border" align="start">
                             <div className="space-y-2">
-                              <h4 className="text-[10px] uppercase font-bold text-neutral-400 px-1">
+                              <h4 className="text-[10px] uppercase font-bold text-muted-foreground px-1">
                                 Filter {col.label}
                               </h4>
                               <input
-                                className="w-full h-8 px-2 text-xs bg-neutral-50 border border-neutral-200 rounded outline-none focus:ring-1 focus:ring-neutral-900"
+                                className="w-full h-8 px-2 text-xs bg-accent border border-border rounded outline-none focus:ring-1 focus:ring-ring"
                                 placeholder="Filter..."
                                 value={columnFilters[col.id] ?? ""}
                                 onChange={(e) => handleColumnFilter(col.id, e.target.value)}
@@ -854,7 +854,7 @@ export function ExploreTable({
                               {hasFilter && (
                                 <Button
                                   variant="ghost"
-                                  className="w-full h-7 text-[10px] text-red-500 hover:text-red-600 justify-start px-1"
+                                  className="w-full h-7 text-[10px] text-destructive hover:text-destructive justify-start px-1"
                                   onClick={() => handleColumnFilter(col.id, null)}
                                 >
                                   Clear filter
@@ -892,7 +892,7 @@ export function ExploreTable({
                         return (
                           <TableCell
                             key={col.id}
-                            className="pl-4 sticky left-0 z-20 bg-white border-r border-neutral-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] transition-colors group-hover:bg-neutral-50 data-[state=selected]:bg-muted"
+                            className="pl-4 sticky left-0 z-20 w-[50px] min-w-[50px] bg-background transition-colors group-hover:bg-muted group-data-[state=selected]:bg-muted"
                             style={{ width: col.width, minWidth: col.width, maxWidth: col.width }}
                           >
                             {renderCell(col, post, isSelected, onSelectRow, isSelected ? pendingChanges : null, rowIdx, onSingleModeration)}
@@ -905,7 +905,7 @@ export function ExploreTable({
                         return (
                           <TableCell
                             key={col.id}
-                            className="px-2 sticky left-[50px] z-20 bg-white border-r border-neutral-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] transition-colors group-hover:bg-neutral-50 data-[state=selected]:bg-muted"
+                            className="px-2 sticky left-[50px] -ml-[1px] z-20 bg-background transition-colors group-hover:bg-muted group-data-[state=selected]:bg-muted"
                             style={{ width: col.width, minWidth: col.width, maxWidth: col.width }}
                           >
                             {renderCell(col, post, isSelected, onSelectRow, isSelected ? pendingChanges : null, rowIdx, onSingleModeration)}
@@ -918,10 +918,10 @@ export function ExploreTable({
                         return (
                           <TableCell
                             key={col.id}
-                            className="pr-3 sticky right-0 z-20 bg-white border-l border-neutral-100 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] transition-colors group-hover:bg-neutral-50 data-[state=selected]:bg-muted"
+                            className="pr-3 sticky right-0 z-20 bg-background border-l border-border shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.05)] transition-colors group-hover:bg-muted group-data-[state=selected]:bg-muted"
                             style={{ width: col.width, minWidth: col.width, maxWidth: col.width }}
                           >
-                            <div className="flex items-center justify-center text-neutral-400 group-hover:text-neutral-900">
+                            <div className="flex items-center justify-center text-muted-foreground group-hover:text-foreground">
                               <RiArrowRightSLine className="h-5 w-5" />
                             </div>
                           </TableCell>
@@ -932,7 +932,7 @@ export function ExploreTable({
                       return (
                         <TableCell
                           key={col.id}
-                          className="px-3 bg-white"
+                          className="px-3"
                           style={{ width: col.width, minWidth: col.width, maxWidth: col.width }}
                         >
                           {renderCell(col, post, isSelected, onSelectRow, isSelected ? pendingChanges : null, rowIdx, onSingleModeration)}

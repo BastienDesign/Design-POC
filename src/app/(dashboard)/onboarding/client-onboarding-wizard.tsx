@@ -213,10 +213,10 @@ export function ClientOnboardingWizard() {
   const renderPhase1 = () => (
     <div className="space-y-8">
       {/* 1.1 Program & Organization Setup */}
-      <Card className="shadow-sm border-neutral-200/80">
+      <Card className="shadow-sm border-border/80">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-neutral-400">1.1</span>
+            <span className="text-xs font-bold text-muted-foreground">1.1</span>
             <CardTitle className="text-base">
               Program & Organization Setup
             </CardTitle>
@@ -231,8 +231,8 @@ export function ClientOnboardingWizard() {
           {/* Program section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="size-1.5 rounded-full bg-blue-600" />
-              <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+              <div className="size-1.5 rounded-full bg-primary" />
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Program
               </span>
             </div>
@@ -283,18 +283,18 @@ export function ClientOnboardingWizard() {
             </div>
           </div>
 
-          <div className="border-t border-neutral-100" />
+          <div className="border-t border-border" />
 
           {/* Organization section */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="size-1.5 rounded-full bg-violet-600" />
-                <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Organization
                 </span>
               </div>
-              <span className="text-[11px] text-neutral-400">
+              <span className="text-[11px] text-muted-foreground">
                 Belongs to the program above
               </span>
             </div>
@@ -319,7 +319,7 @@ export function ClientOnboardingWizard() {
                 value={orgDescription}
                 onChange={(e) => setOrgDescription(e.target.value)}
               />
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-muted-foreground">
                 Additional organizations can be added after onboarding from the
                 Program settings.
               </p>
@@ -329,10 +329,10 @@ export function ClientOnboardingWizard() {
       </Card>
 
       {/* 1.2 Brand Identity */}
-      <Card className="shadow-sm border-neutral-200/80">
+      <Card className="shadow-sm border-border/80">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-neutral-400">1.2</span>
+            <span className="text-xs font-bold text-muted-foreground">1.2</span>
             <CardTitle className="text-base">Brand Identity</CardTitle>
           </div>
           <CardDescription>
@@ -347,7 +347,7 @@ export function ClientOnboardingWizard() {
               value={brandNames}
               onChange={(e) => setBrandNames(e.target.value)}
             />
-            <p className="text-xs text-neutral-400">
+            <p className="text-xs text-muted-foreground">
               Include all registered names, sub-brands, and common misspellings
               to monitor.
             </p>
@@ -365,10 +365,10 @@ export function ClientOnboardingWizard() {
       </Card>
 
       {/* 1.3 Intellectual Property */}
-      <Card className="shadow-sm border-neutral-200/80">
+      <Card className="shadow-sm border-border/80">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-neutral-400">1.3</span>
+            <span className="text-xs font-bold text-muted-foreground">1.3</span>
             <CardTitle className="text-base">Intellectual Property</CardTitle>
           </div>
           <CardDescription>
@@ -376,18 +376,18 @@ export function ClientOnboardingWizard() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="border-2 border-dashed border-neutral-200 rounded-lg p-10 flex flex-col items-center justify-center text-center hover:border-blue-300 hover:bg-blue-50/30 transition-colors cursor-pointer group">
-            <div className="size-12 rounded-full bg-blue-50 flex items-center justify-center mb-3 group-hover:bg-blue-100 transition-colors">
-              <RiUploadCloud2Line className="size-5 text-blue-600" />
+          <div className="border-2 border-dashed border-border rounded-lg p-10 flex flex-col items-center justify-center text-center hover:border-primary/40 hover:bg-primary/30 transition-colors cursor-pointer group">
+            <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/15 transition-colors">
+              <RiUploadCloud2Line className="size-5 text-primary" />
             </div>
-            <p className="text-sm font-medium text-neutral-900">
+            <p className="text-sm font-medium text-foreground">
               Upload IP Certificates
             </p>
-            <p className="text-xs text-neutral-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Drag and drop PDF or image files, or{" "}
-              <span className="text-blue-600 font-medium">browse</span>
+              <span className="text-primary font-medium">browse</span>
             </p>
-            <p className="text-[11px] text-neutral-400 mt-2">
+            <p className="text-[11px] text-muted-foreground mt-2">
               Max 25 MB per file &middot; PDF, PNG, JPG accepted
             </p>
           </div>
@@ -395,10 +395,10 @@ export function ClientOnboardingWizard() {
       </Card>
 
       {/* 1.4 Access Control */}
-      <Card className="shadow-sm border-neutral-200/80">
+      <Card className="shadow-sm border-border/80">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-neutral-400">1.4</span>
+            <span className="text-xs font-bold text-muted-foreground">1.4</span>
             <CardTitle className="text-base">Access Control</CardTitle>
           </div>
           <CardDescription>
@@ -406,17 +406,17 @@ export function ClientOnboardingWizard() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="border border-neutral-200 rounded-lg overflow-hidden">
+          <div className="border border-border rounded-lg overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-neutral-50 border-b border-neutral-200">
-                  <th className="text-left px-4 py-2.5 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                <tr className="bg-accent border-b border-border">
+                  <th className="text-left px-4 py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     Name
                   </th>
-                  <th className="text-left px-4 py-2.5 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                  <th className="text-left px-4 py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     Email
                   </th>
-                  <th className="text-left px-4 py-2.5 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                  <th className="text-left px-4 py-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     Role
                   </th>
                   <th className="w-10" />
@@ -428,7 +428,7 @@ export function ClientOnboardingWizard() {
                     key={user.id}
                     className={
                       i < accessUsers.length - 1
-                        ? "border-b border-neutral-100"
+                        ? "border-b border-border"
                         : ""
                     }
                   >
@@ -438,7 +438,7 @@ export function ClientOnboardingWizard() {
                         onChange={(e) =>
                           handleUserChange(user.id, "name", e.target.value)
                         }
-                        className="h-8 text-sm border-transparent hover:border-neutral-200 focus-visible:ring-1"
+                        className="h-8 text-sm border-transparent hover:border-border focus-visible:ring-1"
                         placeholder="Name..."
                       />
                     </td>
@@ -448,7 +448,7 @@ export function ClientOnboardingWizard() {
                         onChange={(e) =>
                           handleUserChange(user.id, "email", e.target.value)
                         }
-                        className="h-8 text-sm border-transparent hover:border-neutral-200 focus-visible:ring-1"
+                        className="h-8 text-sm border-transparent hover:border-border focus-visible:ring-1"
                         placeholder="Email..."
                       />
                     </td>
@@ -459,7 +459,7 @@ export function ClientOnboardingWizard() {
                           handleUserChange(user.id, "role", val)
                         }
                       >
-                        <SelectTrigger className="h-8 w-[130px] text-sm border-transparent hover:border-neutral-200 focus:ring-1">
+                        <SelectTrigger className="h-8 w-[130px] text-sm border-transparent hover:border-border focus:ring-1">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -473,7 +473,7 @@ export function ClientOnboardingWizard() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-neutral-400 hover:text-red-600"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
                         onClick={() => handleRemoveUser(user.id)}
                       >
                         <RiDeleteBinLine className="size-3.5" />
@@ -488,7 +488,7 @@ export function ClientOnboardingWizard() {
             variant="outline"
             size="sm"
             onClick={handleAddUser}
-            className="mt-3 text-neutral-600 gap-1.5 border-dashed"
+            className="mt-3 text-foreground gap-1.5 border-dashed"
           >
             <RiAddLine className="size-4" />
             Add User
@@ -501,10 +501,10 @@ export function ClientOnboardingWizard() {
   const renderPhase2 = () => (
     <div className="space-y-8">
       {/* 2.1 Product Hierarchy */}
-      <Card className="shadow-sm border-neutral-200/80">
+      <Card className="shadow-sm border-border/80">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-neutral-400">2.1</span>
+            <span className="text-xs font-bold text-muted-foreground">2.1</span>
             <CardTitle className="text-base">Product Hierarchy</CardTitle>
           </div>
           <CardDescription>
@@ -530,16 +530,16 @@ export function ClientOnboardingWizard() {
             </div>
             <Button
               onClick={handleAddCategory}
-              className="bg-neutral-900 text-white hover:bg-neutral-800 gap-1.5 shrink-0"
+              className="bg-foreground text-primary-foreground hover:bg-foreground/90 gap-1.5 shrink-0"
             >
               <RiAddLine className="size-4" />
               Add
             </Button>
           </div>
 
-          <div className="flex flex-wrap gap-2 p-4 bg-neutral-50 border border-neutral-100 rounded-lg min-h-[80px]">
+          <div className="flex flex-wrap gap-2 p-4 bg-accent border border-border rounded-lg min-h-[80px]">
             {categories.length === 0 && (
-              <span className="text-sm text-neutral-400 my-auto">
+              <span className="text-sm text-muted-foreground my-auto">
                 No categories added yet.
               </span>
             )}
@@ -547,12 +547,12 @@ export function ClientOnboardingWizard() {
               <Badge
                 key={cat}
                 variant="secondary"
-                className="px-3 py-1.5 text-sm bg-white border border-neutral-200 shadow-sm flex items-center gap-2"
+                className="px-3 py-1.5 text-sm bg-card border border-border shadow-sm flex items-center gap-2"
               >
                 {cat}
                 <button
                   onClick={() => handleRemoveCategory(cat)}
-                  className="text-neutral-400 hover:text-red-500 transition-colors"
+                  className="text-muted-foreground hover:text-destructive transition-colors"
                 >
                   <RiCloseLine className="size-3.5" />
                 </button>
@@ -563,10 +563,10 @@ export function ClientOnboardingWizard() {
       </Card>
 
       {/* 2.2 Visual DNA */}
-      <Card className="shadow-sm border-neutral-200/80">
+      <Card className="shadow-sm border-border/80">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-neutral-400">2.2</span>
+            <span className="text-xs font-bold text-muted-foreground">2.2</span>
             <CardTitle className="text-base">
               Visual DNA Configuration
             </CardTitle>
@@ -602,21 +602,21 @@ export function ClientOnboardingWizard() {
 
             {/* Counterfeit zone */}
             <div className="space-y-3">
-              <Label className="flex items-center gap-2 text-red-700 font-bold">
+              <Label className="flex items-center gap-2 text-destructive font-bold">
                 <RiAlertLine className="size-4" />
                 Known Counterfeits
               </Label>
-              <div className="border-2 border-dashed border-red-200 bg-red-50/30 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-red-50/60 transition-colors cursor-pointer min-h-[200px]">
-                <div className="size-10 rounded-full bg-red-100 flex items-center justify-center mb-3">
-                  <RiUploadCloud2Line className="size-5 text-red-600" />
+              <div className="border-2 border-dashed border-destructive/30 bg-destructive/10/30 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-destructive/10/60 transition-colors cursor-pointer min-h-[200px]">
+                <div className="size-10 rounded-full bg-destructive/15 flex items-center justify-center mb-3">
+                  <RiUploadCloud2Line className="size-5 text-destructive" />
                 </div>
                 <p className="text-sm font-medium text-red-900">
                   Upload Counterfeit Examples
                 </p>
-                <p className="text-xs text-red-600/70 mt-1">
+                <p className="text-xs text-destructive/70 mt-1">
                   Common fakes, cloned packaging
                 </p>
-                <p className="text-[11px] text-red-500/50 mt-2">
+                <p className="text-[11px] text-destructive/50 mt-2">
                   PNG, JPG &middot; Max 25 MB each
                 </p>
               </div>
@@ -630,10 +630,10 @@ export function ClientOnboardingWizard() {
   const renderPhase3 = () => (
     <div className="space-y-8">
       {/* 3.1 Target Zones */}
-      <Card className="shadow-sm border-neutral-200/80">
+      <Card className="shadow-sm border-border/80">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-neutral-400">3.1</span>
+            <span className="text-xs font-bold text-muted-foreground">3.1</span>
             <CardTitle className="text-base">
               Target Zones (Crawling)
             </CardTitle>
@@ -645,7 +645,7 @@ export function ClientOnboardingWizard() {
         <CardContent className="space-y-6">
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-4">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-100 pb-2">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border pb-2">
                 Marketplaces
               </h4>
               <div className="space-y-3">
@@ -661,7 +661,7 @@ export function ClientOnboardingWizard() {
                     key={plat.name}
                     className="flex items-center justify-between"
                   >
-                    <Label className="text-sm font-medium text-neutral-700 cursor-pointer">
+                    <Label className="text-sm font-medium text-foreground cursor-pointer">
                       {plat.name}
                     </Label>
                     <Switch defaultChecked={plat.on} />
@@ -670,7 +670,7 @@ export function ClientOnboardingWizard() {
               </div>
             </div>
             <div className="space-y-4">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-100 pb-2">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground border-b border-border pb-2">
                 Social Media & Web
               </h4>
               <div className="space-y-3">
@@ -686,7 +686,7 @@ export function ClientOnboardingWizard() {
                     key={plat.name}
                     className="flex items-center justify-between"
                   >
-                    <Label className="text-sm font-medium text-neutral-700 cursor-pointer">
+                    <Label className="text-sm font-medium text-foreground cursor-pointer">
                       {plat.name}
                     </Label>
                     <Switch defaultChecked={plat.on} />
@@ -699,10 +699,10 @@ export function ClientOnboardingWizard() {
       </Card>
 
       {/* 3.2 Search Terms */}
-      <Card className="shadow-sm border-neutral-200/80">
+      <Card className="shadow-sm border-border/80">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-neutral-400">3.2</span>
+            <span className="text-xs font-bold text-muted-foreground">3.2</span>
             <CardTitle className="text-base">
               Search Terms & Keywords
             </CardTitle>
@@ -719,19 +719,19 @@ export function ClientOnboardingWizard() {
               placeholder="e.g. Acme Shoes, #AcmeReplica, Acme Fake, &quot;Acme Original&quot;..."
               className="min-h-[96px] resize-none"
             />
-            <p className="text-xs text-neutral-400">
+            <p className="text-xs text-muted-foreground">
               One term per line or comma-separated. Use quotes for exact match.
             </p>
           </div>
           <div className="space-y-2">
-            <Label className="text-sm text-neutral-500">
+            <Label className="text-sm text-muted-foreground">
               Excluded Terms (Negative Keywords)
             </Label>
             <Textarea
               placeholder="e.g. used, vintage, second-hand, refurbished..."
-              className="min-h-[64px] resize-none bg-neutral-50"
+              className="min-h-[64px] resize-none bg-accent"
             />
-            <p className="text-xs text-neutral-400">
+            <p className="text-xs text-muted-foreground">
               Listings matching these terms will be deprioritized in the crawl
               queue.
             </p>
@@ -744,10 +744,10 @@ export function ClientOnboardingWizard() {
   const renderPhase4 = () => (
     <div className="space-y-8">
       {/* 4.1 Classification Labels */}
-      <Card className="shadow-sm border-neutral-200/80">
+      <Card className="shadow-sm border-border/80">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-neutral-400">4.1</span>
+            <span className="text-xs font-bold text-muted-foreground">4.1</span>
             <CardTitle className="text-base">
               Classification Labels
             </CardTitle>
@@ -762,9 +762,9 @@ export function ClientOnboardingWizard() {
             {[
               {
                 label: "Counterfeit",
-                bg: "bg-red-100",
+                bg: "bg-destructive/15",
                 text: "text-red-800",
-                border: "border-red-200",
+                border: "border-destructive/30",
               },
               {
                 label: "Suspicious",
@@ -774,9 +774,9 @@ export function ClientOnboardingWizard() {
               },
               {
                 label: "Copyright Violation",
-                bg: "bg-blue-100",
-                text: "text-blue-800",
-                border: "border-blue-200",
+                bg: "bg-primary/15",
+                text: "text-primary",
+                border: "border-primary/30",
               },
               {
                 label: "Grey Market",
@@ -805,7 +805,7 @@ export function ClientOnboardingWizard() {
               </Badge>
             ))}
           </div>
-          <p className="text-xs text-neutral-400">
+          <p className="text-xs text-muted-foreground">
             Custom labels can be configured after onboarding from the Moderation
             Settings page.
           </p>
@@ -813,10 +813,10 @@ export function ClientOnboardingWizard() {
       </Card>
 
       {/* 4.2 Detection Engines */}
-      <Card className="shadow-sm border-neutral-200/80">
+      <Card className="shadow-sm border-border/80">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-neutral-400">4.2</span>
+            <span className="text-xs font-bold text-muted-foreground">4.2</span>
             <CardTitle className="text-base">Detection Engines</CardTitle>
           </div>
           <CardDescription>
@@ -849,13 +849,13 @@ export function ClientOnboardingWizard() {
           ].map((engine) => (
             <div
               key={engine.title}
-              className="flex items-start justify-between p-4 border border-neutral-100 rounded-lg bg-neutral-50/50 hover:bg-white transition-colors"
+              className="flex items-start justify-between p-4 border border-border rounded-lg bg-muted/50 hover:bg-card transition-colors"
             >
               <div className="space-y-1 pr-6">
-                <Label className="text-sm font-bold text-neutral-900">
+                <Label className="text-sm font-bold text-foreground">
                   {engine.title}
                 </Label>
-                <p className="text-xs text-neutral-500 leading-relaxed">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   {engine.desc}
                 </p>
               </div>
@@ -870,10 +870,10 @@ export function ClientOnboardingWizard() {
   const renderPhase5 = () => (
     <div className="space-y-8">
       {/* 5.1 Execution Channels */}
-      <Card className="shadow-sm border-neutral-200/80">
+      <Card className="shadow-sm border-border/80">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-neutral-400">5.1</span>
+            <span className="text-xs font-bold text-muted-foreground">5.1</span>
             <CardTitle className="text-base">Execution Channels</CardTitle>
           </div>
           <CardDescription>
@@ -882,41 +882,41 @@ export function ClientOnboardingWizard() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-4">
-            <div className="border border-blue-200 bg-blue-50/50 rounded-lg p-4 cursor-pointer relative overflow-hidden hover:bg-blue-50/80 transition-colors">
-              <div className="absolute top-0 right-0 bg-blue-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-bl-lg">
+            <div className="border border-primary/30 bg-primary/50 rounded-lg p-4 cursor-pointer relative overflow-hidden hover:bg-primary/80 transition-colors">
+              <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-[10px] font-bold px-2.5 py-0.5 rounded-bl-lg">
                 Active
               </div>
-              <h4 className="font-bold text-sm text-blue-900">
+              <h4 className="font-bold text-sm text-primary">
                 Direct API Integration
               </h4>
-              <p className="text-xs text-blue-700/80 mt-1.5 leading-relaxed">
+              <p className="text-xs text-primary/80 mt-1.5 leading-relaxed">
                 Connects directly to major platform IP portals (Amazon Brand
                 Registry, eBay VeRO, etc.) for instant submissions.
               </p>
             </div>
-            <div className="border border-neutral-200 bg-white rounded-lg p-4 cursor-pointer hover:border-neutral-300 transition-colors">
-              <h4 className="font-bold text-sm text-neutral-900">
+            <div className="border border-border bg-card rounded-lg p-4 cursor-pointer hover:border-border transition-colors">
+              <h4 className="font-bold text-sm text-foreground">
                 Automated Legal Emails
               </h4>
-              <p className="text-xs text-neutral-500 mt-1.5 leading-relaxed">
+              <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
                 Sends standard C&D notices to hosting providers and domain
                 abuse contacts via templated emails.
               </p>
             </div>
-            <div className="border border-neutral-200 bg-white rounded-lg p-4 cursor-pointer hover:border-neutral-300 transition-colors">
-              <h4 className="font-bold text-sm text-neutral-900">
+            <div className="border border-border bg-card rounded-lg p-4 cursor-pointer hover:border-border transition-colors">
+              <h4 className="font-bold text-sm text-foreground">
                 Manual Review Queue
               </h4>
-              <p className="text-xs text-neutral-500 mt-1.5 leading-relaxed">
+              <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
                 Routes flagged items to the internal legal team for manual
                 assessment before any action is taken.
               </p>
             </div>
-            <div className="border border-neutral-200 bg-white rounded-lg p-4 cursor-pointer hover:border-neutral-300 transition-colors">
-              <h4 className="font-bold text-sm text-neutral-900">
+            <div className="border border-border bg-card rounded-lg p-4 cursor-pointer hover:border-border transition-colors">
+              <h4 className="font-bold text-sm text-foreground">
                 External Law Firm Handoff
               </h4>
-              <p className="text-xs text-neutral-500 mt-1.5 leading-relaxed">
+              <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
                 Exports case packages to designated external counsel for
                 litigation-grade enforcement.
               </p>
@@ -947,10 +947,10 @@ export function ClientOnboardingWizard() {
             className="data-[state=checked]:bg-emerald-600"
           />
         </div>
-        <CardContent className="p-6 space-y-6 bg-white">
+        <CardContent className="p-6 space-y-6 bg-card">
           <div className="space-y-3">
             <div className="flex justify-between items-end">
-              <Label className="text-sm font-bold text-neutral-700">
+              <Label className="text-sm font-bold text-foreground">
                 Auto-Enforcement Threshold
               </Label>
               <span className="text-xl font-black text-emerald-600 tabular-nums">
@@ -958,7 +958,7 @@ export function ClientOnboardingWizard() {
               </span>
             </div>
             <Slider defaultValue={[90]} max={100} step={1} className="w-full" />
-            <p className="text-xs text-neutral-500 leading-relaxed">
+            <p className="text-xs text-muted-foreground leading-relaxed">
               Any item flagged by the AI with a confidence score above this
               threshold will automatically trigger a takedown notice without
               human review. Lower values increase automation but may produce
@@ -966,13 +966,13 @@ export function ClientOnboardingWizard() {
             </p>
           </div>
 
-          <div className="border-t border-neutral-100 pt-4">
-            <div className="flex items-start justify-between p-4 border border-neutral-100 rounded-lg bg-neutral-50/50">
+          <div className="border-t border-border pt-4">
+            <div className="flex items-start justify-between p-4 border border-border rounded-lg bg-muted/50">
               <div className="space-y-1 pr-6">
-                <Label className="text-sm font-bold text-neutral-900">
+                <Label className="text-sm font-bold text-foreground">
                   Require Dual-Engine Agreement
                 </Label>
-                <p className="text-xs text-neutral-500 leading-relaxed">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   Only auto-enforce when at least two detection engines agree on
                   the classification. Reduces false positives at the cost of
                   slower throughput.
@@ -1004,18 +1004,18 @@ export function ClientOnboardingWizard() {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex h-screen w-full bg-neutral-50 overflow-hidden text-neutral-900">
+    <div className="fixed inset-0 z-[100] flex h-screen w-full bg-accent overflow-hidden text-foreground">
       {/* ── LEFT SIDEBAR: STEPPER ── */}
-      <aside className="w-[320px] bg-white border-r border-neutral-200 flex flex-col z-10 shrink-0">
+      <aside className="w-[320px] bg-card border-r border-border flex flex-col z-10 shrink-0">
         {/* Header */}
-        <div className="p-6 border-b border-neutral-100">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+        <div className="p-6 border-b border-border">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             Setup Wizard
           </span>
-          <h2 className="text-lg font-bold mt-1 text-neutral-900">
+          <h2 className="text-lg font-bold mt-1 text-foreground">
             {orgName.trim() || programName.trim() || "New Deployment"}
           </h2>
-          <p className="text-xs text-neutral-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Phase {current.num} of {PHASES.length}
           </p>
         </div>
@@ -1032,22 +1032,22 @@ export function ClientOnboardingWizard() {
                 onClick={() => idx <= activePhase && setActivePhase(idx)}
                 className={`w-full flex items-start gap-3 p-3 rounded-lg text-left transition-all relative ${
                   isActive
-                    ? "bg-blue-50/80 border border-blue-200/60"
+                    ? "bg-primary/80 border border-primary/30"
                     : isCompleted
-                      ? "hover:bg-neutral-50 cursor-pointer border border-transparent"
+                      ? "hover:bg-accent cursor-pointer border border-transparent"
                       : "opacity-50 cursor-default border border-transparent"
                 }`}
               >
                 {isActive && (
-                  <div className="absolute left-0 top-2 bottom-2 w-[3px] bg-blue-600 rounded-full" />
+                  <div className="absolute left-0 top-2 bottom-2 w-[3px] bg-primary rounded-full" />
                 )}
                 <div
                   className={`size-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold transition-colors ${
                     isActive
-                      ? "bg-blue-600 text-white"
+                      ? "bg-primary text-primary-foreground"
                       : isCompleted
                         ? "bg-emerald-100 text-emerald-600 border border-emerald-200"
-                        : "bg-white text-neutral-400 border border-neutral-200"
+                        : "bg-card text-muted-foreground border border-border"
                   }`}
                 >
                   {isCompleted ? (
@@ -1060,17 +1060,17 @@ export function ClientOnboardingWizard() {
                   <p
                     className={`text-sm font-semibold truncate ${
                       isActive
-                        ? "text-blue-900"
+                        ? "text-primary"
                         : isCompleted
-                          ? "text-neutral-800"
-                          : "text-neutral-500"
+                          ? "text-foreground"
+                          : "text-muted-foreground"
                     }`}
                   >
                     {phase.title}
                   </p>
                   <p
                     className={`text-xs mt-0.5 truncate ${
-                      isActive ? "text-blue-600/70" : "text-neutral-400"
+                      isActive ? "text-primary/70" : "text-muted-foreground"
                     }`}
                   >
                     {phase.sub}
@@ -1082,10 +1082,10 @@ export function ClientOnboardingWizard() {
         </nav>
 
         {/* Exit button */}
-        <div className="p-4 border-t border-neutral-100">
+        <div className="p-4 border-t border-border">
           <Button
             variant="ghost"
-            className="w-full text-neutral-500 hover:text-neutral-700 gap-2"
+            className="w-full text-muted-foreground hover:text-foreground gap-2"
             onClick={handleExitSetup}
           >
             <RiCloseLine className="size-4" />
@@ -1095,23 +1095,23 @@ export function ClientOnboardingWizard() {
       </aside>
 
       {/* ── MAIN CONTENT AREA ── */}
-      <main className="flex-1 flex flex-col min-w-0 bg-neutral-50/50">
+      <main className="flex-1 flex flex-col min-w-0 bg-muted/50">
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-3xl mx-auto w-full py-12 px-8 space-y-8">
             {/* Phase header */}
             <header>
               <div className="flex items-center gap-2.5 mb-3">
-                <div className="size-8 rounded-lg bg-blue-600 flex items-center justify-center">
-                  <current.icon className="size-4 text-white" />
+                <div className="size-8 rounded-lg bg-primary flex items-center justify-center">
+                  <current.icon className="size-4 text-primary-foreground" />
                 </div>
-                <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
+                <span className="text-xs font-bold uppercase tracking-wider text-primary">
                   Phase {current.num}
                 </span>
               </div>
-              <h1 className="text-3xl font-bold tracking-tight text-neutral-900">
+              <h1 className="text-3xl font-bold tracking-tight text-foreground">
                 {current.title}
               </h1>
-              <p className="text-neutral-500 mt-2 text-[15px] leading-relaxed max-w-2xl">
+              <p className="text-muted-foreground mt-2 text-[15px] leading-relaxed max-w-2xl">
                 {current.description}
               </p>
             </header>
@@ -1121,25 +1121,25 @@ export function ClientOnboardingWizard() {
         </div>
 
         {/* ── STICKY FOOTER ── */}
-        <div className="shrink-0 py-4 px-8 border-t border-neutral-200 bg-white flex justify-between items-center shadow-[0_-4px_12px_rgba(0,0,0,0.03)] z-10">
+        <div className="shrink-0 py-4 px-8 border-t border-border bg-card flex justify-between items-center shadow-[0_-4px_12px_rgba(0,0,0,0.03)] z-10">
           <div className="flex items-center gap-3">
             {!isFirst && (
               <Button
                 variant="outline"
-                className="text-neutral-600 gap-2"
+                className="text-foreground gap-2"
                 onClick={() => setActivePhase((p) => p - 1)}
               >
                 <RiArrowLeftLine className="size-4" />
                 Previous
               </Button>
             )}
-            <Button variant="ghost" className="text-neutral-500 gap-2" onClick={handleSaveDraft}>
+            <Button variant="ghost" className="text-muted-foreground gap-2" onClick={handleSaveDraft}>
               <RiDraftLine className="size-4" />
               Save as Draft
             </Button>
           </div>
           <Button
-            className="bg-neutral-900 text-white hover:bg-neutral-800 gap-2 px-6 h-10 disabled:opacity-60"
+            className="bg-foreground text-primary-foreground hover:bg-foreground/90 gap-2 px-6 h-10 disabled:opacity-60"
             disabled={isPending}
             onClick={isLast ? handleCompleteSetup : () => setActivePhase((p) => p + 1)}
           >
