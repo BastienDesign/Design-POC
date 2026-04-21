@@ -198,23 +198,23 @@ export function NetworkTab({
 
   return (
     <>
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-5 min-w-0">
         {/* ── 1. Blast Radius Action Zone ── */}
-        <Card className="bg-primary/5 ring-2 ring-primary/30">
+        <Card className="bg-primary/5 ring-2 ring-primary/30 min-w-0">
           <CardHeader>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex size-7 items-center justify-center rounded-md bg-primary/10 text-primary">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
                 <RiFlashlightLine className="size-4" />
               </span>
-              <CardTitle className="text-sm font-semibold">
+              <CardTitle className="text-sm font-semibold min-w-0 truncate">
                 High-Confidence Network
               </CardTitle>
-              <Badge variant="outline" className="ml-auto gap-1 text-[11px]">
+              <Badge variant="outline" className="ml-auto gap-1 text-[11px] shrink-0">
                 <RiNodeTree className="size-3" />
-                Propagate Action
+                Propagate
               </Badge>
             </div>
-            <CardDescription className="pt-1">{summary}</CardDescription>
+            <CardDescription className="pt-1 break-words">{summary}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">

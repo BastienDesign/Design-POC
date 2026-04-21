@@ -1336,11 +1336,11 @@ export function WebsiteModerationView() {
         </div>
 
         {/* ── Right Pane (Sidebar) ── */}
-        <aside className="w-[380px] xl:w-[450px] shrink-0 bg-white flex flex-col">
+        <aside className="w-[380px] xl:w-[450px] shrink-0 bg-white flex flex-col min-w-0 overflow-hidden">
           <Tabs
             value={sidebarTab}
             onValueChange={setSidebarTab}
-            className="flex-1 flex flex-col min-h-0"
+            className="flex-1 flex flex-col min-h-0 min-w-0"
           >
             {/* Tabs Header */}
             <div className="flex items-center border-b border-neutral-200 bg-white h-12 px-4 shrink-0">
