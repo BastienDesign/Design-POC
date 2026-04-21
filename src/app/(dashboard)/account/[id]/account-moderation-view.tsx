@@ -153,6 +153,7 @@ function buildAccountNetwork(account: AccountData): {
   summary: string;
   directClones: NetworkEntity[];
   suspiciousLinks: NetworkEntity[];
+  relatedEntities: NetworkEntity[];
   totalRelated: number;
 } {
   const seed = account.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
@@ -191,9 +192,47 @@ function buildAccountNetwork(account: AccountData): {
       href: "#",
     })),
   ];
-  const totalRelated = directClones.length + suspiciousLinks.length + account.postsOnBrand;
+  const relatedPosts: NetworkEntity[] = Array.from(
+    { length: Math.min(account.postsOnBrand, 24) },
+    (_, i) => ({
+      id: `${account.id}-rp-${i}`,
+      kind: "post" as const,
+      name: `PO#${5000000 + ((seed * (i + 5)) % 9000000)}`,
+      subtitle: `${account.platform} · listing`,
+      riskScore: 88 - ((seed + i * 7) % 55),
+      href: "#",
+    })
+  );
+  const relatedAccounts: NetworkEntity[] = Array.from({ length: 6 }, (_, i) => ({
+    id: `${account.id}-ra-${i}`,
+    kind: "account" as const,
+    name: `${account.name}_alias_${i + 1}`,
+    subtitle: `${account.platform} · suspected alias`,
+    riskScore: 78 - i * 5,
+    href: "#",
+  }));
+  const relatedWebsites: NetworkEntity[] = [
+    {
+      id: `${account.id}-rw-main`,
+      kind: "website" as const,
+      name: account.platform,
+      subtitle: account.websiteCategory,
+      riskScore: 70,
+      href: "#",
+    },
+    ...Array.from({ length: 4 }, (_, i) => ({
+      id: `${account.id}-rw-${i}`,
+      kind: "website" as const,
+      name: `${account.platform.split(".")[0]}-${["outlet", "deals", "shop", "store"][i]}.com`,
+      subtitle: "Cross-posted destination",
+      riskScore: 68 - i * 4,
+      href: "#",
+    })),
+  ];
+  const relatedEntities = [...relatedWebsites, ...relatedPosts, ...relatedAccounts];
+  const totalRelated = directClones.length + suspiciousLinks.length + relatedEntities.length;
   const summary = `${account.postsOnBrand} posts on brand with ${directClones.length} cloned profiles detected.`;
-  return { summary, directClones, suspiciousLinks, totalRelated };
+  return { summary, directClones, suspiciousLinks, relatedEntities, totalRelated };
 }
 
 interface AccountData {
@@ -904,7 +943,9 @@ export function AccountModerationView({ accountId }: { accountId: string }) {
                       summary={net.summary}
                       directClones={net.directClones}
                       suspiciousLinks={net.suspiciousLinks}
+                      relatedEntities={net.relatedEntities}
                       totalRelated={net.totalRelated}
+                      contextLabel={account.id}
                     />
                   );
                 })()}

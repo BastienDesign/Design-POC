@@ -28,15 +28,12 @@ import {
   RiInformationFill,
   RiExternalLinkLine,
   RiSettings3Line,
-  RiListCheck3,
   RiSearchLine,
-  RiFilter3Line,
   RiCheckboxMultipleLine,
 } from "@remixicon/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -66,11 +63,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 import {
   Accordion,
@@ -95,6 +87,10 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useNetworkStore } from "@/lib/network-store";
+import {
+  NetworkTab,
+  type NetworkEntity as NetworkTabEntity,
+} from "@/components/moderation/network-tab";
 
 /* ─── Risk Tile Types & Styling ─── */
 
@@ -818,482 +814,45 @@ function MainStage() {
   );
 }
 
-/* ─── Action Card (Network Panel) ─── */
+/* ─── Build NetworkTab Data ─── */
 
-function ActionCard({
-  entity,
-}: {
-  entity: (typeof NETWORK_ENTITIES)[number];
-}) {
-  const toggleCheck = useNetworkStore((s) => s.toggleCheck);
-  const checkedEntities = useNetworkStore((s) => s.checkedEntities);
-  const setSelectedPreview = useNetworkStore((s) => s.setSelectedPreview);
-  const selectedEntityPreview = useNetworkStore(
-    (s) => s.selectedEntityPreview
-  );
+function buildWebsiteNetwork(): {
+  summary: string;
+  directClones: NetworkTabEntity[];
+  suspiciousLinks: NetworkTabEntity[];
+  relatedEntities: NetworkTabEntity[];
+  totalRelated: number;
+} {
+  const toTabKind = (
+    t: NetworkEntity["type"]
+  ): NetworkTabEntity["kind"] =>
+    t === "website" ? "website" : t === "image" ? "image" : "post";
 
-  const isChecked = checkedEntities.has(entity.id);
-  const isSelected = selectedEntityPreview === entity.id;
+  const all: NetworkTabEntity[] = NETWORK_ENTITIES.map((e) => ({
+    id: e.id,
+    kind: toTabKind(e.type),
+    name: e.name,
+    subtitle: e.sharedSignals[0] ?? e.geo,
+    riskScore: e.risk,
+    href: "#",
+  }));
 
-  const riskColor =
-    entity.risk >= 80
-      ? "text-red-600"
-      : entity.risk >= 60
-        ? "text-orange-500"
-        : "text-yellow-600";
+  const sortedByRisk = [...all].sort((a, b) => b.riskScore - a.riskScore);
+  const directClones = sortedByRisk.filter((e) => e.riskScore >= 85).slice(0, 3);
+  const suspiciousLinks = sortedByRisk
+    .filter((e) => e.riskScore >= 50 && e.riskScore < 85)
+    .slice(0, 5);
 
-  const typeColor =
-    entity.type === "website"
-      ? "bg-blue-100 text-blue-700"
-      : entity.type === "image"
-        ? "bg-purple-100 text-purple-700"
-        : "bg-amber-100 text-amber-700";
+  const highCount = all.filter((e) => e.riskScore >= 80).length;
+  const summary = `${highCount} high-confidence matches across ${all.length} linked entities — propagate action to shut down the cluster.`;
 
-  return (
-    <div
-      onClick={() => setSelectedPreview(entity.id)}
-      className={`flex items-center gap-3 px-3 py-2.5 border-b border-neutral-100 cursor-pointer transition-colors group ${
-        isSelected
-          ? "bg-blue-50/60 border-l-2 border-l-blue-500"
-          : "hover:bg-neutral-50 border-l-2 border-l-transparent"
-      }`}
-    >
-      <div onClick={(e) => e.stopPropagation()} className="shrink-0">
-        <Checkbox
-          checked={isChecked}
-          onCheckedChange={() => toggleCheck(entity.id)}
-          className="size-3.5"
-        />
-      </div>
-
-      <div className="size-8 rounded bg-neutral-200 flex items-center justify-center text-[9px] font-bold text-neutral-500 shrink-0">
-        {entity.thumbnail}
-      </div>
-
-      <div className="flex-1 min-w-0 flex flex-col gap-0.5">
-        <div className="flex items-center gap-1.5">
-          <span className="text-[11px] font-medium text-neutral-900 truncate">
-            {entity.name}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span
-            className={`text-[9px] font-bold uppercase px-1 py-0.5 rounded ${typeColor}`}
-          >
-            {entity.type}
-          </span>
-          <span className="text-[10px] text-neutral-400">{entity.geo}</span>
-        </div>
-      </div>
-
-      <div className="shrink-0 text-right">
-        <span className={`text-[11px] font-bold tabular-nums ${riskColor}`}>
-          {entity.risk}
-        </span>
-        <div className="text-[9px] text-neutral-400">risk</div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Network Category (reusable accordion section) ─── */
-
-const LOAD_MORE_INCREMENT = 20;
-
-function NetworkCategory({
-  value,
-  label,
-  entities,
-  isLast,
-}: {
-  value: string;
-  label: string;
-  entities: NetworkEntity[];
-  isLast?: boolean;
-}) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [visibleCount, setVisibleCount] = useState(LOAD_MORE_INCREMENT);
-  const [filters, setFilters] = useState({
-    riskHigh: false,
-    riskMed: false,
-    riskLow: false,
-  });
-
-  const hasActiveFilters = Object.values(filters).some(Boolean);
-
-  const filtered = useMemo(() => {
-    return entities.filter((e) => {
-      // Search match
-      const matchesSearch =
-        !searchQuery.trim() ||
-        e.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        e.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        e.geo.toLowerCase().includes(searchQuery.toLowerCase());
-
-      // Risk filter match
-      let matchesRisk = true;
-      if (hasActiveFilters) {
-        const isHigh = e.risk >= 80;
-        const isMed = e.risk >= 50 && e.risk < 80;
-        const isLow = e.risk < 50;
-        matchesRisk =
-          (filters.riskHigh && isHigh) ||
-          (filters.riskMed && isMed) ||
-          (filters.riskLow && isLow);
-      }
-
-      return matchesSearch && matchesRisk;
-    });
-  }, [entities, searchQuery, filters, hasActiveFilters]);
-
-  const visible = filtered.slice(0, visibleCount);
-  const remaining = filtered.length - visibleCount;
-
-  if (entities.length === 0) return null;
-
-  return (
-    <AccordionItem
-      value={value}
-      className={isLast ? "border-neutral-100 border-b-0" : "border-neutral-100"}
-    >
-      <AccordionTrigger className="px-4 py-3 text-[11px] font-semibold text-neutral-700 hover:no-underline hover:bg-neutral-50">
-        {label} ({filtered.length})
-      </AccordionTrigger>
-      <AccordionContent className="pt-0 pb-3">
-        {entities.length > 10 && (
-          <div className="flex items-center gap-2 px-3 pb-2">
-            <div className="relative flex-1">
-              <RiSearchLine className="absolute left-2 top-1/2 -translate-y-1/2 size-3 text-neutral-400" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setVisibleCount(LOAD_MORE_INCREMENT);
-                }}
-                placeholder={`Search ${entities.length} ${label.toLowerCase()}…`}
-                className="h-7 pl-7 text-[11px] bg-neutral-50 border-neutral-200"
-              />
-            </div>
-
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-7 w-7 relative shrink-0 bg-neutral-50 border-neutral-200"
-                >
-                  <RiFilter3Line className="size-3.5 text-neutral-600" />
-                  {hasActiveFilters && (
-                    <span className="absolute top-1 right-1 flex size-1.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
-                      <span className="relative inline-flex rounded-full size-1.5 bg-blue-500" />
-                    </span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent align="end" className="w-56 p-3 shadow-xl rounded-xl">
-                <div className="space-y-3">
-                  <h4 className="text-[10px] font-semibold text-neutral-900 uppercase tracking-wider">
-                    Filter by Risk
-                  </h4>
-                  <div className="space-y-2.5">
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        id={`${value}-high`}
-                        checked={filters.riskHigh}
-                        onCheckedChange={(c) =>
-                          setFilters((p) => ({ ...p, riskHigh: !!c }))
-                        }
-                        className="size-3.5"
-                      />
-                      <Label
-                        htmlFor={`${value}-high`}
-                        className="text-xs font-medium text-neutral-700 flex items-center gap-1.5"
-                      >
-                        <span className="size-2 rounded-full bg-red-500" />
-                        High Risk (80-100)
-                      </Label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        id={`${value}-med`}
-                        checked={filters.riskMed}
-                        onCheckedChange={(c) =>
-                          setFilters((p) => ({ ...p, riskMed: !!c }))
-                        }
-                        className="size-3.5"
-                      />
-                      <Label
-                        htmlFor={`${value}-med`}
-                        className="text-xs font-medium text-neutral-700 flex items-center gap-1.5"
-                      >
-                        <span className="size-2 rounded-full bg-orange-500" />
-                        Medium Risk (50-79)
-                      </Label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        id={`${value}-low`}
-                        checked={filters.riskLow}
-                        onCheckedChange={(c) =>
-                          setFilters((p) => ({ ...p, riskLow: !!c }))
-                        }
-                        className="size-3.5"
-                      />
-                      <Label
-                        htmlFor={`${value}-low`}
-                        className="text-xs font-medium text-neutral-700 flex items-center gap-1.5"
-                      >
-                        <span className="size-2 rounded-full bg-emerald-500" />
-                        Low Risk (0-49)
-                      </Label>
-                    </div>
-                  </div>
-                  {hasActiveFilters && (
-                    <Button
-                      variant="ghost"
-                      className="w-full h-7 text-[10px] text-neutral-500 mt-2"
-                      onClick={() =>
-                        setFilters({
-                          riskHigh: false,
-                          riskMed: false,
-                          riskLow: false,
-                        })
-                      }
-                    >
-                      Clear Filters
-                    </Button>
-                  )}
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-        )}
-
-        <div className="space-y-0">
-          {visible.map((entity) => (
-            <ActionCard key={entity.id} entity={entity} />
-          ))}
-        </div>
-
-        {remaining > 0 && (
-          <button
-            onClick={() => setVisibleCount((c) => c + LOAD_MORE_INCREMENT)}
-            className="w-full py-2 text-[11px] font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50/50 transition-colors"
-          >
-            Show {Math.min(remaining, LOAD_MORE_INCREMENT)} more…
-          </button>
-        )}
-
-        {(searchQuery || hasActiveFilters) && filtered.length === 0 && (
-          <div className="px-4 py-3 text-[10px] text-neutral-400 text-center">
-            No matches found
-          </div>
-        )}
-      </AccordionContent>
-    </AccordionItem>
-  );
-}
-
-/* ─── Network Panel with Accordion Categories ─── */
-
-function NetworkPanel() {
-  const checkedCount = useNetworkStore((s) => s.checkedEntities.size);
-
-  const websites = useMemo(
-    () => NETWORK_ENTITIES.filter((e) => e.type === "website"),
-    []
-  );
-  const images = useMemo(
-    () => NETWORK_ENTITIES.filter((e) => e.type === "image"),
-    []
-  );
-  const posts = useMemo(
-    () => NETWORK_ENTITIES.filter((e) => e.type === "post"),
-    []
-  );
-
-  return (
-    <div className="flex flex-col justify-start">
-      {/* Summary bar */}
-      <div className="px-4 py-3 border-b border-neutral-100">
-        <div className="flex items-center justify-between">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">
-            {NETWORK_ENTITIES.length} linked entities
-          </span>
-          {checkedCount > 0 && (
-            <Badge className="text-[9px] bg-neutral-900 text-white hover:bg-neutral-800">
-              {checkedCount} selected
-            </Badge>
-          )}
-        </div>
-      </div>
-
-      {/* Categorized entity list */}
-      <Accordion
-        type="multiple"
-        defaultValue={["websites", "images", "posts"]}
-        className="w-full"
-      >
-        <NetworkCategory value="websites" label="Related Websites" entities={websites} />
-        <NetworkCategory value="images" label="Related Images" entities={images} />
-        <NetworkCategory value="posts" label="Related Posts" entities={posts} isLast />
-      </Accordion>
-    </div>
-  );
-}
-
-/* ─── Batch Tray & Sub-Batch Sheet ─── */
-
-function BatchTrayOverlay() {
-  const checkedEntities = useNetworkStore((s) => s.checkedEntities);
-  const clearChecked = useNetworkStore((s) => s.clearChecked);
-  const isSubBatchSheetOpen = useNetworkStore((s) => s.isSubBatchSheetOpen);
-  const setSubBatchOpen = useNetworkStore((s) => s.setSubBatchOpen);
-
-  const count = checkedEntities.size;
-  if (count === 0) return null;
-
-  const checkedList = NETWORK_ENTITIES.filter((e) =>
-    checkedEntities.has(e.id)
-  );
-
-  return (
-    <>
-      {/* Floating Bottom Tray */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 bg-neutral-900 text-white pl-4 pr-2 py-2 rounded-xl shadow-2xl border border-neutral-700 animate-in slide-in-from-bottom-8 duration-300">
-        <RiListCheck3 className="size-4 text-neutral-400" />
-        <span className="text-sm font-medium whitespace-nowrap">
-          {count} selected
-        </span>
-        <div className="w-px h-5 bg-neutral-700" />
-        <Button
-          size="sm"
-          onClick={() => setSubBatchOpen(true)}
-          className="bg-white text-neutral-900 hover:bg-neutral-200 h-7 text-xs font-semibold"
-        >
-          Create Sub-Batch
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-7 text-neutral-400 hover:text-white hover:bg-neutral-800"
-          onClick={clearChecked}
-        >
-          <RiCloseLine className="size-3.5" />
-        </Button>
-      </div>
-
-      {/* Sub-Batch Sheet */}
-      <Sheet open={isSubBatchSheetOpen} onOpenChange={setSubBatchOpen}>
-        <SheetContent className="w-[600px] sm:max-w-[600px] flex flex-col p-0">
-          <SheetHeader className="px-6 py-5 border-b border-neutral-200 shrink-0">
-            <SheetTitle className="text-base font-bold">
-              Sub-Batch Workflow
-            </SheetTitle>
-            <SheetDescription className="text-xs text-neutral-500">
-              Processing {count} entities from WEB#81 network
-            </SheetDescription>
-          </SheetHeader>
-
-          <ScrollArea className="flex-1 min-h-0">
-            <div className="px-6 py-5 space-y-6">
-              {/* Selected entities list */}
-              <section>
-                <SectionHeader icon={RiNodeTree} label="Selected Entities" />
-                <div className="space-y-1">
-                  {checkedList.map((entity) => {
-                    const riskColor =
-                      entity.risk >= 80
-                        ? "text-red-600"
-                        : entity.risk >= 60
-                          ? "text-orange-500"
-                          : "text-yellow-600";
-                    return (
-                      <div
-                        key={entity.id}
-                        className="flex items-center justify-between py-2 px-3 rounded-md bg-neutral-50 border border-neutral-100"
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <div className="size-6 rounded bg-neutral-200 flex items-center justify-center text-[8px] font-bold text-neutral-500">
-                            {entity.thumbnail}
-                          </div>
-                          <div>
-                            <div className="text-[11px] font-medium text-neutral-900">
-                              {entity.name}
-                            </div>
-                            <div className="text-[10px] text-neutral-400">
-                              {entity.id}
-                            </div>
-                          </div>
-                        </div>
-                        <span
-                          className={`text-[11px] font-bold tabular-nums ${riskColor}`}
-                        >
-                          {entity.risk}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-
-              {/* Action Selection */}
-              <section>
-                <SectionHeader icon={RiAlertLine} label="Batch Action" />
-                <Select>
-                  <SelectTrigger className="h-9 text-xs w-full">
-                    <SelectValue placeholder="Select action..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="counterfeit" className="text-xs">
-                      Mark as Counterfeit
-                    </SelectItem>
-                    <SelectItem value="takedown" className="text-xs">
-                      Send Takedown Notice
-                    </SelectItem>
-                    <SelectItem value="escalate" className="text-xs">
-                      Escalate to Legal
-                    </SelectItem>
-                    <SelectItem value="archive" className="text-xs">
-                      Archive
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </section>
-
-              {/* Notes */}
-              <section>
-                <SectionHeader icon={RiFileTextLine} label="Notes" />
-                <textarea
-                  placeholder="Add context for this batch action..."
-                  className="w-full h-24 text-[11px] leading-relaxed text-neutral-700 border border-neutral-200 rounded-md p-3 bg-white resize-none focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-ring"
-                />
-              </section>
-            </div>
-          </ScrollArea>
-
-          {/* Footer */}
-          <div className="px-6 py-4 border-t border-neutral-200 shrink-0 flex items-center justify-between">
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-xs"
-              onClick={() => setSubBatchOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              size="sm"
-              className="bg-neutral-900 hover:bg-neutral-800 text-white text-xs px-6"
-            >
-              Execute Batch
-            </Button>
-          </div>
-        </SheetContent>
-      </Sheet>
-    </>
-  );
+  return {
+    summary,
+    directClones,
+    suspiciousLinks,
+    relatedEntities: all,
+    totalRelated: all.length,
+  };
 }
 
 /* ─── Main Page ─── */
@@ -2194,17 +1753,27 @@ export function WebsiteModerationView() {
               {/* ── Network Tab ── */}
               <TabsContent
                 value="network"
-                className="m-0 p-0 outline-none focus:ring-0"
+                className="m-0 p-5 pb-20 outline-none focus:ring-0"
               >
-                <NetworkPanel />
+                {(() => {
+                  const net = buildWebsiteNetwork();
+                  return (
+                    <NetworkTab
+                      clusterLabel="Counterfeit Cluster"
+                      summary={net.summary}
+                      directClones={net.directClones}
+                      suspiciousLinks={net.suspiciousLinks}
+                      relatedEntities={net.relatedEntities}
+                      totalRelated={net.totalRelated}
+                      contextLabel="WEB#81 network"
+                    />
+                  );
+                })()}
               </TabsContent>
             </ScrollArea>
           </Tabs>
         </aside>
       </div>
-
-      {/* ── Batch Tray (floats above everything) ── */}
-      <BatchTrayOverlay />
     </div>
   );
 }

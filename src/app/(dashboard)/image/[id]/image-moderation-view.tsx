@@ -165,6 +165,7 @@ function buildImageNetwork(image: ImageData): {
   summary: string;
   directClones: NetworkEntity[];
   suspiciousLinks: NetworkEntity[];
+  relatedEntities: NetworkEntity[];
   totalRelated: number;
 } {
   const seed = image.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
@@ -203,9 +204,37 @@ function buildImageNetwork(image: ImageData): {
       href: "#",
     })),
   ];
+  const postsCap = Math.min(image.postsCount, 24);
+  const accountsCap = Math.min(image.accountsCount, 16);
+  const websitesCap = Math.min(image.websitesCount, 12);
+  const relatedPosts: NetworkEntity[] = Array.from({ length: postsCap }, (_, i) => ({
+    id: `${image.id}-rp-${i}`,
+    kind: "post" as const,
+    name: `PO#${4000000 + ((seed * (i + 3)) % 9000000)}`,
+    subtitle: `${image.platform} · listing`,
+    riskScore: 90 - ((seed + i * 5) % 60),
+    href: "#",
+  }));
+  const relatedAccounts: NetworkEntity[] = Array.from({ length: accountsCap }, (_, i) => ({
+    id: `${image.id}-ra-${i}`,
+    kind: "account" as const,
+    name: `seller_${((seed + i * 13) % 9999).toString().padStart(4, "0")}`,
+    subtitle: `${image.platform} · reposts hero`,
+    riskScore: 82 - ((seed + i * 7) % 50),
+    href: "#",
+  }));
+  const relatedWebsites: NetworkEntity[] = Array.from({ length: websitesCap }, (_, i) => ({
+    id: `${image.id}-rw-${i}`,
+    kind: "website" as const,
+    name: `marketplace-${((seed + i * 17) % 99)}.com`,
+    subtitle: "Hosts same asset",
+    riskScore: 78 - ((seed + i * 11) % 55),
+    href: "#",
+  }));
+  const relatedEntities = [...relatedWebsites, ...relatedPosts, ...relatedAccounts];
   const totalRelated = image.postsCount + image.accountsCount + image.websitesCount;
   const summary = `${image.postsCount} posts and ${image.accountsCount} accounts share this image across ${image.websitesCount} sites.`;
-  return { summary, directClones, suspiciousLinks, totalRelated };
+  return { summary, directClones, suspiciousLinks, relatedEntities, totalRelated };
 }
 
 interface ImageData {
@@ -918,7 +947,9 @@ export function ImageModerationView({ imageId }: { imageId: string }) {
                       summary={net.summary}
                       directClones={net.directClones}
                       suspiciousLinks={net.suspiciousLinks}
+                      relatedEntities={net.relatedEntities}
                       totalRelated={net.totalRelated}
+                      contextLabel={image.id}
                     />
                   );
                 })()}

@@ -95,6 +95,7 @@ function buildExploreNetwork(item: ExplorePost): {
   summary: string;
   directClones: NetworkEntity[];
   suspiciousLinks: NetworkEntity[];
+  relatedEntities: NetworkEntity[];
   totalRelated: number;
 } {
   const seed = item.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
@@ -133,9 +134,40 @@ function buildExploreNetwork(item: ExplorePost): {
       href: "#",
     })),
   ];
-  const totalRelated = directClones.length + suspiciousLinks.length + item.domainCount;
+  const relatedWebsites: NetworkEntity[] = item.relatedDomains.map((d, i) => ({
+    id: `${item.id}-site-${i}`,
+    kind: "website" as const,
+    name: d,
+    subtitle: "Cross-linked marketplace",
+    riskScore: 80 - ((seed + i * 11) % 60),
+    href: "#",
+  }));
+  const relatedPosts: NetworkEntity[] = Array.from(
+    { length: Math.min(item.domainCount, 12) },
+    (_, i) => ({
+      id: `${item.id}-rp-${i}`,
+      kind: "post" as const,
+      name: `PO#${2000000 + ((seed * (i + 7)) % 9000000)}`,
+      subtitle: item.relatedDomains[i % Math.max(item.relatedDomains.length, 1)] ?? item.websiteDomain,
+      riskScore: 85 - ((seed + i * 7) % 55),
+      href: "#",
+    })
+  );
+  const relatedImages: NetworkEntity[] = Array.from(
+    { length: Math.min(item.media.length * 2, 8) },
+    (_, i) => ({
+      id: `${item.id}-ri-${i}`,
+      kind: "image" as const,
+      name: `IM#${3000000 + ((seed * (i + 5)) % 9000000)}`,
+      subtitle: "Near-duplicate hero",
+      riskScore: 78 - ((seed + i * 9) % 50),
+      href: "#",
+    })
+  );
+  const relatedEntities = [...relatedWebsites, ...relatedImages, ...relatedPosts];
+  const totalRelated = directClones.length + suspiciousLinks.length + relatedEntities.length;
   const summary = `${directClones.length} direct clones and ${suspiciousLinks.length} suspicious links detected in this cluster.`;
-  return { summary, directClones, suspiciousLinks, totalRelated };
+  return { summary, directClones, suspiciousLinks, relatedEntities, totalRelated };
 }
 
 const LABEL_COLORS: Record<string, string> = {
@@ -1472,7 +1504,9 @@ export function ModerationWorkspace({
                       summary={network.summary}
                       directClones={network.directClones}
                       suspiciousLinks={network.suspiciousLinks}
+                      relatedEntities={network.relatedEntities}
                       totalRelated={network.totalRelated}
+                      contextLabel={`PO#${currentItem.postId}`}
                     />
                   );
                 })()}
